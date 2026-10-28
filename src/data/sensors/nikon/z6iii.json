@@ -1,0 +1,22 @@
+{
+  "name": "Z6III",
+  "kind": "stills",
+  "formatClass": "full-frame",
+  "formats": [
+    {
+      "id": "fx",
+      "name": "FX (full frame)",
+      "width": 35.9,
+      "height": 23.9,
+      "photosites": [
+        6048,
+        4032
+      ],
+      "citation": {
+        "ref": "nikon-z6iii-specs",
+        "locator": "Image sensor; Image size (pixels), FX (36 x 24) Large"
+      }
+    }
+  ],
+  "confidence": "manufacturer"
+}

@@ -1,0 +1,9 @@
+[
+  { "id": "arri", "name": "ARRI" },
+  { "id": "film", "name": "Film", "generic": true },
+  { "id": "fujifilm", "name": "Fujifilm" },
+  { "id": "nikon", "name": "Nikon" },
+  { "id": "om-system", "name": "OM System" },
+  { "id": "samsung", "name": "Samsung" },
+  { "id": "sony", "name": "Sony" }
+]

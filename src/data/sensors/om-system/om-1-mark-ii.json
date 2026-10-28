@@ -1,0 +1,18 @@
+{
+  "name": "OM-1 Mark II",
+  "kind": "stills",
+  "formatClass": "micro-four-thirds",
+  "formats": [
+    {
+      "id": "4-3",
+      "name": "4:3",
+      "width": 17.3,
+      "height": 13,
+      "citation": {
+        "ref": "om-system-om-1-mark-ii",
+        "locator": "Technical specifications: Image sensor, Aspect ratio & area"
+      }
+    }
+  ],
+  "confidence": "manufacturer"
+}

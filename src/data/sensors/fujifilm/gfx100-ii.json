@@ -1,0 +1,22 @@
+{
+  "name": "GFX100 II",
+  "kind": "stills",
+  "formatClass": "medium-format",
+  "formats": [
+    {
+      "id": "4-3",
+      "name": "4:3",
+      "width": 43.8,
+      "height": 32.9,
+      "photosites": [
+        11648,
+        8736
+      ],
+      "citation": {
+        "ref": "fujifilm-gfx100-ii-specs",
+        "locator": "Image sensor; Image size, 4:3 L"
+      }
+    }
+  ],
+  "confidence": "manufacturer"
+}

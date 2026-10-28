@@ -18,6 +18,7 @@ CapXer builds on the work below. Each item keeps its own licence. The CapXer lic
 | Vitest | Unit tests | MIT | https://github.com/vitest-dev/vitest |
 | Playwright | Browser tests | Apache-2.0 | https://github.com/microsoft/playwright |
 | axe-core | Accessibility tests | MPL-2.0 | https://github.com/dequelabs/axe-core |
+| Zod | Data validation | MIT | https://github.com/colinhacks/zod |
 
 ## Services
 
@@ -27,7 +28,9 @@ CapXer builds on the work below. Each item keeps its own licence. The CapXer lic
 
 ## Data
 
-No third-party data is included yet. Camera sensor and lens data sources will be listed here, with their licences and required attributions, as they are added.
+No third-party dataset is included. The camera database in `src/data/` is CapXer's own: each sensor size is taken from the maker's published specifications or from a SMPTE standard, and every value cites its source in `src/references/references.json`. The sources are listed on the website's About page.
+
+Datasets with their own licences (for example lensfun) will be listed here, with their required attributions, if they are added.
 
 ## Fonts
 

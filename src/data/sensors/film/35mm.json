@@ -1,0 +1,50 @@
+{
+  "name": "35mm motion picture film",
+  "kind": "film",
+  "formatClass": "super-35",
+  "formats": [
+    {
+      "id": "full-aperture",
+      "name": "Full aperture (4-perf)",
+      "width": 24.92,
+      "height": 18.67,
+      "citation": {
+        "ref": "smpte-st-59-1998",
+        "locator": "Table 3, Style C, dimensions A and B"
+      }
+    },
+    {
+      "id": "academy",
+      "name": "Academy (4-perf)",
+      "width": 22,
+      "height": 16,
+      "citation": {
+        "ref": "smpte-st-59-1998",
+        "locator": "Table 1, Style A, dimensions A and B"
+      }
+    },
+    {
+      "id": "anamorphic",
+      "name": "Anamorphic 2x (4-perf)",
+      "width": 22,
+      "height": 18.59,
+      "squeeze": 2,
+      "citation": {
+        "ref": "smpte-st-59-1998",
+        "locator": "Table 2, Style B, dimension B; width A as in Table 1"
+      }
+    },
+    {
+      "id": "3-perf",
+      "name": "3-perf",
+      "width": 24.92,
+      "height": 13.87,
+      "citation": {
+        "ref": "smpte-st-59-1998",
+        "locator": "Table 4, Style D, dimensions A and B"
+      }
+    }
+  ],
+  "confidence": "standard",
+  "notes": "Nominal camera aperture images. The 2x squeeze for the anamorphic style is the usual factor; SMPTE 59 does not state it."
+}

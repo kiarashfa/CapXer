@@ -1,0 +1,86 @@
+[
+  {
+    "id": "arri-alexa-35",
+    "type": "webpage",
+    "title": "ALEXA 35: Technical Data",
+    "publisher": "ARRI",
+    "URL": "https://www.arri.com/en/camera-systems/cameras/alexa-35",
+    "accessed": { "date-parts": [[2026, 10, 28]] }
+  },
+  {
+    "id": "arri-alexa-mini-lf",
+    "type": "webpage",
+    "title": "ALEXA Mini LF: Technical Data",
+    "publisher": "ARRI",
+    "URL": "https://www.arri.com/en/camera-systems/cameras/alexa-mini-lf",
+    "accessed": { "date-parts": [[2026, 10, 28]] }
+  },
+  {
+    "id": "nikon-z6iii-specs",
+    "type": "webpage",
+    "title": "Nikon Z6III Online Manual: Specifications",
+    "publisher": "Nikon",
+    "URL": "https://onlinemanual.nikonimglib.com/z6III/en/specifications_387.html",
+    "accessed": { "date-parts": [[2026, 10, 28]] }
+  },
+  {
+    "id": "fujifilm-x-t5-specs",
+    "type": "webpage",
+    "title": "FUJIFILM X-T5: Specifications",
+    "publisher": "Fujifilm",
+    "URL": "https://www.fujifilm-x.com/global/products/cameras/x-t5/specifications/",
+    "accessed": { "date-parts": [[2026, 10, 28]] }
+  },
+  {
+    "id": "fujifilm-gfx100-ii-specs",
+    "type": "webpage",
+    "title": "FUJIFILM GFX100 II: Specifications",
+    "publisher": "Fujifilm",
+    "URL": "https://www.fujifilm-x.com/global/products/cameras/gfx100-ii/specifications/",
+    "accessed": { "date-parts": [[2026, 10, 28]] }
+  },
+  {
+    "id": "om-system-om-1-mark-ii",
+    "type": "webpage",
+    "title": "OM SYSTEM OM-1 Mark II: Technical specifications",
+    "publisher": "OM Digital Solutions",
+    "URL": "https://explore.omsystem.com/us/en/om-1-mark-ii",
+    "accessed": { "date-parts": [[2026, 10, 28]] }
+  },
+  {
+    "id": "sony-rx100-vii-specs",
+    "type": "webpage",
+    "title": "DSC-RX100M7 Specifications",
+    "publisher": "Sony",
+    "URL": "https://www.sony.com.tw/en/electronics/cyber-shot-compact-cameras/dsc-rx100m7/specifications",
+    "accessed": { "date-parts": [[2026, 10, 28]] }
+  },
+  {
+    "id": "samsung-isocell-hp2",
+    "type": "webpage",
+    "title": "ISOCELL HP2: Specs",
+    "publisher": "Samsung Semiconductor",
+    "URL": "https://semiconductor.samsung.com/image-sensor/mobile-image-sensor/isocell-hp2/",
+    "accessed": { "date-parts": [[2026, 10, 28]] }
+  },
+  {
+    "id": "smpte-st-59-1998",
+    "type": "standard",
+    "title": "Motion-Picture Film (35-mm): Camera Aperture Images and Usage",
+    "number": "SMPTE 59-1998",
+    "publisher": "Society of Motion Picture and Television Engineers",
+    "issued": { "date-parts": [[1998, 10, 1]] },
+    "URL": "https://pub.smpte.org/doc/st59/19981001-pub/",
+    "accessed": { "date-parts": [[2026, 10, 28]] }
+  },
+  {
+    "id": "smpte-st-201-1996",
+    "type": "standard",
+    "title": "Motion-Picture Film (16-mm): Type W Camera Aperture Image",
+    "number": "ANSI/SMPTE 201M-1996",
+    "publisher": "Society of Motion Picture and Television Engineers",
+    "issued": { "date-parts": [[1996, 4, 8]] },
+    "URL": "https://pub.smpte.org/doc/st201/19960408-pub/",
+    "accessed": { "date-parts": [[2026, 10, 28]] }
+  }
+]

@@ -1,0 +1,141 @@
+{
+  "name": "ALEXA Mini LF",
+  "kind": "cinema",
+  "formatClass": "full-frame",
+  "pitch": {
+    "value": 8.25,
+    "citation": {
+      "ref": "arri-alexa-mini-lf",
+      "locator": "Technical Data: Photosite Pitch"
+    }
+  },
+  "formats": [
+    {
+      "id": "4-5k-lf-3-2-open-gate",
+      "name": "4.5K LF 3:2 Open Gate",
+      "width": 36.7,
+      "height": 25.54,
+      "photosites": [
+        4448,
+        3096
+      ],
+      "citation": {
+        "ref": "arri-alexa-mini-lf",
+        "locator": "Technical Data: Sensor Active Image Area, 4.5K LF 3:2 Open Gate"
+      }
+    },
+    {
+      "id": "4-5k-lf-2-39-1",
+      "name": "4.5K LF 2.39:1",
+      "width": 36.7,
+      "height": 15.31,
+      "photosites": [
+        4448,
+        1856
+      ],
+      "citation": {
+        "ref": "arri-alexa-mini-lf",
+        "locator": "Technical Data: Sensor Active Image Area, 4.5K LF 2.39:1"
+      }
+    },
+    {
+      "id": "4-3k-lf-16-9",
+      "name": "4.3K LF 16:9",
+      "width": 35.64,
+      "height": 20.05,
+      "photosites": [
+        4320,
+        2430
+      ],
+      "citation": {
+        "ref": "arri-alexa-mini-lf",
+        "locator": "Technical Data: Sensor Active Image Area, 4.3K LF 16:9"
+      }
+    },
+    {
+      "id": "3-8k-lf-16-9",
+      "name": "3.8K LF 16:9 UHD",
+      "width": 31.68,
+      "height": 17.82,
+      "photosites": [
+        3840,
+        2160
+      ],
+      "citation": {
+        "ref": "arri-alexa-mini-lf",
+        "locator": "Technical Data: Sensor Active Image Area, 3.8K LF 16:9"
+      }
+    },
+    {
+      "id": "2-8k-lf-1-1",
+      "name": "2.8K LF 1:1",
+      "width": 23.76,
+      "height": 23.76,
+      "photosites": [
+        2880,
+        2880
+      ],
+      "citation": {
+        "ref": "arri-alexa-mini-lf",
+        "locator": "Technical Data: Sensor Active Image Area, 2.8K LF 1:1"
+      }
+    },
+    {
+      "id": "3-4k-s35-3-2",
+      "name": "3.4K S35 3:2",
+      "width": 28.25,
+      "height": 18.16,
+      "photosites": [
+        3424,
+        2202
+      ],
+      "citation": {
+        "ref": "arri-alexa-mini-lf",
+        "locator": "Technical Data: Sensor Active Image Area, 3.4K S35 3:2"
+      }
+    },
+    {
+      "id": "3-2k-s35-16-9",
+      "name": "3.2K S35 16:9",
+      "width": 26.4,
+      "height": 14.85,
+      "photosites": [
+        3200,
+        1800
+      ],
+      "citation": {
+        "ref": "arri-alexa-mini-lf",
+        "locator": "Technical Data: Sensor Active Image Area, 3.2K S35 16:9"
+      }
+    },
+    {
+      "id": "2-8k-s35-4-3",
+      "name": "2.8K S35 4:3",
+      "width": 23.76,
+      "height": 17.81,
+      "photosites": [
+        2880,
+        2160
+      ],
+      "citation": {
+        "ref": "arri-alexa-mini-lf",
+        "locator": "Technical Data: Sensor Active Image Area, 2.8K S35 4:3"
+      }
+    },
+    {
+      "id": "2-8k-s35-16-9",
+      "name": "2.8K S35 16:9",
+      "width": 23.76,
+      "height": 13.36,
+      "photosites": [
+        2880,
+        1620
+      ],
+      "citation": {
+        "ref": "arri-alexa-mini-lf",
+        "locator": "Technical Data: Sensor Active Image Area, 2.8K S35 16:9"
+      }
+    }
+  ],
+  "confidence": "manufacturer"
+}

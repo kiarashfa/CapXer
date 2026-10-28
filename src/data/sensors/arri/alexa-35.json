@@ -1,0 +1,142 @@
+{
+  "name": "ALEXA 35",
+  "kind": "cinema",
+  "formatClass": "super-35",
+  "pitch": {
+    "value": 6.075,
+    "citation": {
+      "ref": "arri-alexa-35",
+      "locator": "Technical Data: Photosite Pitch"
+    }
+  },
+  "formats": [
+    {
+      "id": "4-6k-3-2-open-gate",
+      "name": "4.6K 3:2 Open Gate",
+      "width": 27.99,
+      "height": 19.22,
+      "photosites": [
+        4608,
+        3164
+      ],
+      "citation": {
+        "ref": "arri-alexa-35",
+        "locator": "Technical Data: Sensor Maximum Number of Photosites and Size"
+      }
+    },
+    {
+      "id": "4-6k-16-9",
+      "name": "4.6K 16:9",
+      "width": 28,
+      "height": 15.7,
+      "photosites": [
+        4608,
+        2592
+      ],
+      "citation": {
+        "ref": "arri-alexa-35",
+        "locator": "Technical Data: Sensor Active Image Area, 4.6K 16:9"
+      }
+    },
+    {
+      "id": "4k-16-9",
+      "name": "4K 16:9",
+      "width": 24.9,
+      "height": 14,
+      "photosites": [
+        4096,
+        2304
+      ],
+      "citation": {
+        "ref": "arri-alexa-35",
+        "locator": "Technical Data: Sensor Active Image Area, 4K 16:9"
+      }
+    },
+    {
+      "id": "4k-2-1",
+      "name": "4K 2:1",
+      "width": 24.9,
+      "height": 12.4,
+      "photosites": [
+        4096,
+        2048
+      ],
+      "citation": {
+        "ref": "arri-alexa-35",
+        "locator": "Technical Data: Sensor Active Image Area, 4K 2:1"
+      }
+    },
+    {
+      "id": "3-8k-16-9",
+      "name": "3.8K 16:9 UHD",
+      "width": 23.3,
+      "height": 13.1,
+      "photosites": [
+        3840,
+        2160
+      ],
+      "citation": {
+        "ref": "arri-alexa-35",
+        "locator": "Technical Data: Sensor Active Image Area, 3.8K 16:9"
+      }
+    },
+    {
+      "id": "3-3k-6-5",
+      "name": "3.3K 6:5",
+      "width": 20.22,
+      "height": 16.95,
+      "photosites": [
+        3328,
+        2790
+      ],
+      "citation": {
+        "ref": "arri-alexa-35",
+        "locator": "Technical Data: Sensor Active Image Area, 3.3K 6:5"
+      }
+    },
+    {
+      "id": "3k-1-1",
+      "name": "3K 1:1",
+      "width": 18.7,
+      "height": 18.7,
+      "photosites": [
+        3072,
+        3072
+      ],
+      "citation": {
+        "ref": "arri-alexa-35",
+        "locator": "Technical Data: Sensor Active Image Area, 3K 1:1"
+      }
+    },
+    {
+      "id": "2-7k-8-9",
+      "name": "2.7K 8:9",
+      "width": 16.7,
+      "height": 18.7,
+      "photosites": [
+        2743,
+        3086
+      ],
+      "citation": {
+        "ref": "arri-alexa-35",
+        "locator": "Technical Data: Sensor Active Image Area, 2.7K 8:9"
+      }
+    },
+    {
+      "id": "2k-16-9-s16",
+      "name": "2K 16:9 S16",
+      "width": 12.4,
+      "height": 7,
+      "photosites": [
+        2048,
+        1152
+      ],
+      "citation": {
+        "ref": "arri-alexa-35",
+        "locator": "Technical Data: Sensor Active Image Area, 2K 16:9 S16"
+      }
+    }
+  ],
+  "confidence": "manufacturer",
+  "notes": "ARRI rounds most format dimensions to 0.1 mm; the open gate size uses the more precise sensor size from the same table."
+}

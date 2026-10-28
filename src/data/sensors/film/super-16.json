@@ -1,0 +1,19 @@
+{
+  "name": "Super 16 film",
+  "kind": "film",
+  "formatClass": "super-16",
+  "formats": [
+    {
+      "id": "type-w",
+      "name": "Super 16 (Type W)",
+      "width": 12.35,
+      "height": 7.42,
+      "citation": {
+        "ref": "smpte-st-201-1996",
+        "locator": "Table 1, dimensions A and B"
+      }
+    }
+  ],
+  "confidence": "standard",
+  "notes": "Many sources quote 12.52 x 7.41 mm; this entry uses the nominal camera aperture image from the SMPTE standard."
+}

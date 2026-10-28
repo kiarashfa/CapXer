@@ -1,0 +1,19 @@
+{
+  "name": "RX100 VII",
+  "kind": "stills",
+  "formatClass": "one-inch",
+  "formats": [
+    {
+      "id": "3-2",
+      "name": "3:2",
+      "width": 13.2,
+      "height": 8.8,
+      "citation": {
+        "ref": "sony-rx100-vii-specs",
+        "locator": "Image Sensor: Sensor Type"
+      }
+    }
+  ],
+  "confidence": "manufacturer",
+  "notes": "1.0-type is an optical format name, not a measurement; the sensor itself is 13.2 x 8.8 mm."
+}

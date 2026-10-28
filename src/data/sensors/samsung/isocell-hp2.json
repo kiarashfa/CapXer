@@ -1,0 +1,30 @@
+{
+  "name": "ISOCELL HP2",
+  "kind": "phone",
+  "formatClass": "phone",
+  "pitch": {
+    "value": 0.6,
+    "citation": {
+      "ref": "samsung-isocell-hp2",
+      "locator": "Specs: Pixel Size"
+    }
+  },
+  "formats": [
+    {
+      "id": "4-3",
+      "name": "4:3",
+      "width": 9.83,
+      "height": 7.37,
+      "photosites": [
+        16384,
+        12288
+      ],
+      "citation": {
+        "ref": "samsung-isocell-hp2",
+        "locator": "Specs: Effective Resolution, Pixel Size"
+      }
+    }
+  ],
+  "confidence": "derived",
+  "notes": "Size calculated from the published effective resolution and pixel size (16,384 x 0.6 um by 12,288 x 0.6 um). Phone makers rarely publish sensor sizes."
+}

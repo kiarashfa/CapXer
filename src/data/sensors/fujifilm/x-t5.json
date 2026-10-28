@@ -1,0 +1,22 @@
+{
+  "name": "X-T5",
+  "kind": "stills",
+  "formatClass": "aps-c",
+  "formats": [
+    {
+      "id": "3-2",
+      "name": "3:2",
+      "width": 23.5,
+      "height": 15.7,
+      "photosites": [
+        7728,
+        5152
+      ],
+      "citation": {
+        "ref": "fujifilm-x-t5-specs",
+        "locator": "Image sensor; Image size, 3:2 L"
+      }
+    }
+  ],
+  "confidence": "manufacturer"
+}
