@@ -9,10 +9,10 @@ interface Props {
 const { title, lead } = Astro.props;
 ---
 
-<article class="space-y-10">
-  <header class="space-y-3">
-    <h1 class="text-3xl font-bold tracking-tight desktop:text-5xl">{title}</h1>
-    {lead && <p class="text-lg text-muted">{lead}</p>}
+<article class="space-y-8 desktop:space-y-10">
+  <header class="space-y-3 border-b border-line pb-6">
+    <h1 class="text-h1 leading-tight font-extrabold desktop:text-h1-desktop">{title}</h1>
+    {lead && <p class="text-lg leading-relaxed text-muted">{lead}</p>}
   </header>
   <div class="grid gap-6 desktop:grid-cols-2">
     <slot />

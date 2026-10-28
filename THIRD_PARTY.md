@@ -34,4 +34,10 @@ Datasets with their own licences (for example lensfun) will be listed here, with
 
 ## Fonts
 
-None bundled. CapXer uses the fonts already on your device.
+Served from CapXer itself (no third-party font server is contacted), packaged by Fontsource.
+
+| Name | Use | Licence | Link |
+|---|---|---|---|
+| Figtree | Interface and reading text | SIL Open Font License 1.1 | https://github.com/erikdkennedy/figtree |
+| JetBrains Mono | Numbers and measurements | SIL Open Font License 1.1 | https://github.com/JetBrains/JetBrainsMono |
+| Fontsource | Font packaging | MIT | https://github.com/fontsource/fontsource |

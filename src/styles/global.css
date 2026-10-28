@@ -1,30 +1,46 @@
 @import "tailwindcss";
 
+/* CapXer design system ("Studio notes"): about 70% precise, 30% friendly.
+   Anything that shows a measurement looks like a drawing (grid paper, mono
+   numbers, hairlines); anything you touch looks soft (pills, rounded cards).
+   Colours are semantic tokens; components never use raw hex values.
+   Contrast (WCAG 2.2) measured for both themes: text >= 5.5:1 everywhere,
+   `control` borders >= 3:1 against bg, surface and tint. */
+
 /* Theme is driven by data-theme on <html>, set before first paint in BaseLayout. */
 @custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
 
-/* Semantic tokens. Contrast checked for WCAG 2.2 AA in both themes (fg/muted/accent on bg and surface). */
 :root,
 [data-theme="dark"] {
   color-scheme: dark;
-  --bg: #0d0f12;
-  --surface: #161a1f;
-  --fg: #e8eaed;
-  --muted: #a3abb5;
-  --line: #2c333c;
-  --accent: #f5b301;
-  --accent-fg: #111111;
+  --bg: #10151d;
+  --surface: #171e28;
+  --ink: #e7ecf2;
+  --muted: #a5b2c1;
+  --line: #2b3542;
+  --control: #6b798a;
+  --strong: #95a4b5;
+  --grid: #1c2430;
+  --hatch: rgb(231 236 242 / 0.12);
+  --accent: #9db0ff;
+  --on-accent: #0c1222;
+  --tint: #1f2847;
 }
 
 [data-theme="light"] {
   color-scheme: light;
-  --bg: #f7f7f5;
+  --bg: #f4f6f8;
   --surface: #ffffff;
-  --fg: #15181c;
-  --muted: #4f5763;
-  --line: #d4d8dd;
-  --accent: #8a5a00;
-  --accent-fg: #ffffff;
+  --ink: #14243a;
+  --muted: #4d5d70;
+  --line: #d9e0e7;
+  --control: #7a8797;
+  --strong: #14243a;
+  --grid: #ebeff3;
+  --hatch: rgb(20 36 58 / 0.12);
+  --accent: #3451d1;
+  --on-accent: #ffffff;
+  --tint: #e9edfb;
 }
 
 /* Layout: exactly two views.
@@ -37,24 +53,47 @@
   --breakpoint-*: initial;
   --breakpoint-desktop: 64rem;
   --container-page: 75rem;
+
+  /* Shapes: controls are pills (rounded-full); these are the rest. */
+  --radius-card: 16px;
+  --radius-frame: 14px;
+  --radius-shape: 6px;
+
+  /* Type scale (px): 12 label, 13 ui, 14 sm, 16 base, 18 lg, 22 h3, 28 h2, 34/46 h1. */
+  --text-label: 0.75rem;
+  --text-ui: 0.8125rem;
+  --text-h3: 1.375rem;
+  --text-h2: 1.75rem;
+  --text-h1: 2.125rem;
+  --text-h1-desktop: 2.875rem;
 }
 
 @theme inline {
   --color-bg: var(--bg);
   --color-surface: var(--surface);
-  --color-fg: var(--fg);
+  --color-ink: var(--ink);
   --color-muted: var(--muted);
   --color-line: var(--line);
+  --color-control: var(--control);
+  --color-strong: var(--strong);
   --color-accent: var(--accent);
-  --color-accent-fg: var(--accent-fg);
-  --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --color-on-accent: var(--on-accent);
+  --color-tint: var(--tint);
+  --font-sans: "Figtree Variable", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "JetBrains Mono Variable", ui-monospace, "Cascadia Mono", Consolas, monospace;
 }
 
 @layer base {
   html {
     background: var(--bg);
-    color: var(--fg);
+    color: var(--ink);
     -webkit-text-size-adjust: 100%;
+  }
+
+  h1,
+  h2,
+  h3 {
+    letter-spacing: -0.02em;
   }
 
   :focus-visible {
@@ -67,6 +106,72 @@
     color: var(--accent);
     text-decoration: underline;
     text-underline-offset: 3px;
+  }
+}
+
+/* Shared component styles, used from both Astro and Svelte. */
+@layer components {
+  /* Buttons: 44px+ targets. Primary is calm ink, secondary is outlined. */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: 2.75rem;
+    padding: 0 1.25rem;
+    border-radius: var(--radius-card);
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 150ms, border-color 150ms;
+  }
+  .btn-primary {
+    background: var(--ink);
+    color: var(--bg);
+    border: 1px solid var(--ink);
+  }
+  .btn-secondary {
+    background: var(--surface);
+    color: var(--ink);
+    border: 1px solid var(--control);
+  }
+  .btn-secondary:hover {
+    background: var(--tint);
+  }
+
+  .icon-btn {
+    display: inline-grid;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 9999px;
+    background: var(--surface);
+    color: var(--ink);
+    border: 1px solid var(--control);
+    cursor: pointer;
+  }
+
+  .card {
+    background: var(--surface);
+    border-radius: var(--radius-card);
+    box-shadow: 0 0 0 1px var(--line);
+  }
+
+  .note {
+    background: var(--tint);
+    border-radius: var(--radius-card);
+  }
+
+  /* Drawing surfaces: grid paper behind images and diagrams. */
+  .grid-paper {
+    background-color: var(--surface);
+    background-image:
+      linear-gradient(var(--grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+    background-size: 12px 12px;
+  }
+  .hatch {
+    background: repeating-linear-gradient(135deg, var(--hatch) 0 1px, transparent 1px 6px);
   }
 }
 

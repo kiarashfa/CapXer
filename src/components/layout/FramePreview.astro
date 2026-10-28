@@ -1,47 +1,31 @@
 ---
-// Decorative hero illustration: a 16:9 scene seen through 2.39:1 frame lines
-// with a dimmed mask and rule-of-thirds guides. 2.39:1 inside 160x90 is
-// 160 x 66.9, so the mask bands are 11.55 high top and bottom.
-const W = 160;
-const H = 90;
-const frameH = W / 2.39;
-const top = (H - frameH) / 2;
+// Decorative hero illustration in the viewfinder style: a line-drawn 16:9
+// scene on grid paper, seen through 2.39:1 frame lines with a hatched mask
+// and rule-of-thirds guides. Geometry: 2.39:1 inside 16:9 uses
+// (16/9) / 2.39 = 74.38% of the height, so each mask band is 12.81%.
+const MASK = 12.81;
+const FRAME = 100 - 2 * MASK;
+const thirds = [MASK + FRAME / 3, MASK + (2 * FRAME) / 3];
 ---
 
-<svg
-  aria-hidden="true"
-  viewBox={`0 0 ${W} ${H}`}
-  class="w-full rounded-lg border border-line bg-surface"
-  preserveAspectRatio="xMidYMid meet"
->
-  <defs>
-    <linearGradient id="fp-sky" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="var(--accent)" stop-opacity="0.35"></stop>
-      <stop offset="1" stop-color="var(--surface)" stop-opacity="0"></stop>
-    </linearGradient>
-  </defs>
-  <rect width={W} height={H} fill="url(#fp-sky)"></rect>
-  <circle cx="112" cy="40" r="9" fill="var(--accent)" opacity="0.6"></circle>
-  <path d="M0 62 Q30 44 58 58 T112 54 T160 50 V90 H0Z" fill="var(--muted)" opacity="0.35"></path>
-  <path d="M0 72 Q40 60 80 70 T160 66 V90 H0Z" fill="var(--muted)" opacity="0.55"></path>
-  <!-- figure on the right third -->
-  <path d="M104 72 v-11 a3 3 0 0 1 6 0 v11Z M107 57 a2.6 2.6 0 1 1 0.01 0Z" fill="var(--fg)" opacity="0.8"></path>
-
-  <!-- mask outside the 2.39:1 frame -->
-  <rect width={W} height={top} fill="#000" opacity="0.55"></rect>
-  <rect y={H - top} width={W} height={top} fill="#000" opacity="0.55"></rect>
-
-  <!-- thirds -->
-  <g stroke="var(--fg)" stroke-opacity="0.3" stroke-width="0.4">
-    <line x1={W / 3} y1={top} x2={W / 3} y2={H - top}></line>
-    <line x1={(2 * W) / 3} y1={top} x2={(2 * W) / 3} y2={H - top}></line>
-    <line x1="0" y1={top + frameH / 3} x2={W} y2={top + frameH / 3}></line>
-    <line x1="0" y1={top + (2 * frameH) / 3} x2={W} y2={top + (2 * frameH) / 3}></line>
-  </g>
-
-  <!-- frame lines -->
-  <rect x="0.5" y={top} width={W - 1} height={frameH} fill="none" stroke="var(--accent)" stroke-width="0.8"></rect>
-  <text x="4" y={top - 3.5} font-size="4.2" fill="#fff" opacity="0.85" font-family="system-ui, sans-serif">
-    Super 35 · 35 mm · 2.39:1
-  </text>
-</svg>
+<div aria-hidden="true">
+  <div class="grid-paper relative aspect-video overflow-hidden rounded-frame text-ink" style="box-shadow: 0 0 0 1px var(--strong)">
+    <svg viewBox="0 0 358 201" preserveAspectRatio="none" class="absolute inset-0 size-full" fill="none" stroke="currentColor" stroke-width="1.2" vector-effect="non-scaling-stroke">
+      <circle cx="268" cy="72" r="14" vector-effect="non-scaling-stroke"></circle>
+      <path d="M0 138 Q64 101 128 128 T248 117 T358 110" vector-effect="non-scaling-stroke"></path>
+      <path d="M0 162 Q82 138 174 156 T358 147" vector-effect="non-scaling-stroke"></path>
+      <path d="M233 158 v-31 a5.5 5.5 0 0 1 11 0 v31Z M238.5 117 a5.5 5.5 0 1 1 0.01 0Z" vector-effect="non-scaling-stroke"></path>
+    </svg>
+    <div class="hatch absolute inset-x-0 top-0" style={`height: ${MASK}%`}></div>
+    <div class="hatch absolute inset-x-0 bottom-0" style={`height: ${MASK}%`}></div>
+    <div class="absolute inset-x-0" style={`top: ${MASK}%; bottom: ${MASK}%; box-shadow: inset 0 0 0 2px var(--accent)`}></div>
+    <div class="absolute border-l border-accent opacity-55" style={`left: 33.333%; top: ${MASK}%; bottom: ${MASK}%`}></div>
+    <div class="absolute border-l border-accent opacity-55" style={`left: 66.667%; top: ${MASK}%; bottom: ${MASK}%`}></div>
+    {thirds.map((y) => <div class="absolute inset-x-0 border-t border-accent opacity-55" style={`top: ${y}%`} />)}
+    <span class="absolute top-[3%] left-3 rounded-full bg-surface px-2 font-mono text-label text-ink">2.39 : 1</span>
+  </div>
+  <div class="relative mt-2 h-6 border-x border-strong">
+    <div class="absolute inset-x-0 top-[11px] border-t border-strong"></div>
+    <span class="absolute top-0.5 left-1/2 -translate-x-1/2 bg-bg px-2 font-mono text-label text-muted">16 : 9 recorded area</span>
+  </div>
+</div>

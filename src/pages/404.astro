@@ -5,11 +5,12 @@ import { url } from '../lib/url.ts';
 ---
 
 <BaseLayout title="Page not found">
-  <section class="grid items-center gap-8 py-6 desktop:grid-cols-2 desktop:gap-16">
+  <section class="grid items-center gap-8 py-4 desktop:grid-cols-2 desktop:gap-16">
     <div class="space-y-4">
-      <h1 class="text-3xl font-bold tracking-tight desktop:text-5xl">Out of frame</h1>
-      <p class="text-lg text-muted">This page does not exist. Maybe it was cropped out.</p>
-      <p><a href={url()}>Back to the viewfinder</a></p>
+      <p class="font-mono text-label tracking-wide text-accent uppercase">Error 404</p>
+      <h1 class="text-h1 leading-tight font-extrabold desktop:text-h1-desktop">Out of frame</h1>
+      <p class="text-lg leading-relaxed text-muted">This page does not exist. Maybe it was cropped out.</p>
+      <p class="pt-2"><a class="btn btn-primary" href={url()}>Back to the viewfinder</a></p>
     </div>
     <FramePreview />
   </section>

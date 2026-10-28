@@ -18,6 +18,8 @@ const software = [
   { name: 'Astro', use: 'Site framework (build time)', licence: 'MIT', href: 'https://astro.build' },
   { name: 'Svelte', use: 'Interactive components', licence: 'MIT', href: 'https://svelte.dev' },
   { name: 'Tailwind CSS', use: 'Styling (build time)', licence: 'MIT', href: 'https://tailwindcss.com' },
+  { name: 'Figtree', use: 'Typeface', licence: 'SIL Open Font', href: 'https://github.com/erikdkennedy/figtree' },
+  { name: 'JetBrains Mono', use: 'Typeface for numbers', licence: 'SIL Open Font', href: 'https://github.com/JetBrains/JetBrainsMono' },
 ];
 ---
 
@@ -39,10 +41,10 @@ const software = [
 
     <DocSection id="credits" title="Credits">
       <p>CapXer is built with the following software. Thank you to everyone who maintains it.</p>
-      <ul class="divide-y divide-line rounded-md border border-line">
+      <ul class="divide-y divide-line border-y border-line">
         {
           software.map((s) => (
-            <li class="flex flex-wrap items-baseline justify-between gap-2 px-3 py-2.5">
+            <li class="flex flex-wrap items-baseline justify-between gap-2 py-2.5">
               <a href={s.href}>{s.name}</a>
               <span class="text-sm text-muted">
                 {s.use}, {s.licence} licence
@@ -58,12 +60,12 @@ const software = [
         Every sensor size in CapXer comes from one of these sources: the maker's own specifications or a published
         standard. Each value records exactly where in the source it was found.
       </p>
-      <ul class="grid gap-x-6 desktop:grid-cols-2">
+      <ul class="grid gap-x-8 border-t border-line desktop:grid-cols-2">
         {
           dataSources.map((r) => (
             <li class="flex flex-wrap items-baseline justify-between gap-2 border-b border-line py-2.5">
               {r.URL ? <a href={r.URL}>{r.title}</a> : <span>{r.title}</span>}
-              <span class="text-sm text-muted">{r.number ? `${r.publisher}, ${r.number}` : r.publisher}</span>
+              <span class="font-mono text-label text-muted">{r.number ? `${r.publisher}, ${r.number}` : r.publisher}</span>
             </li>
           ))
         }

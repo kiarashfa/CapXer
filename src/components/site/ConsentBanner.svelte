@@ -36,20 +36,20 @@
     tabindex="-1"
     aria-labelledby="consent-title"
     data-testid="consent-banner"
-    class="fixed inset-x-3 bottom-3 z-50 mx-auto max-w-xl rounded-lg border border-line bg-surface p-4 text-fg shadow-lg desktop:inset-x-4 desktop:bottom-4"
-    style="padding-bottom: max(1rem, env(safe-area-inset-bottom));"
+    class="card fixed inset-x-3 bottom-3 z-50 mx-auto max-w-xl p-5 text-ink shadow-xl desktop:inset-x-4 desktop:bottom-4"
+    style="padding-bottom: max(1.25rem, env(safe-area-inset-bottom));"
   >
-    <h2 id="consent-title" class="text-base font-semibold">{t.consent.title}</h2>
-    <p class="mt-1 text-sm text-muted">
+    <h2 id="consent-title" class="text-base font-bold">{t.consent.title}</h2>
+    <p class="mt-1 text-sm leading-relaxed text-muted">
       {t.consent.body}
       <a href={url('privacy')}>{t.consent.more}</a>
     </p>
     <!-- Equal weight on purpose: declining must be as easy as accepting. -->
-    <div class="mt-3 grid grid-cols-2 gap-2">
-      <button type="button" class="min-h-11 rounded-md border border-line px-3 font-medium hover:bg-bg" onclick={() => choose('denied')}>
+    <div class="mt-4 grid grid-cols-2 gap-2">
+      <button type="button" class="btn btn-secondary px-3" onclick={() => choose('denied')}>
         {t.consent.decline}
       </button>
-      <button type="button" class="min-h-11 rounded-md border border-line px-3 font-medium hover:bg-bg" onclick={() => choose('granted')}>
+      <button type="button" class="btn btn-secondary px-3" onclick={() => choose('granted')}>
         {t.consent.accept}
       </button>
     </div>
