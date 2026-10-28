@@ -1,0 +1,17 @@
+---
+// One card in a DocPage grid. `wide` spans both desktop columns.
+interface Props {
+  id: string;
+  title: string;
+  wide?: boolean;
+}
+const { id, title, wide = false } = Astro.props;
+---
+
+<section
+  aria-labelledby={id}
+  class:list={['space-y-3 rounded-lg border border-line bg-surface p-6 leading-relaxed', wide && 'desktop:col-span-2']}
+>
+  <h2 id={id} class="text-xl font-semibold">{title}</h2>
+  <slot />
+</section>

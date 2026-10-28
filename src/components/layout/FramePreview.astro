@@ -1,0 +1,47 @@
+---
+// Decorative hero illustration: a 16:9 scene seen through 2.39:1 frame lines
+// with a dimmed mask and rule-of-thirds guides. 2.39:1 inside 160x90 is
+// 160 x 66.9, so the mask bands are 11.55 high top and bottom.
+const W = 160;
+const H = 90;
+const frameH = W / 2.39;
+const top = (H - frameH) / 2;
+---
+
+<svg
+  aria-hidden="true"
+  viewBox={`0 0 ${W} ${H}`}
+  class="w-full rounded-lg border border-line bg-surface"
+  preserveAspectRatio="xMidYMid meet"
+>
+  <defs>
+    <linearGradient id="fp-sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="var(--accent)" stop-opacity="0.35"></stop>
+      <stop offset="1" stop-color="var(--surface)" stop-opacity="0"></stop>
+    </linearGradient>
+  </defs>
+  <rect width={W} height={H} fill="url(#fp-sky)"></rect>
+  <circle cx="112" cy="40" r="9" fill="var(--accent)" opacity="0.6"></circle>
+  <path d="M0 62 Q30 44 58 58 T112 54 T160 50 V90 H0Z" fill="var(--muted)" opacity="0.35"></path>
+  <path d="M0 72 Q40 60 80 70 T160 66 V90 H0Z" fill="var(--muted)" opacity="0.55"></path>
+  <!-- figure on the right third -->
+  <path d="M104 72 v-11 a3 3 0 0 1 6 0 v11Z M107 57 a2.6 2.6 0 1 1 0.01 0Z" fill="var(--fg)" opacity="0.8"></path>
+
+  <!-- mask outside the 2.39:1 frame -->
+  <rect width={W} height={top} fill="#000" opacity="0.55"></rect>
+  <rect y={H - top} width={W} height={top} fill="#000" opacity="0.55"></rect>
+
+  <!-- thirds -->
+  <g stroke="var(--fg)" stroke-opacity="0.3" stroke-width="0.4">
+    <line x1={W / 3} y1={top} x2={W / 3} y2={H - top}></line>
+    <line x1={(2 * W) / 3} y1={top} x2={(2 * W) / 3} y2={H - top}></line>
+    <line x1="0" y1={top + frameH / 3} x2={W} y2={top + frameH / 3}></line>
+    <line x1="0" y1={top + (2 * frameH) / 3} x2={W} y2={top + (2 * frameH) / 3}></line>
+  </g>
+
+  <!-- frame lines -->
+  <rect x="0.5" y={top} width={W - 1} height={frameH} fill="none" stroke="var(--accent)" stroke-width="0.8"></rect>
+  <text x="4" y={top - 3.5} font-size="4.2" fill="#fff" opacity="0.85" font-family="system-ui, sans-serif">
+    Super 35 · 35 mm · 2.39:1
+  </text>
+</svg>

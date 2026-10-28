@@ -1,0 +1,54 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import FramePreview from '../components/layout/FramePreview.astro';
+import { url } from '../lib/url.ts';
+
+const pillars = [
+  {
+    title: 'Viewfinder',
+    body: 'Choose a sensor or film format, an aspect ratio and a focal length, and see the exact frame with frame lines and composition guides.',
+  },
+  {
+    title: 'Live camera',
+    body: 'Point your phone or webcam at a real location and check framing with exposure aids such as a histogram, zebras and focus peaking.',
+  },
+  {
+    title: 'Lessons',
+    body: 'Short, cited lessons on the ideas behind the tools, starting with aspect ratios.',
+  },
+];
+---
+
+<BaseLayout>
+  <section class="grid items-center gap-8 desktop:grid-cols-2 desktop:gap-16">
+    <div>
+      <h1 class="text-3xl font-bold tracking-tight desktop:text-5xl text-balance">A director's viewfinder in your browser</h1>
+      <p class="mt-4 text-lg text-muted">
+        Preview a shot before the camera arrives. CapXer is free, has no ads and no accounts, and your camera feed
+        never leaves your device.
+      </p>
+      <p class="mt-6 inline-block rounded-md border border-line bg-surface px-3 py-2 text-sm">
+        CapXer is being built. The viewfinder arrives first.
+      </p>
+    </div>
+    <FramePreview />
+  </section>
+
+  <section aria-labelledby="pillars" class="mt-16">
+    <h2 id="pillars" class="sr-only">What CapXer will do</h2>
+    <ul class="grid gap-4 desktop:grid-cols-3">
+      {
+        pillars.map((p) => (
+          <li class="rounded-lg border border-line bg-surface p-5">
+            <h3 class="font-semibold">{p.title}</h3>
+            <p class="mt-2 text-sm text-muted">{p.body}</p>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+
+  <p class="mt-12 text-center text-sm text-muted">
+    Curious how your data is handled? Read the <a href={url('privacy')}>privacy page</a>.
+  </p>
+</BaseLayout>

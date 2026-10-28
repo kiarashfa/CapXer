@@ -1,4 +1,5 @@
-# Internal planning files
+# Internal planning files (never public)
+.internal/
 memory.md
 plan.md
 spec.md
@@ -14,3 +15,8 @@ dist/
 .astro/
 .env
 .env.*
+
+# Test output
+tests/.results/
+tests/.report/
+coverage/

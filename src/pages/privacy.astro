@@ -1,0 +1,50 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import DocPage from '../components/layout/DocPage.astro';
+import DocSection from '../components/layout/DocSection.astro';
+import { t } from '../i18n/en.ts';
+---
+
+<BaseLayout title="Privacy" description="How CapXer handles your camera, your settings and analytics.">
+  <DocPage
+    title="Privacy"
+    lead="Short version: your camera stays on your device, and analytics only runs if you say yes."
+  >
+    <DocSection id="camera" title="Camera">
+      <p>
+        When you use the live camera, the video is processed entirely inside your browser. No video, photo or frame is
+        ever uploaded. CapXer has no server that could receive it: the site is a set of static files.
+      </p>
+    </DocSection>
+
+    <DocSection id="storage" title="Settings on your device">
+      <p>
+        CapXer remembers a few choices, such as your theme and your analytics choice, in your browser's local storage.
+        They stay on your device. Clearing your site data removes them.
+      </p>
+    </DocSection>
+
+    <DocSection id="analytics" title="Analytics">
+      <p>
+        If you allow it, CapXer uses Google Analytics 4 to count visits and see which pages are used. Google Analytics
+        then sets cookies (named <code>_ga</code> and <code>_ga_</code> followed by an ID) and receives information
+        such as the pages you view, your browser and device type, and your approximate location. Google signals and
+        ad personalisation are turned off.
+      </p>
+      <p>
+        If you decline, Google Analytics is never loaded and no analytics cookies are set. CapXer never sends your
+        camera feed, photos or camera and lens settings to analytics.
+      </p>
+      <p>
+        You can change your choice at any time:{' '}
+        <button type="button" class="text-accent underline underline-offset-3" data-open-consent>
+          {t.consent.settings}
+        </button>
+      </p>
+    </DocSection>
+
+    <DocSection id="none" title="What CapXer does not have">
+      <p>No accounts, no ads, no tracking beyond the optional analytics above, and no selling of data.</p>
+    </DocSection>
+  </DocPage>
+</BaseLayout>

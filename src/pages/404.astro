@@ -1,0 +1,16 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import FramePreview from '../components/layout/FramePreview.astro';
+import { url } from '../lib/url.ts';
+---
+
+<BaseLayout title="Page not found">
+  <section class="grid items-center gap-8 py-6 desktop:grid-cols-2 desktop:gap-16">
+    <div class="space-y-4">
+      <h1 class="text-3xl font-bold tracking-tight desktop:text-5xl">Out of frame</h1>
+      <p class="text-lg text-muted">This page does not exist. Maybe it was cropped out.</p>
+      <p><a href={url()}>Back to the viewfinder</a></p>
+    </div>
+    <FramePreview />
+  </section>
+</BaseLayout>

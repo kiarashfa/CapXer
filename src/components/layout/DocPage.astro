@@ -1,0 +1,20 @@
+---
+// Layout for text pages (about, privacy, later the lesson index): a title block,
+// then sections as cards. One column on mobile/tablet, two columns on desktop.
+// Text fills its container; no inner narrow widths.
+interface Props {
+  title: string;
+  lead?: string;
+}
+const { title, lead } = Astro.props;
+---
+
+<article class="space-y-10">
+  <header class="space-y-3">
+    <h1 class="text-3xl font-bold tracking-tight desktop:text-5xl">{title}</h1>
+    {lead && <p class="text-lg text-muted">{lead}</p>}
+  </header>
+  <div class="grid gap-6 desktop:grid-cols-2">
+    <slot />
+  </div>
+</article>

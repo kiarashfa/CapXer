@@ -1,0 +1,48 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import DocPage from '../components/layout/DocPage.astro';
+import DocSection from '../components/layout/DocSection.astro';
+import { REPO_URL } from '../config/site.ts';
+
+// Keep in sync with THIRD_PARTY.md in the repo root.
+const software = [
+  { name: 'Astro', use: 'Site framework (build time)', licence: 'MIT', href: 'https://astro.build' },
+  { name: 'Svelte', use: 'Interactive components', licence: 'MIT', href: 'https://svelte.dev' },
+  { name: 'Tailwind CSS', use: 'Styling (build time)', licence: 'MIT', href: 'https://tailwindcss.com' },
+];
+---
+
+<BaseLayout title="About" description="What CapXer is, who made it, and the software and data it builds on.">
+  <DocPage
+    title="About CapXer"
+    lead="A director's viewfinder is a small handheld tool for previewing a shot without the camera. CapXer brings that idea to the browser, adds your phone or webcam as a live view, and explains the ideas behind it in short, cited lessons."
+  >
+    <DocSection id="licence" title="Licence">
+      <p>
+        CapXer is free to use. Its source code is public under a source-available licence, which is not an open source
+        licence. Read the terms in the <a href={`${REPO_URL}/blob/main/LICENSE`}>LICENSE file</a>.
+      </p>
+      <p class="text-muted">
+        Camera sensor and lens data sources will be credited on this page as the database grows. The full list of
+        third-party software and data is in the{' '}
+        <a href={`${REPO_URL}/blob/main/THIRD_PARTY.md`}>THIRD_PARTY.md file</a>.
+      </p>
+    </DocSection>
+
+    <DocSection id="credits" title="Credits">
+      <p>CapXer is built with the following software. Thank you to everyone who maintains it.</p>
+      <ul class="divide-y divide-line rounded-md border border-line">
+        {
+          software.map((s) => (
+            <li class="flex flex-wrap items-baseline justify-between gap-2 px-3 py-2.5">
+              <a href={s.href}>{s.name}</a>
+              <span class="text-sm text-muted">
+                {s.use}, {s.licence} licence
+              </span>
+            </li>
+          ))
+        }
+      </ul>
+    </DocSection>
+  </DocPage>
+</BaseLayout>
