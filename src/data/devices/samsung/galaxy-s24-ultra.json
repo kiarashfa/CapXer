@@ -1,0 +1,58 @@
+{
+  "name": "Galaxy S24 Ultra",
+  "kind": "phone",
+  "cameras": [
+    {
+      "id": "wide",
+      "name": "Wide",
+      "facing": "back",
+      "diagonalFov": 85,
+      "citation": {
+        "ref": "samsung-galaxy-s24-launch",
+        "locator": "Specification Table, Galaxy S24 Ultra, Camera"
+      }
+    },
+    {
+      "id": "ultra-wide",
+      "name": "Ultra-wide",
+      "facing": "back",
+      "diagonalFov": 120,
+      "citation": {
+        "ref": "samsung-galaxy-s24-launch",
+        "locator": "Specification Table, Galaxy S24 Ultra, Camera"
+      }
+    },
+    {
+      "id": "telephoto-3x",
+      "name": "Telephoto 3x",
+      "facing": "back",
+      "diagonalFov": 36,
+      "citation": {
+        "ref": "samsung-galaxy-s24-launch",
+        "locator": "Specification Table, Galaxy S24 Ultra, Camera"
+      }
+    },
+    {
+      "id": "telephoto-5x",
+      "name": "Telephoto 5x",
+      "facing": "back",
+      "diagonalFov": 22,
+      "citation": {
+        "ref": "samsung-galaxy-s24-launch",
+        "locator": "Specification Table, Galaxy S24 Ultra, Camera"
+      }
+    },
+    {
+      "id": "front",
+      "name": "Front",
+      "facing": "front",
+      "diagonalFov": 80,
+      "citation": {
+        "ref": "samsung-galaxy-s24-launch",
+        "locator": "Specification Table, Galaxy S24 Ultra, Camera"
+      }
+    }
+  ],
+  "confidence": "manufacturer",
+  "notes": "Samsung publishes field of view, not focal length. Assumed diagonal across the 4:3 still image."
+}

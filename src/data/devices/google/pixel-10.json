@@ -1,0 +1,38 @@
+{
+  "name": "Pixel 10",
+  "kind": "phone",
+  "cameras": [
+    {
+      "id": "wide",
+      "name": "Wide",
+      "facing": "back",
+      "diagonalFov": 82,
+      "citation": {
+        "ref": "google-pixel-10-specs",
+        "locator": "Rear camera: Wide Camera"
+      }
+    },
+    {
+      "id": "ultra-wide",
+      "name": "Ultrawide",
+      "facing": "back",
+      "diagonalFov": 120,
+      "citation": {
+        "ref": "google-pixel-10-specs",
+        "locator": "Rear camera: Ultrawide Camera"
+      }
+    },
+    {
+      "id": "telephoto-5x",
+      "name": "Telephoto 5x",
+      "facing": "back",
+      "diagonalFov": 23,
+      "citation": {
+        "ref": "google-pixel-10-specs",
+        "locator": "Rear camera: Telephoto Camera"
+      }
+    }
+  ],
+  "confidence": "manufacturer",
+  "notes": "Google publishes field of view, not focal length. Assumed diagonal across the 4:3 still image."
+}

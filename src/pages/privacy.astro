@@ -21,12 +21,17 @@ import { t } from '../i18n/en.ts';
         When you use the live camera, the video is processed entirely inside your browser. No video, photo or frame is
         ever uploaded. CapXer has no server that could receive it: the site is a set of static files.
       </p>
+      <p>
+        The camera only starts when you tap to turn it on, and it is released when you switch back to the scene or
+        leave the page. Photos you take are made in your browser and handed straight to you as a file. The level uses
+        your device's motion sensors in the same way: the readings never leave the browser.
+      </p>
     </DocSection>
 
     <DocSection id="storage" title="Settings on your device">
       <p>
         CapXer remembers a few choices, such as your theme and your analytics choice, in your browser's local storage.
-        They stay on your device. Clearing your site data removes them.
+        They stay on your device. Clearing your site data removes them. The phone or webcam you pick for the live camera is not stored at all: it is forgotten when you reload the page.
       </p>
     </DocSection>
 

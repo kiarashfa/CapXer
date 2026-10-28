@@ -1,0 +1,22 @@
+{
+  "name": "C920 Pro HD Webcam",
+  "kind": "webcam",
+  "cameras": [
+    {
+      "id": "main",
+      "name": "Webcam",
+      "facing": "front",
+      "diagonalFov": 78,
+      "aspect": [
+        16,
+        9
+      ],
+      "citation": {
+        "ref": "logitech-c920-specs",
+        "locator": "Great video calls. Privacy included."
+      }
+    }
+  ],
+  "confidence": "manufacturer",
+  "notes": "Diagonal field of view, assumed across the 16:9 full HD image."
+}

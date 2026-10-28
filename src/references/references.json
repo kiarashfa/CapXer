@@ -92,5 +92,53 @@
     "issued": { "date-parts": [[1996, 4, 8]] },
     "URL": "https://pub.smpte.org/doc/st201/19960408-pub/",
     "accessed": { "date-parts": [[2026, 10, 28]] }
+  },
+  {
+    "id": "samsung-galaxy-s25-launch",
+    "type": "webpage",
+    "title": "Samsung Galaxy S25 Series Sets the Standard of AI Phone as a True AI Companion",
+    "publisher": "Samsung Newsroom",
+    "URL": "https://news.samsung.com/global/samsung-galaxy-s25-series-sets-the-standard-of-ai-phone-as-a-true-ai-companion",
+    "accessed": { "date-parts": [[2026, 10, 28]] }
+  },
+  {
+    "id": "samsung-galaxy-s24-launch",
+    "type": "webpage",
+    "title": "Enter the New Era of Mobile AI with Samsung Galaxy S24 Series",
+    "publisher": "Samsung Newsroom",
+    "URL": "https://news.samsung.com/uk/enter-the-new-era-of-mobile-ai-with-samsung-galaxy-s24-series",
+    "accessed": { "date-parts": [[2026, 10, 28]] }
+  },
+  {
+    "id": "google-pixel-10-specs",
+    "type": "webpage",
+    "title": "Google Pixel 10: Specs and features",
+    "publisher": "Google Store",
+    "URL": "https://store.google.com/gb/product/pixel_10_specs?hl=en-GB",
+    "accessed": { "date-parts": [[2026, 10, 28]] }
+  },
+  {
+    "id": "apple-iphone-17-specs",
+    "type": "webpage",
+    "title": "iPhone 17: Technical Specifications",
+    "publisher": "Apple",
+    "URL": "https://www.apple.com/iphone-17/specs/",
+    "accessed": { "date-parts": [[2026, 10, 28]] }
+  },
+  {
+    "id": "apple-iphone-16-specs",
+    "type": "webpage",
+    "title": "iPhone 16: Technical Specifications",
+    "publisher": "Apple",
+    "URL": "https://www.apple.com/iphone-16/specs/",
+    "accessed": { "date-parts": [[2026, 10, 28]] }
+  },
+  {
+    "id": "logitech-c920-specs",
+    "type": "webpage",
+    "title": "C920 Pro HD Webcam",
+    "publisher": "Logitech",
+    "URL": "https://www.logitech.com/en-us/products/webcams/c920-pro-hd-webcam.960-000764.html",
+    "accessed": { "date-parts": [[2026, 10, 28]] }
   }
 ]

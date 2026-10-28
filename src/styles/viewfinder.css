@@ -1,4 +1,4 @@
-/* Viewfinder page (P3). Phone/tablet: T3 layout (pinned viewfinder with an
+/* Viewfinder page (P3, live camera P4). Phone/tablet: T3 layout (pinned viewfinder with an
    instrument readout, tabs, panes). Desktop: viewfinder stage with a readout
    strip; the same panes float under the site bar's dock. Two views only. */
 
@@ -54,6 +54,54 @@
 .vf-caption { margin: 6px 0 0; font-size: 0.75rem; color: var(--muted); }
 .vf-num { font-family: "JetBrains Mono Variable", ui-monospace, monospace; font-variant-numeric: tabular-nums; }
 
+/* ---------- live camera (P4) ---------- */
+.vf-stagebox { position: relative; }
+.vf-stage.live { background: color-mix(in srgb, var(--muted) 14%, var(--surface)); }
+.vf-stage.live::before { content: ""; position: absolute; inset: 0; background: repeating-linear-gradient(135deg, var(--hatch) 0 1px, transparent 1px 6px); }
+.vf-stage.live .vf-mask { background: rgb(0 0 0); }
+.vf-stage.live .vf-mask::after { display: none; }
+.vf-scene.dim { opacity: 0.25; }
+.vf-video { position: absolute; display: block; max-width: none; max-height: none; object-fit: fill; }
+.vf-video.mirror { transform: scaleX(-1); }
+.vf-mode { top: auto; bottom: 8px; left: 8px; }
+.vf-level { left: 50%; top: 50%; width: 46%; height: 0; border-top: 2px dashed var(--frame); }
+.vf-level.ok { border-top-style: solid; }
+.vf-level-tag { top: auto; bottom: 8px; right: 8px; }
+.vf-level-tag.ok { background: var(--accent); color: var(--on-accent); }
+
+.vf-card { position: absolute; inset: 0; z-index: 2; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; overflow: auto; padding: 12px 16px; border-radius: 14px; text-align: center; background: color-mix(in srgb, var(--surface) 82%, transparent); }
+.vf-card b { font-size: 1rem; }
+.vf-card p { max-width: 34em; margin: 0; font-size: 0.8125rem; color: var(--muted); }
+.vf-card-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 4px; }
+
+.vf-bar { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+.vf-bar-msg { flex: 1; min-width: 0; font-size: 0.8125rem; color: var(--muted); text-align: right; }
+.vf-bar-btn svg { width: 20px; height: 20px; }
+.vf-bar-full { min-height: 2.75rem; padding: 0 14px; border-radius: 9999px; font-size: 0.875rem; }
+
+/* Full view: the viewfinder fills the screen (fullscreen element or fixed layer). */
+.vf-full-ui { display: none; }
+.vf-page.full .vf-top { position: fixed; inset: 0; z-index: 60; margin: 0; padding: 0; border: 0; display: grid; place-items: center; background: rgb(0 0 0); }
+.vf-page.full .vf-bar, .vf-page.full .vf-inst, .vf-page.full .vf-hud, .vf-page.full .vf-caption { display: none; }
+/* Room is kept for the controls: above and below when upright, at the sides when held sideways. */
+.vf-page.full .vf-stagebox { width: min(100vw - 24px, (100dvh - 200px) * var(--aspect)); margin: 0; }
+@media (orientation: landscape) { .vf-page.full .vf-stagebox { width: min(100vw - 168px, (100dvh - 24px) * var(--aspect)); } }
+.vf-page.full .vf-stage { box-shadow: none; border-radius: 0; }
+.vf-page.full .vf-full-ui { display: contents; }
+.vf-full-ui > * { position: fixed; z-index: 61; }
+.vf-full-close { top: max(12px, env(safe-area-inset-top)); left: max(12px, env(safe-area-inset-left)); }
+.vf-full-focal { bottom: max(12px, env(safe-area-inset-bottom)); left: max(12px, env(safe-area-inset-left)); display: flex; align-items: center; gap: 10px; padding: 4px; border-radius: 9999px; background: var(--surface); color: var(--ink); font-size: 1.25rem; font-weight: 600; }
+.vf-full-focal small { font-size: 0.8125rem; color: var(--muted); }
+.vf-full-read { top: max(12px, env(safe-area-inset-top)); right: max(12px, env(safe-area-inset-right)); display: flex; flex-direction: column; align-items: flex-end; gap: 2px; padding: 6px 10px; border-radius: 12px; background: var(--surface); color: var(--ink); font-size: 0.75rem; }
+.vf-shutter { bottom: max(12px, env(safe-area-inset-bottom)); right: max(12px, env(safe-area-inset-right)); display: grid; place-items: center; width: 64px; height: 64px; border: 3px solid rgb(255 255 255); border-radius: 50%; background: var(--ink); color: var(--bg); cursor: pointer; }
+.vf-shutter svg { width: 26px; height: 26px; }
+/* Held sideways: controls move into the side margins. */
+@media (orientation: landscape) {
+  .vf-full-focal { bottom: auto; top: 50%; transform: translateY(-50%); flex-direction: column-reverse; gap: 6px; padding: 4px 4px 6px; font-size: 1rem; }
+  .vf-full-focal small { display: block; text-align: center; }
+  .vf-shutter { bottom: auto; top: 50%; transform: translateY(-50%); }
+}
+
 /* ---------- phone/tablet: T3 ---------- */
 .vf-top { position: sticky; top: 60px; z-index: 5; margin: -2rem -1rem 0; padding: 12px 16px 10px; background: var(--bg); border-bottom: 1px solid var(--line); }
 .vf-inst { display: grid; grid-template-columns: auto 1fr; align-items: end; gap: 4px 16px; margin-top: 10px; }
@@ -73,7 +121,7 @@
 /* ---------- desktop: floating panes under the dock ---------- */
 @media (min-width: 64rem) {
   .vf-top { position: static; margin: 0; padding: 0; border: 0; background: none; }
-  .vf-stage, .vf-hud, .vf-caption { width: min(100%, calc((100dvh - 230px) * var(--aspect))); margin-inline: auto; }
+  .vf-stagebox, .vf-bar, .vf-hud, .vf-caption { width: min(100%, calc((100dvh - 290px) * var(--aspect))); margin-inline: auto; }
   .vf-inst, .vf-tabs { display: none; }
   .vf-hud { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px 16px; margin-top: 12px; font-size: 0.8125rem; color: var(--muted); }
   .vf-hud b { font-weight: 500; color: var(--ink); }

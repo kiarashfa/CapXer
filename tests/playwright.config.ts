@@ -5,6 +5,12 @@ import { BASE_PATH } from '../src/config/site.ts';
 const PORT = 4321;
 const CI = !!process.env.CI;
 
+// Chromium's built-in fake webcam (a moving test pattern), allowed without a prompt.
+const fakeCamera = {
+  permissions: ['camera'],
+  launchOptions: { args: ['--use-fake-device-for-media-stream', '--use-fake-ui-for-media-stream'] },
+};
+
 // Runs against the production build (`npm run build` first) served by `astro preview`.
 export default defineConfig({
   testDir: 'e2e',
@@ -18,10 +24,11 @@ export default defineConfig({
     trace: 'retain-on-failure',
   },
   projects: [
-    { name: 'desktop-chromium', use: { ...devices['Desktop Chrome'] } },
+    { name: 'desktop-chromium', use: { ...devices['Desktop Chrome'], ...fakeCamera } },
     // No real iPhone is available for testing, so mobile WebKit is the stand-in for iOS Safari.
+    // It has no fake camera: the live tests there cover the refused and missing camera paths.
     { name: 'mobile-webkit', use: { ...devices['iPhone 15'] } },
-    { name: 'mobile-chromium', use: { ...devices['Pixel 7'] } },
+    { name: 'mobile-chromium', use: { ...devices['Pixel 7'], ...fakeCamera } },
   ],
   webServer: {
     command: `npm run preview -- --port ${PORT}`,

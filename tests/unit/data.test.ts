@@ -1,20 +1,24 @@
 import { readdirSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
-import { displayName, fullFormat, getSensor, makers, sensors } from '../../src/data/index.ts';
+import { devices, displayName, fullFormat, getDevice, getSensor, makers, sensors } from '../../src/data/index.ts';
 import { validateDatabase, type DataFile } from '../../src/data/validate.ts';
 import { references } from '../../src/references/index.ts';
 import { cropFactor } from '../../src/optics/index.ts';
 
-const dir = fileURLToPath(new URL('../../src/data/sensors/', import.meta.url));
-const realFiles: DataFile[] = readdirSync(dir, { recursive: true, encoding: 'utf8' })
-  .map((p) => p.replaceAll('\\', '/'))
-  .filter((p) => p.endsWith('.json'))
-  .map((path) => ({ path, data: JSON.parse(readFileSync(dir + path, 'utf8')) }));
+function readData(sub: string): DataFile[] {
+  const dir = fileURLToPath(new URL(`../../src/data/${sub}/`, import.meta.url));
+  return readdirSync(dir, { recursive: true, encoding: 'utf8' })
+    .map((p) => p.replaceAll('\\', '/'))
+    .filter((p) => p.endsWith('.json'))
+    .map((path) => ({ path, data: JSON.parse(readFileSync(dir + path, 'utf8')) }));
+}
+const realFiles = readData('sensors');
+const deviceFiles = readData('devices');
 
 const clone = <T>(x: T): T => structuredClone(x);
 const nikon = () => clone(realFiles.find((f) => f.path === 'nikon/z6iii.json')!);
-const validate = (files: DataFile[]) => validateDatabase(files, makers, references);
+const validate = (files: DataFile[]) => validateDatabase(files, makers, references, deviceFiles);
 
 describe('camera database', () => {
   it('is valid and fully cited', () => {
@@ -97,7 +101,38 @@ describe('validateDatabase rejects bad data', () => {
 
   it('a maker with no sensors', () => {
     expect(validateDatabase([nikon()], [...makers.filter((m) => m.id === 'nikon'), { id: 'leica', name: 'Leica' }], references).join('\n')).toMatch(
-      /"leica" has no sensors folder/,
+      /"leica" has no sensors or devices folder/,
     );
+  });
+});
+
+describe('device database (phones and webcams)', () => {
+  const run = (files: DataFile[]) => validateDatabase(realFiles, makers, references, files).join('\n');
+  const s25 = () => clone(deviceFiles.find((f) => f.path === 'samsung/galaxy-s25.json')!);
+
+  it('is valid and fully cited', () => {
+    expect(run(deviceFiles)).toBe('');
+  });
+
+  it('loads phones first, with ids from the path', () => {
+    expect(devices).toHaveLength(deviceFiles.length);
+    expect(devices.at(-1)!.kind).toBe('webcam');
+    expect(displayName(getDevice('samsung/galaxy-s25')!)).toBe('Samsung Galaxy S25');
+  });
+
+  it('rejects a camera with both a focal length and an angle', () => {
+    const f = s25();
+    (f.data as { cameras: Record<string, unknown>[] }).cameras[0]!.equivalent = 24;
+    expect(run([f])).toMatch(/exactly one of equivalent or diagonalFov/);
+  });
+
+  it('rejects an unknown reference and duplicate camera ids', () => {
+    const f = s25();
+    const cams = (f.data as { cameras: { id: string; citation: { ref: string } }[] }).cameras;
+    cams[0]!.citation.ref = 'nowhere';
+    cams[1]!.id = cams[0]!.id;
+    const out = run([f]);
+    expect(out).toMatch(/unknown reference "nowhere"/);
+    expect(out).toMatch(/duplicate camera id "wide"/);
   });
 });

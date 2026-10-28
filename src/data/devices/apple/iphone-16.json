@@ -1,0 +1,28 @@
+{
+  "name": "iPhone 16",
+  "kind": "phone",
+  "cameras": [
+    {
+      "id": "main",
+      "name": "Main",
+      "facing": "back",
+      "equivalent": 26,
+      "citation": {
+        "ref": "apple-iphone-16-specs",
+        "locator": "Camera: Fusion Main"
+      }
+    },
+    {
+      "id": "ultra-wide",
+      "name": "Ultra Wide",
+      "facing": "back",
+      "equivalent": 13,
+      "citation": {
+        "ref": "apple-iphone-16-specs",
+        "locator": "Camera: Ultra Wide"
+      }
+    }
+  ],
+  "confidence": "manufacturer",
+  "notes": "Apple publishes 35mm-equivalent focal lengths."
+}

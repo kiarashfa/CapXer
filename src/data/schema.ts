@@ -1,7 +1,7 @@
 import { z } from 'zod';
-import { FORMAT_CLASSES, SENSOR_KINDS } from './constants.ts';
+import { DEVICE_KINDS, FORMAT_CLASSES, SENSOR_KINDS } from './constants.ts';
 
-export { FORMAT_CLASSES, SENSOR_KINDS, SENSOR_PATH } from './constants.ts';
+export { DEVICE_KINDS, FORMAT_CLASSES, SENSOR_KINDS, SENSOR_PATH } from './constants.ts';
 
 // Schemas for the camera database. Used at build/test time (scripts/check-data.ts,
 // tests/unit/data.test.ts); the app imports only the inferred types, so zod is
@@ -63,7 +63,39 @@ export const SensorSchema = z.strictObject({
   notes: z.string().min(1).optional(),
 });
 
+/**
+ * One camera of a phone or webcam, for calibrating the live view. Makers
+ * publish either a 35mm-equivalent focal length (Apple) or a field of view
+ * (Google, Samsung, Logitech); the file stores whichever the source states.
+ */
+export const DeviceCameraSchema = z
+  .strictObject({
+    id: slug,
+    name: z.string().min(1),
+    facing: z.enum(['back', 'front']),
+    /** 35mm-equivalent focal length, mm (diagonal convention). */
+    equivalent: z.number().min(5).max(300).optional(),
+    /** Diagonal angle of view, degrees. */
+    diagonalFov: z.number().gt(5).lt(180).optional(),
+    /** Shape of the image the figure describes, long side first. Default 4:3 (phone stills). */
+    aspect: z.tuple([z.int().positive(), z.int().positive()]).optional(),
+    citation: CitationSchema,
+  })
+  .refine((c) => (c.equivalent === undefined) !== (c.diagonalFov === undefined), 'give exactly one of equivalent or diagonalFov');
+
+/** One file: src/data/devices/<maker>/<model>.json. The first camera is the main one. */
+export const DeviceSchema = z.strictObject({
+  name: z.string().min(1),
+  kind: z.enum(DEVICE_KINDS),
+  cameras: z.array(DeviceCameraSchema).min(1),
+  confidence: z.enum(['manufacturer', 'derived']),
+  notes: z.string().min(1).optional(),
+});
+
 export type Citation = z.infer<typeof CitationSchema>;
+export type DeviceCamera = z.infer<typeof DeviceCameraSchema>;
+export type DeviceFile = z.infer<typeof DeviceSchema>;
+export type Device = DeviceFile & { id: string; maker: Maker };
 export type Format = z.infer<typeof FormatSchema>;
 export type Maker = z.infer<typeof MakerSchema>;
 export type SensorFile = z.infer<typeof SensorSchema>;

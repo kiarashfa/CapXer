@@ -1,7 +1,10 @@
 [
+  { "id": "apple", "name": "Apple" },
   { "id": "arri", "name": "ARRI" },
   { "id": "film", "name": "Film", "generic": true },
   { "id": "fujifilm", "name": "Fujifilm" },
+  { "id": "google", "name": "Google" },
+  { "id": "logitech", "name": "Logitech" },
   { "id": "nikon", "name": "Nikon" },
   { "id": "om-system", "name": "OM System" },
   { "id": "samsung", "name": "Samsung" },

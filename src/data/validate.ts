@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { MakerSchema, SENSOR_PATH, SensorSchema, type SensorFile } from './schema.ts';
+import { DeviceSchema, MakerSchema, SENSOR_PATH, SensorSchema, type DeviceFile, type SensorFile } from './schema.ts';
 import { ReferenceSchema } from '../references/schema.ts';
 
 // Validation for the camera database, beyond the schema shape:
@@ -7,10 +7,12 @@ import { ReferenceSchema } from '../references/schema.ts';
 // citation points at a real reference, recording formats fit inside the full
 // image area, and published figures agree with each other
 // (photosites x pitch = size, pixel aspect = mm aspect).
+// Devices (phones and webcams, src/data/devices/) follow the same path and
+// citation rules.
 // Run by scripts/check-data.ts (npm run check) and tests/unit/data.test.ts.
 
 export interface DataFile {
-  /** Path relative to src/data/sensors/, e.g. "nikon/z6iii.json". */
+  /** Path relative to src/data/sensors/ (or devices/), e.g. "nikon/z6iii.json". */
   path: string;
   data: unknown;
 }
@@ -19,7 +21,12 @@ export interface DataFile {
 const MM_TOLERANCE = 0.06;
 const RATIO_TOLERANCE = 0.02;
 
-export function validateDatabase(sensorFiles: DataFile[], makersData: unknown, referencesData: unknown): string[] {
+export function validateDatabase(
+  sensorFiles: DataFile[],
+  makersData: unknown,
+  referencesData: unknown,
+  deviceFiles: DataFile[] = [],
+): string[] {
   const errors: string[] = [];
 
   const refs = z.array(ReferenceSchema).safeParse(referencesData);
@@ -31,15 +38,19 @@ export function validateDatabase(sensorFiles: DataFile[], makersData: unknown, r
   const makerIds = uniqueIds('makers.json', makers.data, errors);
 
   const usedMakers = new Set<string>();
-  for (const { path, data } of sensorFiles) {
+  const checkPath = (path: string): boolean => {
     const match = SENSOR_PATH.exec(path);
     if (!match) {
       errors.push(`${path}: path must be <maker>/<model>.json in lowercase kebab-case`);
-      continue;
+      return false;
     }
     if (!makerIds.has(match[1]!)) errors.push(`${path}: maker "${match[1]}" is not in makers.json`);
     usedMakers.add(match[1]!);
+    return true;
+  };
 
+  for (const { path, data } of sensorFiles) {
+    if (!checkPath(path)) continue;
     const parsed = SensorSchema.safeParse(data);
     if (!parsed.success) {
       errors.push(`${path}: ${z.prettifyError(parsed.error)}`);
@@ -47,7 +58,27 @@ export function validateDatabase(sensorFiles: DataFile[], makersData: unknown, r
     }
     errors.push(...checkSensor(path, parsed.data, refIds));
   }
-  for (const id of makerIds) if (!usedMakers.has(id)) errors.push(`makers.json: "${id}" has no sensors folder`);
+  for (const { path, data } of deviceFiles) {
+    if (!checkPath(path)) continue;
+    const parsed = DeviceSchema.safeParse(data);
+    if (!parsed.success) {
+      errors.push(`devices/${path}: ${z.prettifyError(parsed.error)}`);
+      continue;
+    }
+    errors.push(...checkDevice(`devices/${path}`, parsed.data, refIds));
+  }
+  for (const id of makerIds) if (!usedMakers.has(id)) errors.push(`makers.json: "${id}" has no sensors or devices folder`);
+  return errors;
+}
+
+function checkDevice(path: string, d: DeviceFile, refIds: Set<string>): string[] {
+  const errors: string[] = [];
+  const ids = new Set<string>();
+  for (const c of d.cameras) {
+    if (ids.has(c.id)) errors.push(`${path}: duplicate camera id "${c.id}"`);
+    ids.add(c.id);
+    if (!refIds.has(c.citation.ref)) errors.push(`${path}: cites unknown reference "${c.citation.ref}"`);
+  }
   return errors;
 }
 

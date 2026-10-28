@@ -4,12 +4,16 @@ import DocPage from '../components/layout/DocPage.astro';
 import DocSection from '../components/layout/DocSection.astro';
 import { REPO_URL } from '../config/site.ts';
 import { t } from '../i18n/en.ts';
-import { sensors } from '../data/index.ts';
+import { devices, sensors } from '../data/index.ts';
 import { getReference, type Reference } from '../references/index.ts';
 import { SAFE_AREAS } from '../setup/presets.ts';
 
-// Every source the camera database and the viewfinder's guides cite, generated from the data so it never drifts.
-const citedIds = new Set([...sensors.flatMap((s) => [s.pitch?.citation.ref, ...s.formats.map((f) => f.citation.ref)]), SAFE_AREAS.citation.ref]);
+// Every source the camera and device database and the viewfinder's guides cite, generated from the data so it never drifts.
+const citedIds = new Set([
+  ...sensors.flatMap((s) => [s.pitch?.citation.ref, ...s.formats.map((f) => f.citation.ref)]),
+  ...devices.flatMap((d) => d.cameras.map((c) => c.citation.ref)),
+  SAFE_AREAS.citation.ref,
+]);
 const dataSources = [...citedIds]
   .map((id) => getReference(id!))
   .filter((r): r is Reference => !!r)
@@ -65,7 +69,7 @@ const software = [
 
     <DocSection id="data-sources" title="Camera data sources" wide>
       <p>
-        Every sensor size and guide in CapXer comes from one of these sources: the maker's own specifications or a
+        Every sensor size, phone and webcam angle of view, and guide in CapXer comes from one of these sources: the maker's own specifications or a
         published standard. Each value records exactly where in the source it was found.
       </p>
       <ul class="grid gap-x-8 border-t border-line desktop:grid-cols-2">

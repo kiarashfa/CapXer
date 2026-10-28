@@ -3,6 +3,8 @@
 
 export const SENSOR_KINDS = ['stills', 'cinema', 'film', 'phone'] as const;
 
+export const DEVICE_KINDS = ['phone', 'webcam'] as const;
+
 /** Format classes, largest first (also the picker's group order). */
 export const FORMAT_CLASSES = [
   'medium-format',
@@ -15,5 +17,5 @@ export const FORMAT_CLASSES = [
   'phone',
 ] as const;
 
-/** "<maker>/<model>.json", lowercase kebab-case on both levels. */
+/** "<maker>/<model>.json", lowercase kebab-case on both levels (sensors and devices). */
 export const SENSOR_PATH = /^([a-z0-9]+(?:-[a-z0-9]+)*)\/([a-z0-9]+(?:-[a-z0-9]+)*)\.json$/;
