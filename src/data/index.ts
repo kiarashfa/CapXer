@@ -1,4 +1,5 @@
-import { FORMAT_CLASSES, SENSOR_PATH, type Format, type Maker, type Sensor, type SensorFile } from './schema.ts';
+import { FORMAT_CLASSES, SENSOR_PATH } from './constants.ts';
+import type { Format, Maker, Sensor, SensorFile } from './schema.ts';
 import makerList from './makers.json';
 
 // The camera database: src/data/sensors/<maker>/<model>.json, one file per

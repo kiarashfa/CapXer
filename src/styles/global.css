@@ -88,6 +88,8 @@
     background: var(--bg);
     color: var(--ink);
     -webkit-text-size-adjust: 100%;
+    /* Section links land below the sticky site bar (and its open dock on desktop). */
+    scroll-padding-top: 6rem;
   }
 
   h1,

@@ -5,7 +5,13 @@ import DocSection from '../components/layout/DocSection.astro';
 import { t } from '../i18n/en.ts';
 ---
 
-<BaseLayout title="Privacy" description="How CapXer handles your camera, your settings and analytics.">
+<BaseLayout title="Privacy" description="How CapXer handles your camera, your settings and analytics." dockLabel={t.dock.onThisPage}>
+  <div slot="dock" class="dock-row">
+    <span class="dock-label">{t.dock.onThisPage}</span>
+    <a class="dock-tool" href="#camera">Camera</a>
+    <a class="dock-tool" href="#storage">Settings</a>
+    <a class="dock-tool" href="#analytics">Analytics</a>
+  </div>
   <DocPage
     title="Privacy"
     lead="Short version: your camera stays on your device, and analytics only runs if you say yes."

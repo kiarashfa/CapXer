@@ -1,0 +1,17 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Viewfinder from '../components/viewfinder/Viewfinder.svelte';
+import ViewfinderDock from '../components/viewfinder/ViewfinderDock.svelte';
+import { t } from '../i18n/en.ts';
+import '../styles/viewfinder.css';
+---
+
+<BaseLayout
+  title="Viewfinder"
+  description="Pick a camera, format, frame and focal length, and see exactly what the lens frames, with guides and live angle-of-view readouts."
+  dockLabel={t.vf.tools}
+>
+  <ViewfinderDock slot="dock" client:load />
+  <h1 class="sr-only">Viewfinder</h1>
+  <Viewfinder client:load />
+</BaseLayout>

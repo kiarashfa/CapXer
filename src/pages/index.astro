@@ -27,10 +27,13 @@ const pillars = [
         Preview a shot before the camera arrives. CapXer is free, has no ads and no accounts, and your camera feed
         never leaves your device.
       </p>
-      <p class="mt-6 inline-flex items-center gap-3 rounded-full bg-tint py-2 pr-4 pl-2 text-sm">
-        <span class="rounded-full bg-surface px-2 py-0.5 font-mono text-label tracking-wide text-accent uppercase">Status</span>
-        CapXer is being built. The viewfinder arrives first.
-      </p>
+      <div class="mt-6 flex flex-wrap items-center gap-3">
+        <a class="btn btn-primary" href={url('viewfinder')}>Open the viewfinder</a>
+        <p class="inline-flex items-center gap-3 rounded-full bg-tint py-2 pr-4 pl-2 text-sm">
+          <span class="rounded-full bg-surface px-2 py-0.5 font-mono text-label tracking-wide text-accent uppercase">Status</span>
+          Live camera comes next.
+        </p>
+      </div>
     </div>
     <FramePreview />
   </section>

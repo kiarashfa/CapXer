@@ -1,4 +1,7 @@
 import { z } from 'zod';
+import { FORMAT_CLASSES, SENSOR_KINDS } from './constants.ts';
+
+export { FORMAT_CLASSES, SENSOR_KINDS, SENSOR_PATH } from './constants.ts';
 
 // Schemas for the camera database. Used at build/test time (scripts/check-data.ts,
 // tests/unit/data.test.ts); the app imports only the inferred types, so zod is
@@ -26,17 +29,6 @@ export const FormatSchema = z.strictObject({
   citation: CitationSchema,
 });
 
-export const SENSOR_KINDS = ['stills', 'cinema', 'film', 'phone'] as const;
-export const FORMAT_CLASSES = [
-  'medium-format',
-  'full-frame',
-  'super-35',
-  'aps-c',
-  'micro-four-thirds',
-  'one-inch',
-  'super-16',
-  'phone',
-] as const;
 
 /**
  * A maker (or, with generic: true, a family of formats such as film) from
@@ -80,5 +72,3 @@ export type Sensor = SensorFile & { id: string; maker: Maker };
 export type SensorKind = Sensor['kind'];
 export type FormatClass = Sensor['formatClass'];
 
-/** "<maker>/<model>.json", lowercase kebab-case on both levels. */
-export const SENSOR_PATH = /^([a-z0-9]+(?:-[a-z0-9]+)*)\/([a-z0-9]+(?:-[a-z0-9]+)*)\.json$/;

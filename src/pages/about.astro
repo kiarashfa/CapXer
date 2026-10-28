@@ -3,11 +3,13 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import DocPage from '../components/layout/DocPage.astro';
 import DocSection from '../components/layout/DocSection.astro';
 import { REPO_URL } from '../config/site.ts';
+import { t } from '../i18n/en.ts';
 import { sensors } from '../data/index.ts';
 import { getReference, type Reference } from '../references/index.ts';
+import { SAFE_AREAS } from '../setup/presets.ts';
 
-// Every source the camera database cites, generated from the data so it never drifts.
-const citedIds = new Set(sensors.flatMap((s) => [s.pitch?.citation.ref, ...s.formats.map((f) => f.citation.ref)]));
+// Every source the camera database and the viewfinder's guides cite, generated from the data so it never drifts.
+const citedIds = new Set([...sensors.flatMap((s) => [s.pitch?.citation.ref, ...s.formats.map((f) => f.citation.ref)]), SAFE_AREAS.citation.ref]);
 const dataSources = [...citedIds]
   .map((id) => getReference(id!))
   .filter((r): r is Reference => !!r)
@@ -23,7 +25,13 @@ const software = [
 ];
 ---
 
-<BaseLayout title="About" description="What CapXer is, who made it, and the software and data it builds on.">
+<BaseLayout title="About" description="What CapXer is, who made it, and the software and data it builds on." dockLabel={t.dock.onThisPage}>
+  <div slot="dock" class="dock-row">
+    <span class="dock-label">{t.dock.onThisPage}</span>
+    <a class="dock-tool" href="#licence">Licence</a>
+    <a class="dock-tool" href="#credits">Credits</a>
+    <a class="dock-tool" href="#data-sources">Data sources</a>
+  </div>
   <DocPage
     title="About CapXer"
     lead="A director's viewfinder is a small handheld tool for previewing a shot without the camera. CapXer brings that idea to the browser, adds your phone or webcam as a live view, and explains the ideas behind it in short, cited lessons."
@@ -57,8 +65,8 @@ const software = [
 
     <DocSection id="data-sources" title="Camera data sources" wide>
       <p>
-        Every sensor size in CapXer comes from one of these sources: the maker's own specifications or a published
-        standard. Each value records exactly where in the source it was found.
+        Every sensor size and guide in CapXer comes from one of these sources: the maker's own specifications or a
+        published standard. Each value records exactly where in the source it was found.
       </p>
       <ul class="grid gap-x-8 border-t border-line desktop:grid-cols-2">
         {

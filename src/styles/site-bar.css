@@ -1,0 +1,91 @@
+/* The site bar (owner-approved "D4 Stepped bar", 2026-10-28).
+   One surface across the top. On desktop pages that provide a dock, the middle
+   of the bar steps down on two S-curves: a small step while closed, a wide step
+   while open. Open, the page links fade out and the page's own tools appear
+   across the bar line. One drop-shadow on the parent draws a single hairline
+   around the whole silhouette. Phone/tablet: a plain bar with a menu sheet.
+   Behaviour: src/lib/site-bar.ts. Two views only: base and 64rem (desktop). */
+
+.site-bar {
+  --bar-h: 60px;
+  --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --dur: 320ms;
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  filter: drop-shadow(0 1px 0 var(--line)) drop-shadow(0 8px 20px rgb(0 0 0 / 0.08));
+}
+.bar-box { position: relative; background: var(--surface); }
+.bar-inner {
+  position: relative;
+  max-width: 75rem;
+  height: var(--bar-h);
+  margin: 0 auto;
+  padding: 0 12px 0 16px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.bar-brand { position: relative; z-index: 3; display: inline-flex; align-items: center; gap: 8px; min-height: 44px; color: var(--ink); text-decoration: none; font-size: 1.125rem; font-weight: 800; letter-spacing: -0.02em; }
+.bar-brand svg { width: 26px; height: 26px; color: var(--accent); }
+.bar-pages { display: none; }
+.bar-toggles { position: relative; z-index: 3; margin-left: auto; display: flex; align-items: center; gap: 6px; }
+
+.menu-btn { display: inline-grid; place-items: center; width: 44px; height: 44px; border: 0; border-radius: 9999px; background: transparent; color: var(--ink); cursor: pointer; }
+.menu-btn:hover, .menu-btn[aria-expanded="true"] { background: var(--tint); }
+.menu-btn svg { width: 22px; height: 22px; }
+.menu-sheet { position: absolute; left: 8px; right: 8px; top: calc(var(--bar-h) + 8px); padding: 8px; }
+.menu-sheet a { display: flex; align-items: center; min-height: 48px; padding: 0 14px; border-radius: 12px; color: var(--ink); text-decoration: none; font-weight: 600; }
+.menu-sheet a[aria-current="page"] { background: var(--tint); color: var(--accent); }
+
+.bar-hang, .dock-tools { display: none; }
+
+@media (min-width: 64rem) {
+  .site-bar { --bar-h: 64px; }
+  .bar-inner { padding: 0 32px; }
+  .menu-btn, .menu-sheet { display: none !important; }
+
+  .bar-pages { display: flex; align-items: center; transition: opacity 200ms ease, transform var(--dur) var(--ease); }
+  .bar-pages .divider { width: 1px; height: 24px; margin: 0 10px; background: var(--line); }
+  .bar-pages ul { list-style: none; margin: 0; padding: 0; display: flex; gap: 2px; }
+  .bar-pages a { display: inline-flex; align-items: center; min-height: 40px; padding: 0 14px; border-radius: 9999px; color: var(--ink); text-decoration: none; font-weight: 500; }
+  .bar-pages a:hover { background: var(--tint); }
+  .bar-pages a[aria-current="page"] { background: var(--tint); color: var(--accent); font-weight: 700; }
+  .site-bar[data-dock="open"] .bar-pages { opacity: 0; transform: translateY(-8px); pointer-events: none; }
+
+  /* The step: curve | body | curve, hanging under the centre of the bar. */
+  .site-bar[data-dock] { --hd: 20px; --hw: 140px; --cw: 96px; }
+  .site-bar[data-dock="open"] { --hd: 44px; --hw: max(160px, calc(var(--dock-w, 640px) - 80px)); --cw: 110px; }
+  .bar-hang { position: absolute; z-index: 1; left: 50%; top: var(--bar-h); transform: translateX(-50%); display: flex; align-items: flex-start; height: var(--hd); transition: height var(--dur) var(--ease); }
+  .bar-hang .curve { display: block; flex: none; width: var(--cw); height: 100%; margin: 0 -0.5px; fill: var(--surface); transition: width var(--dur) var(--ease); }
+  .bar-hang .hang-body { display: grid; place-items: start center; width: var(--hw); height: 100%; background: var(--surface); transition: width var(--dur) var(--ease); }
+  .dock-handle { display: inline-grid; place-items: center; width: 64px; height: 20px; border: 0; border-radius: 0 0 12px 12px; background: transparent; color: var(--muted); cursor: pointer; transition: opacity 160ms ease; }
+  .dock-handle:hover { color: var(--ink); background: var(--tint); }
+  .dock-handle svg { width: 18px; height: 18px; }
+  .site-bar[data-dock="open"] .dock-handle { opacity: 0; pointer-events: none; }
+
+  /* The page's tools, across the bar line. */
+  /* Faded as one group: Astro wraps islands in display:contents elements,
+     which ignore opacity, so per-child fades would not apply to island tools. */
+  .dock-tools { position: absolute; z-index: 2; left: 50%; top: 34px; transform: translate(-50%, -6px); display: flex; align-items: center; gap: 2px; white-space: nowrap; color: var(--ink);
+    opacity: 0; visibility: hidden; pointer-events: none; transition: opacity 200ms ease, transform var(--dur) var(--ease), visibility 0s linear var(--dur); }
+  .site-bar[data-dock="open"] .dock-tools { opacity: 1; visibility: visible; pointer-events: auto; transform: translate(-50%, 0); transition-delay: 60ms, 0s, 0s; }
+  .site-bar[data-dock="open"] .bar-pages { visibility: hidden; transition: opacity 200ms ease, transform var(--dur) var(--ease), visibility 0s linear 200ms; }
+}
+
+/* Shared tool styles: used by the static dock links and the Svelte dock islands. */
+.dock-row { display: flex; align-items: center; gap: 2px; }
+.dock-label { padding: 0 8px 0 4px; font-family: "JetBrains Mono Variable", ui-monospace, monospace; font-size: 0.6875rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+.dock-tool { display: inline-flex; align-items: center; gap: 7px; min-height: 40px; padding: 0 12px; border: 0; border-radius: 9999px; background: transparent; color: var(--ink); font-size: 0.875rem; font-weight: 600; text-decoration: none; cursor: pointer; }
+.dock-tool svg { width: 20px; height: 20px; }
+.dock-tool:hover { background: var(--tint); }
+.dock-tool[aria-expanded="true"] { background: var(--tint); color: var(--accent); }
+.dock-sep { width: 1px; height: 26px; margin: 0 6px; background: var(--line); }
+.dock-icon { display: inline-grid; place-items: center; width: 36px; height: 36px; border: 0; border-radius: 9999px; background: transparent; color: var(--muted); cursor: pointer; }
+.dock-icon:hover { background: var(--tint); color: var(--ink); }
+.dock-icon svg { width: 17px; height: 17px; }
+.dock-icon[aria-pressed="true"] { background: var(--tint); color: var(--accent); }
+
+@media (prefers-reduced-motion: reduce) {
+  .site-bar *, .site-bar *::before, .site-bar *::after { transition: none !important; }
+}

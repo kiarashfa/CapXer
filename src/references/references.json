@@ -74,6 +74,16 @@
     "accessed": { "date-parts": [[2026, 10, 28]] }
   },
   {
+    "id": "ebu-r95-2017",
+    "type": "standard",
+    "title": "Safe areas for 16:9 television production",
+    "number": "EBU R 95, version 1.1",
+    "publisher": "European Broadcasting Union",
+    "issued": { "date-parts": [[2017, 6]] },
+    "URL": "https://tech.ebu.ch/docs/r/r095.pdf",
+    "accessed": { "date-parts": [[2026, 10, 28]] }
+  },
+  {
     "id": "smpte-st-201-1996",
     "type": "standard",
     "title": "Motion-Picture Film (16-mm): Type W Camera Aperture Image",
