@@ -18,11 +18,11 @@ async function openLivePane(page: Page, isMobile: boolean) {
 }
 
 function stubCamera(page: Page, error: string) {
-  // Playwright's WebKit on some platforms has no mediaDevices at all, so the stub provides it.
+  // Replaces mediaDevices as a whole: Playwright's WebKit has none on some platforms, and on
+  // Linux assigning getUserMedia on the real one does not stick (the real call then refuses).
   return page.addInitScript((name) => {
     const fail = () => Promise.reject(new DOMException('stub', name));
-    if (navigator.mediaDevices) navigator.mediaDevices.getUserMedia = fail;
-    else Object.defineProperty(navigator, 'mediaDevices', { value: { getUserMedia: fail, enumerateDevices: async () => [] } });
+    Object.defineProperty(navigator, 'mediaDevices', { configurable: true, value: { getUserMedia: fail, enumerateDevices: async () => [] } });
   }, error);
 }
 
