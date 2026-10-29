@@ -53,8 +53,8 @@
 <div class="vf-row">
   <div class="vf-txt"><b>{L.source}</b><span>{L.sourceHint}</span></div>
   <div class="seg" role="group" aria-label={L.source}>
-    <button type="button" aria-pressed={live.source === 'scene'} onclick={() => live.stop()}>{L.scene}</button>
-    <button type="button" aria-pressed={live.source === 'live'} onclick={() => live.begin()}>{L.live}</button>
+    <button type="button" aria-pressed={live.source === 'scene'} onclick={() => live.stop()} data-testid="pane-source-scene">{L.scene}</button>
+    <button type="button" aria-pressed={live.source === 'live'} onclick={() => live.begin()} data-testid="pane-source-live">{L.live}</button>
   </div>
 </div>
 

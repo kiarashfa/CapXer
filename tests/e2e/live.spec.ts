@@ -1,6 +1,6 @@
 import type { Page } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
-import { test, expect } from './fixtures.ts';
+import { test, expect, openDock, setSource } from './fixtures.ts';
 
 // Live camera (P4). Chromium projects use the browser's fake webcam; every
 // project covers the refused and missing camera paths with a stubbed
@@ -10,9 +10,9 @@ async function openLivePane(page: Page, isMobile: boolean) {
   if (isMobile) {
     await page.getByRole('tab', { name: 'Live' }).click();
   } else {
-    await page.getByRole('button', { name: 'Show page tools' }).focus();
-    await page.keyboard.press('Enter');
-    await page.locator('#dock-tools').getByRole('button', { name: 'Live', exact: true }).click();
+    await openDock(page);
+    // Choosing Live as the source may already have opened this panel; the tool button toggles it.
+    if (!(await page.getByTestId('pane-live').isVisible())) await page.locator('#dock-tools').getByRole('button', { name: 'Live', exact: true }).click();
   }
   await expect(page.getByTestId('pane-live')).toBeVisible();
 }
@@ -27,7 +27,7 @@ function stubCamera(page: Page, error: string) {
 }
 
 async function turnOn(page: Page) {
-  await page.getByTestId('vf-live').click();
+  await setSource(page, 'live');
   await page.getByRole('button', { name: 'Turn on camera' }).click();
 }
 
@@ -39,7 +39,7 @@ test.beforeEach(async ({ page }) => {
 
 test('Live explains before the browser asks, and Back returns to the scene', async ({ page }) => {
   await page.goto('viewfinder/');
-  await page.getByTestId('vf-live').click();
+  await setSource(page, 'live');
   const card = page.getByTestId('vf-live-card');
   await expect(card).toHaveAttribute('data-status', 'off');
   await expect(card).toContainText('nothing is uploaded');
@@ -115,8 +115,8 @@ test.describe('with the fake webcam', () => {
     await expect.poll(total).toBeGreaterThan(0);
     const before = await total();
     await page.getByRole('button', { name: 'Full view' }).click();
-    await page.getByRole('button', { name: 'Longer focal length' }).click();
-    await page.getByRole('button', { name: 'Longer focal length' }).click();
+    await page.locator('main').getByRole('button', { name: 'Longer focal length' }).click();
+    await page.locator('main').getByRole('button', { name: 'Longer focal length' }).click();
     await expect.poll(total).toBeGreaterThan(before);
   });
 

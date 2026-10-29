@@ -1,15 +1,8 @@
 import type { Page } from '@playwright/test';
-import { test, expect } from './fixtures.ts';
+import { test, expect, openDock } from './fixtures.ts';
 
 // The viewfinder: phone/tablet uses tabs, desktop opens the same panes from the
 // site bar's dock. Defaults: ALEXA 35, 4K 16:9, 2.39:1, 35 mm.
-
-// Keyboard path: a mouse click first hovers the handle, which already opens the dock.
-async function openDock(page: Page) {
-  await page.getByRole('button', { name: 'Show page tools' }).focus();
-  await page.keyboard.press('Enter');
-  await expect(page.locator('.site-bar')).toHaveAttribute('data-dock', 'open');
-}
 
 async function openPane(page: Page, name: string, isMobile: boolean) {
   if (isMobile) {
@@ -110,6 +103,8 @@ test.describe('desktop dock', () => {
       await tools.getByRole('button', { name, exact: true }).click();
       const pane = page.getByTestId(`pane-${name.toLowerCase()}`);
       await expect(pane).toBeVisible();
+      // The panel slides in over a few hundred ms and the picture resizes with it.
+      await expect(page.locator('.vf-page')).toHaveCSS('grid-template-columns', /\d+px 424px$/);
       sizes.push((await pane.boundingBox())!);
     }
     // Every tool gets the same panel, to the right of the viewfinder.

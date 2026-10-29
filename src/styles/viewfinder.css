@@ -152,24 +152,30 @@
 }
 
 /* ---------- desktop: side panel beside the viewfinder ---------- */
-/* One workbench of fixed height: the viewfinder column on the left, a fixed-size panel on the
-   right while a dock tool is open. The picture is letterboxed inside its column (container
-   units), so it shrinks to make room and the panel never changes size between tools. */
+/* One workbench: the viewfinder column on the left, a fixed-width panel on the right while a dock
+   tool is open. The picture takes the column's width (capped by the window height), so it shrinks
+   to make room. The panel is as tall as the column, never shorter than 30rem, and the same for
+   every tool. */
 .vf-side { display: contents; }
 @media (min-width: 64rem) {
-  .vf-page { --vf-h: max(34rem, calc(100dvh - 15rem)); --panel-w: 25rem; --panel-gap: 24px;
-    display: grid; grid-template-columns: minmax(0, 1fr) 0; grid-template-rows: var(--vf-h);
+  .vf-page { --vf-h: max(34rem, calc(100dvh - 15rem - var(--vf-top))); --vf-top: 1.75rem; --panel-w: 25rem; --panel-gap: 24px;
+    display: grid; grid-template-columns: minmax(0, 1fr) 0; grid-template-rows: minmax(30rem, auto); margin-top: var(--vf-top);
     transition: grid-template-columns 320ms cubic-bezier(0.2, 0.8, 0.2, 1); }
   .vf-page.has-panel { grid-template-columns: minmax(0, 1fr) calc(var(--panel-w) + var(--panel-gap)); }
   .vf-top { position: static; margin: 0; padding: 0; border: 0; background: none; }
-  .vf-page:not(.full) .vf-top { display: flex; flex-direction: column; height: 100%; min-width: 0; }
-  .vf-page:not(.full) .vf-view { flex: 1; min-height: 0; display: grid; place-items: center; container-type: size; }
-  .vf-page:not(.full) .vf-stagebox { width: min(100cqw, 100cqh * var(--aspect)); }
+  /* Picture on top (letterboxed in what is left), then one foot row: readout left, live actions right. */
+  .vf-page:not(.full) .vf-top { display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-rows: minmax(0, 1fr) minmax(2.75rem, auto) auto; min-width: 0; }
+  .vf-page:not(.full) .vf-view { grid-column: 1 / -1; display: grid; place-items: center; container-type: inline-size; }
+  .vf-page:not(.full) .vf-stagebox { width: min(100cqw, (var(--vf-h) - 2.75rem) * var(--aspect)); }
+  .vf-page:not(.full) .vf-caption { grid-column: 1 / -1; }
+  /* Scene / Live is chosen in the Live tool here; the bar keeps only the shutter and Full view. */
+  .vf-bar { grid-row: 2; grid-column: 2; margin: 0; }
+  .vf-bar .seg { display: none; }
   .vf-inst, .vf-tabs { display: none; }
-  .vf-hud { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px 16px; margin-top: 12px; font-size: 0.8125rem; color: var(--muted); }
+  .vf-hud { grid-row: 2; grid-column: 1; align-self: center; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px 16px; margin: 0; font-size: 0.8125rem; color: var(--muted); }
   .vf-hud b { font-weight: 500; color: var(--ink); }
-  .vf-side { display: block; min-width: 0; height: 100%; overflow: hidden; }
-  .vf-pane { width: var(--panel-w); height: 100%; margin-left: var(--panel-gap); padding: 0 20px 8px; overflow: auto;
+  .vf-side { position: relative; display: block; min-width: 0; overflow: hidden; }
+  .vf-pane { position: absolute; top: 0; bottom: 0; left: var(--panel-gap); width: var(--panel-w); padding: 0 20px 8px; overflow: auto;
     border: 1px solid var(--line); border-radius: 20px; background: var(--surface); }
   .vf-pane-head { position: sticky; top: 0; z-index: 1; display: flex; align-items: center; justify-content: space-between; padding: 12px 0 6px; border-bottom: 1px solid var(--line); background: var(--surface); }
   .vf-pane-head h2 { font-size: 1.125rem; font-weight: 800; }

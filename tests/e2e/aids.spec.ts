@@ -1,6 +1,6 @@
 import type { Page } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
-import { test, expect } from './fixtures.ts';
+import { test, expect, openDock, setSource } from './fixtures.ts';
 
 // Exposure aids (P5). The panel works everywhere; the aids themselves need
 // the live camera, so they run on Chromium's fake webcam (a moving test pattern).
@@ -9,8 +9,7 @@ async function openExposurePane(page: Page, isMobile: boolean) {
   if (isMobile) {
     await page.getByRole('tab', { name: 'Exposure' }).click();
   } else {
-    await page.getByRole('button', { name: 'Show page tools' }).focus();
-    await page.keyboard.press('Enter');
+    await openDock(page);
     await page.locator('#dock-tools').getByRole('button', { name: 'Exposure', exact: true }).click();
   }
   const pane = page.getByTestId('pane-exposure');
@@ -19,7 +18,7 @@ async function openExposurePane(page: Page, isMobile: boolean) {
 }
 
 async function turnOn(page: Page) {
-  await page.getByTestId('vf-live').click();
+  await setSource(page, 'live');
   await page.getByRole('button', { name: 'Turn on camera' }).click();
   await expect(page.getByTestId('vf-video')).toBeVisible();
 }
@@ -115,7 +114,7 @@ test.describe('with the fake webcam', () => {
     await pane.getByTestId('aid-histogram').check();
     await pane.getByTestId('aid-zebras').click();
     await expect(page.getByTestId('vf-aids')).toBeVisible();
-    await page.getByRole('button', { name: 'Scene', exact: true }).first().click();
+    await setSource(page, 'scene');
     await expect(page.getByTestId('vf-aids')).toHaveCount(0);
     await expect(page.getByTestId('vf-hist')).toHaveCount(0);
   });
