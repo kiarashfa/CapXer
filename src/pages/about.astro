@@ -7,12 +7,14 @@ import { t } from '../i18n/en.ts';
 import { devices, sensors } from '../data/index.ts';
 import { getReference, type Reference } from '../references/index.ts';
 import { SAFE_AREAS } from '../setup/presets.ts';
+import { BT709 } from '../analysis/levels.ts';
 
-// Every source the camera and device database and the viewfinder's guides cite, generated from the data so it never drifts.
+// Every source the camera and device database, the viewfinder's guides and the exposure aids cite, generated from the data so it never drifts.
 const citedIds = new Set([
   ...sensors.flatMap((s) => [s.pitch?.citation.ref, ...s.formats.map((f) => f.citation.ref)]),
   ...devices.flatMap((d) => d.cameras.map((c) => c.citation.ref)),
   SAFE_AREAS.citation.ref,
+  BT709.ref,
 ]);
 const dataSources = [...citedIds]
   .map((id) => getReference(id!))
@@ -34,6 +36,7 @@ const software = [
     <span class="dock-label">{t.dock.onThisPage}</span>
     <a class="dock-tool" href="#licence">Licence</a>
     <a class="dock-tool" href="#credits">Credits</a>
+    <a class="dock-tool" href="#exposure-aids">Exposure aids</a>
     <a class="dock-tool" href="#data-sources">Data sources</a>
   </div>
   <DocPage
@@ -67,9 +70,23 @@ const software = [
       </ul>
     </DocSection>
 
+    <DocSection id="exposure-aids" title="Exposure aids" wide>
+      <p>
+        The histogram, zebras, false colour and focus peaking on the live camera are measured on the video your browser
+        receives. That picture has already been through your phone's or webcam's own automatic exposure and processing.
+        It is not RAW, and not the log signal of a cinema camera, so treat the aids as a guide to light and contrast,
+        not as a light meter.
+      </p>
+      <p>
+        Brightness is measured as luma from the BT.709 video standard. There is no industry standard for false colour:
+        every camera maker uses its own table. CapXer places its bands around an 18% grey card using the BT.709 video
+        curve. Phones shape their picture with their own curve, so the stop labels are approximate.
+      </p>
+    </DocSection>
+
     <DocSection id="data-sources" title="Camera data sources" wide>
       <p>
-        Every sensor size, phone and webcam angle of view, and guide in CapXer comes from one of these sources: the maker's own specifications or a
+        Every sensor size, phone and webcam angle of view, guide and exposure-aid level in CapXer comes from one of these sources: the maker's own specifications or a
         published standard. Each value records exactly where in the source it was found.
       </p>
       <ul class="grid gap-x-8 border-t border-line desktop:grid-cols-2">

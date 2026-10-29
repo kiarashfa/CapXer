@@ -30,6 +30,8 @@ class LiveStore {
   video = $state({ width: 0, height: 0 });
   /** Zoom the camera reports after applying it. */
   appliedZoom = $state(1);
+  /** Exposure compensation in stops, as the camera reports it (0 for a new stream). */
+  ev = $state(0);
   /** null = not calibrated yet (an assumed device is used). */
   calibration = $state<Calibration | null>(null);
   /** Touch device: assume a phone rather than a webcam. */
@@ -101,6 +103,7 @@ class LiveStore {
       this.facing = settings.facingMode === 'user' ? 'user' : settings.facingMode === 'environment' ? 'environment' : undefined;
       this.caps = s.capabilities(track);
       this.appliedZoom = (settings as { zoom?: number }).zoom ?? 1;
+      this.ev = (settings as { exposureCompensation?: number }).exposureCompensation ?? 0;
       this.video = { width: settings.width ?? 0, height: settings.height ?? 0 };
       this.stream = stream;
       this.status = 'on';
@@ -175,6 +178,12 @@ class LiveStore {
     const track = this.stream?.getVideoTracks()[0];
     if (!track || !this.caps.zoom) return;
     if (await (await streamModule()).setZoom(track, value)) this.appliedZoom = (track.getSettings() as { zoom?: number }).zoom ?? value;
+  }
+
+  async exposure(ev: number) {
+    const track = this.stream?.getVideoTracks()[0];
+    if (!track || !this.caps.exposure) return;
+    if (await (await streamModule()).setExposure(track, ev)) this.ev = (track.getSettings() as { exposureCompensation?: number }).exposureCompensation ?? ev;
   }
 }
 

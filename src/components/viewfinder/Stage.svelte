@@ -1,12 +1,16 @@
 <script lang="ts">
   import { vf } from '../../setup/store.svelte.ts';
   import { live } from '../../camera/live.svelte.ts';
+  import { aids } from '../../analysis/aids.svelte.ts';
+  import { CLIP_SHARE } from '../../analysis/levels.ts';
   import { displaySize } from '../../setup/derive.ts';
   import { FRAME_COLORS, SAFE_AREAS, aspectText } from '../../setup/presets.ts';
   import { toEntry } from '../../setup/focal.ts';
   import { overlayGeometry, type Box } from '../../overlay/geometry.ts';
   import { SCENE, SCENE_HALF_WIDTH, viewBoxFor } from '../../overlay/scene.ts';
   import { t } from '../../i18n/en.ts';
+  import AidsLayer from './AidsLayer.svelte';
+  import Histogram from './Histogram.svelte';
 
   // The viewfinder: the drawn scene or the live camera, with the frame, mask
   // and guides on top. Both backdrops sit in the same tangent space, so the
@@ -18,14 +22,22 @@
   const box = $derived(viewBoxFor(size.width, size.height, vf.setup.focal));
   const half = $derived(size.width / (2 * vf.setup.focal));
   const ov = $derived(overlayGeometry(d.frameFraction, vf.setup.guides, SAFE_AREAS));
+  const clipping = $derived.by(() => {
+    const h = live.showing ? aids.hist : null;
+    if (!h) return '';
+    const parts = [h.low > CLIP_SHARE && t.vf.aids.clipShadows, h.high > CLIP_SHARE && t.vf.aids.clipHighlights].filter(Boolean);
+    return parts.length ? `, ${parts.join(', ')}` : '';
+  });
   const aspectLabel = $derived(aspectText(vf.setup.mode, vf.setup.aspect));
   const focalLabel = $derived(`${toEntry(vf.setup.focal, vf.setup.focalEntry, d.crop)} mm${vf.setup.focalEntry === 'equivalent' ? ' FF' : ''}`);
   const label = $derived(
     `${vf.camera.name}, ${vf.format.name}, ${vf.setup.focal} mm lens, ${aspectLabel} frame, ` +
       `${d.fov.horizontal.toFixed(1)} by ${d.fov.vertical.toFixed(1)} degrees` +
-      (live.showing ? `, live camera, ${live.modeLabel}` : ''),
+      (live.showing ? `, live camera, ${live.modeLabel}` : '') +
+      clipping,
   );
   const pct = (b: Box) => `left:${b.x * 100}%;top:${b.y * 100}%;width:${b.w * 100}%;height:${b.h * 100}%`;
+  const histShown = $derived(live.showing && aids.histogram && !!aids.hist);
   const level = $derived(live.level && live.rollValid && Math.abs(live.roll) < 0.5);
   const card = $derived(live.source === 'live' && !live.showing ? live.status : null);
   const err = $derived(card && card in t.vf.live.errors ? t.vf.live.errors[card as keyof typeof t.vf.live.errors] : null);
@@ -86,6 +98,7 @@
         onloadedmetadata={onsize}
         onresize={onsize}
       ></video>
+      <AidsLayer frame={ov.frame} style={live.box ? pct(live.box) : 'opacity:0'} />
     {/if}
     {#each ov.masks as m}<div class="vf-ov vf-mask" style={`${pct(m)};opacity:${vf.setup.mask}`}></div>{/each}
     <div class="vf-ov vf-frame" style={pct(ov.frame)}></div>
@@ -100,13 +113,14 @@
     {#if live.level}
       {#if live.rollValid}
         <div class="vf-ov vf-level" class:ok={level} style={`transform:translate(-50%,-50%) rotate(${-live.roll}deg)`}></div>
-        <span class="vf-tag vf-level-tag vf-num" class:ok={level}>{level ? t.vf.live.levelOk : `${live.roll > 0 ? '+' : ''}${live.roll.toFixed(1)}°`}</span>
+        <span class="vf-tag vf-level-tag vf-num" class:ok={level} class:raised={histShown}>{level ? t.vf.live.levelOk : `${live.roll > 0 ? '+' : ''}${live.roll.toFixed(1)}°`}</span>
       {:else}
-        <span class="vf-tag vf-level-tag">{t.vf.live.levelFlat}</span>
+        <span class="vf-tag vf-level-tag" class:raised={histShown}>{t.vf.live.levelFlat}</span>
       {/if}
     {/if}
     <span class="vf-tag" style="left:8px">{aspectLabel}</span>
     <span class="vf-tag" style="right:8px">{focalLabel}</span>
+    {#if histShown}<Histogram />{/if}
     {#if live.showing && live.modeLabel}<span class="vf-tag vf-mode" data-testid="vf-mode" data-mode={live.plan?.mode}>{live.modeLabel}</span>{/if}
   </div>
 

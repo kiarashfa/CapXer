@@ -3,6 +3,7 @@
   import { vf } from '../../setup/store.svelte.ts';
   import { live } from '../../camera/live.svelte.ts';
   import { levelRoll } from '../../camera/lens.ts';
+  import { aids } from '../../analysis/aids.svelte.ts';
   import { toEntry } from '../../setup/focal.ts';
   import { aspectText } from '../../setup/presets.ts';
   import type { PanelId } from '../../setup/types.ts';
@@ -15,19 +16,21 @@
   import LensPane from './LensPane.svelte';
   import GuidesPane from './GuidesPane.svelte';
   import LivePane from './LivePane.svelte';
+  import ExposurePane from './ExposurePane.svelte';
   import InfoPane from './InfoPane.svelte';
   import CameraPicker from './CameraPicker.svelte';
   import DevicePicker from './DevicePicker.svelte';
 
   // One set of panes, two presentations: tabs below the pinned viewfinder on
   // phone/tablet, floating panels opened from the site bar's dock on desktop.
-  const panels: PanelId[] = ['camera', 'frame', 'lens', 'guides', 'live', 'info'];
+  const panels: PanelId[] = ['camera', 'frame', 'lens', 'guides', 'live', 'exposure', 'info'];
   let desktop = $state(false);
   let picker = $state<ReturnType<typeof CameraPicker>>();
   let devicePicker = $state<ReturnType<typeof DevicePicker>>();
   let top = $state<HTMLElement>();
   let fullBtn = $state<HTMLButtonElement>();
   let photoMsg = $state('');
+  let aidsOpen = $state(false);
 
   const d = $derived(vf.derived);
   const deg = (n: number) => `${n.toFixed(1)}°`;
@@ -108,6 +111,7 @@
 
   function closeFull() {
     live.fullView = false;
+    aidsOpen = false;
     try {
       screen.orientation?.unlock?.();
     } catch {
@@ -128,7 +132,10 @@
     if (e.key !== 'Escape' || document.querySelector('dialog[open]')) return;
     if (live.fullView) {
       e.preventDefault();
-      closeFull();
+      if (aidsOpen) {
+        aidsOpen = false;
+        top?.querySelector<HTMLElement>('.vf-full-aids')?.focus();
+      } else closeFull();
       return;
     }
     if (!desktop || !vf.panel) return;
@@ -187,6 +194,19 @@
         </div>
         <span class="vf-full-read vf-num"><span>{t.vf.readout.horizontal} {deg(d.fov.horizontal)}</span><span>{t.vf.readout.vertical} {deg(d.fov.vertical)}</span></span>
         {@render shutter('vf-shutter')}
+        <button type="button" class="icon-btn vf-full-aids" aria-label={t.vf.aids.open} aria-expanded={aidsOpen} aria-controls="vf-full-aids-menu" onclick={() => (aidsOpen = !aidsOpen)}>
+          <svg aria-hidden="true" viewBox="0 0 24 24" class="size-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="8"></circle><path d="M12 4a8 8 0 0 1 0 16z" fill="currentColor"></path></svg>
+        </button>
+        {#if aidsOpen}
+          <div class="vf-full-menu" id="vf-full-aids-menu" role="group" aria-label={t.vf.aids.open}>
+            <button type="button" class="chip" aria-pressed={aids.histogram} onclick={() => (aids.histogram = !aids.histogram)}>{t.vf.aids.histogram[0]}</button>
+            {#if aids.gpu !== false}
+              <button type="button" class="chip" aria-pressed={aids.picture === 'zebras'} onclick={() => (aids.picture = aids.picture === 'zebras' ? 'off' : 'zebras')}>{t.vf.aids.zebras} {aids.zebra} %</button>
+              <button type="button" class="chip" aria-pressed={aids.picture === 'falseColour'} onclick={() => (aids.picture = aids.picture === 'falseColour' ? 'off' : 'falseColour')}>{t.vf.aids.falseColour}</button>
+              <button type="button" class="chip" aria-pressed={aids.peaking} onclick={() => (aids.peaking = !aids.peaking)}>{t.vf.aids.peakingShort}</button>
+            {/if}
+          </div>
+        {/if}
       </div>
     {/if}
     <div class="vf-inst" aria-live="polite">
@@ -244,6 +264,7 @@
       {:else if p === 'lens'}<LensPane />
       {:else if p === 'guides'}<GuidesPane />
       {:else if p === 'live'}<LivePane onpick={() => devicePicker?.open()} />
+      {:else if p === 'exposure'}<ExposurePane />
       {:else}<InfoPane />{/if}
     </section>
   {/each}
