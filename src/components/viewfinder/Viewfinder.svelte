@@ -22,7 +22,7 @@
   import DevicePicker from './DevicePicker.svelte';
 
   // One set of panes, two presentations: tabs below the pinned viewfinder on
-  // phone/tablet, floating panels opened from the site bar's dock on desktop.
+  // phone/tablet, a fixed-size side panel opened from the site bar's dock on desktop.
   const panels: PanelId[] = ['camera', 'frame', 'lens', 'guides', 'live', 'exposure', 'info'];
   let desktop = $state(false);
   let picker = $state<ReturnType<typeof CameraPicker>>();
@@ -161,7 +161,7 @@
   </button>
 {/snippet}
 
-<div class="vf-page" class:full={live.fullView} style={`--aspect:${d.areaAspect}`}>
+<div class="vf-page" class:full={live.fullView} class:has-panel={desktop && vf.panel !== null} style={`--aspect:${d.areaAspect}`}>
   <div class="vf-top" bind:this={top}>
     <div class="vf-bar">
       <div class="seg" role="group" aria-label={t.vf.live.source}>
@@ -177,7 +177,7 @@
         </button>
       {/if}
     </div>
-    <Stage />
+    <div class="vf-view"><Stage /></div>
     {#if live.fullView}
       <div class="vf-full-ui">
         <button type="button" class="icon-btn vf-full-close" aria-label={t.vf.live.closeFullView} onclick={closeFull}>
@@ -244,11 +244,12 @@
     {/each}
   </div>
 
+  <div class="vf-side">
   {#each panels as p}
     <section
       id={`vf-pane-${p}`}
       class="vf-pane"
-      role={desktop ? 'dialog' : 'tabpanel'}
+      role={desktop ? 'region' : 'tabpanel'}
       aria-labelledby={desktop ? `vf-pane-${p}-title` : `vf-tab-${p}`}
       hidden={vf.panel !== p}
       data-testid={`pane-${p}`}
@@ -268,6 +269,7 @@
       {:else}<InfoPane />{/if}
     </section>
   {/each}
+  </div>
 
   <CameraPicker bind:this={picker} />
   <DevicePicker bind:this={devicePicker} />

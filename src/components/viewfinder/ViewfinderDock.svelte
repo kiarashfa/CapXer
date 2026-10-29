@@ -6,7 +6,7 @@
   import { t } from '../../i18n/en.ts';
 
   // The viewfinder's tools in the site bar's dock (desktop). Each opens its
-  // pane from Viewfinder.svelte as a floating panel; the store is shared.
+  // pane from Viewfinder.svelte in the side panel beside the viewfinder; the store is shared.
   const shown = $derived(toEntry(vf.setup.focal, vf.setup.focalEntry, vf.derived.crop));
   const ff = $derived(vf.setup.focalEntry === 'equivalent' ? ' FF' : '');
 

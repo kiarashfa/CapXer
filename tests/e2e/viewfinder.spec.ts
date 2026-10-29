@@ -100,6 +100,32 @@ test.describe('desktop dock', () => {
     await expect(bar).toHaveAttribute('data-dock', 'closed');
   });
 
+  test('tools open in a fixed side panel beside a smaller viewfinder', async ({ page }) => {
+    await openDock(page);
+    const tools = page.locator('#dock-tools');
+    const stage = page.getByTestId('vf-stage');
+    const before = (await stage.boundingBox())!;
+    const sizes: { x: number; y: number; width: number; height: number }[] = [];
+    for (const name of ['Camera', 'Frame', 'Guides', 'Live', 'Exposure', 'Info']) {
+      await tools.getByRole('button', { name, exact: true }).click();
+      const pane = page.getByTestId(`pane-${name.toLowerCase()}`);
+      await expect(pane).toBeVisible();
+      sizes.push((await pane.boundingBox())!);
+    }
+    // Every tool gets the same panel, to the right of the viewfinder.
+    for (const b of sizes) {
+      expect(b.width).toBeCloseTo(sizes[0]!.width, 0);
+      expect(b.height).toBeCloseTo(sizes[0]!.height, 0);
+      expect(b.y).toBeCloseTo(sizes[0]!.y, 0);
+    }
+    const after = (await stage.boundingBox())!;
+    expect(after.width).toBeLessThan(before.width);
+    expect(after.x + after.width).toBeLessThanOrEqual(sizes[0]!.x);
+    // The panel is as tall as the viewfinder column (source bar to readout), and covers none of it.
+    const column = (await page.locator('.vf-top').boundingBox())!;
+    expect(sizes[0]!.height).toBeCloseTo(column.height, 0);
+  });
+
   test('hovering the handle opens the dock', async ({ page }) => {
     // Move the mouse there directly: the handle steps aside as soon as it is hovered.
     const box = (await page.getByRole('button', { name: 'Show page tools' }).boundingBox())!;
