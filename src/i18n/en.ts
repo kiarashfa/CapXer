@@ -7,6 +7,9 @@ export const en = {
     tagline: "A director's viewfinder in your browser",
     description:
       "CapXer is a free director's viewfinder in your browser. Pick a sensor, aspect ratio and focal length, and see the frame on your phone or webcam.",
+    /** Line on the link preview image (scripts/make-social.ts). */
+    cardLine: 'Pick a sensor, aspect ratio and focal length, and see the frame.',
+    cardAlt: "CapXer: a director's viewfinder in your browser. A drawn scene seen through 2.39:1 frame lines.",
   },
   nav: {
     label: 'Main',
@@ -38,9 +41,16 @@ export const en = {
     more: 'Privacy details',
     settings: 'Privacy settings',
   },
+  oldBrowser: {
+    title: 'Your browser is too old for CapXer',
+    body: 'Some parts of this site need a recent browser. Please update, or use a current version of Chrome, Safari, Firefox or Edge.',
+    tool: 'The viewfinder is switched off because it would not work correctly here.',
+  },
+  about: {
+    version: (v: string, date: string) => `Version ${v}, built ${date}.`,
+  },
   footer: {
     source: 'Source code',
-    licence: 'Source-available licence',
   },
   lessons: {
     title: 'Lessons',
@@ -103,8 +113,8 @@ export const en = {
       entry: 'Entry',
       entryHint: 'Real focal length or full-frame equivalent',
       actual: 'Actual',
-      equivalent: 'FF equiv.',
-      sliderHint: 'Each stop of zoom is the same slider distance',
+      equivalent: 'Like FF',
+      sliderHint: 'Every doubling of focal length moves the slider the same distance',
       stops: 'Lens stops',
       stopsHint: 'A generic prime set; add your own',
       addLens: 'Add lens (mm)',
@@ -269,7 +279,7 @@ export const en = {
       choose: 'Choose device',
       lens: 'Which of its cameras',
       manual: ['Or type it in', 'From your device specifications'],
-      manualMm: 'mm equiv.',
+      manualMm: 'mm like FF',
       manualDeg: '° diagonal',
       manualLabel: 'Value',
       apply: 'Use',

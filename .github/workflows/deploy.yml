@@ -38,6 +38,9 @@ jobs:
       - name: Em-dash check (built site)
         run: npm run check:emdash:dist
 
+      - name: Size budget (built site)
+        run: npm run check:size
+
       - name: Install browsers
         run: npx playwright install --with-deps chromium webkit
 

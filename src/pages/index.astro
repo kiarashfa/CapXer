@@ -17,7 +17,7 @@ const pillars = [
   {
     title: 'Lessons',
     href: url('lessons'),
-    body: 'Short, cited lessons on the ideas behind the tools, starting with aspect ratios.',
+    body: 'Short, cited lessons on the ideas behind the tools: aspect ratios, focal length and composition.',
   },
 ];
 ---
@@ -32,9 +32,9 @@ const pillars = [
       </p>
       <div class="mt-6 flex flex-wrap items-center gap-3">
         <a class="btn btn-primary" href={url('viewfinder')}>Open the viewfinder</a>
-        <p class="inline-flex items-center gap-3 rounded-full bg-tint py-2 pr-4 pl-2 text-sm">
-          <span class="rounded-full bg-surface px-2 py-0.5 font-mono text-label tracking-wide text-accent uppercase">Status</span>
-          New: a first lesson, on{' '}<a href={url('lessons/aspect-ratios')}>aspect ratios</a>.
+        <p class="inline-flex max-w-full items-center gap-3 rounded-3xl bg-tint py-2 pr-4 pl-2 text-sm">
+          <span class="flex-none rounded-full bg-surface px-2 py-0.5 font-mono text-label tracking-wide text-accent uppercase">Status</span>
+          <span class="min-w-0">New: three lessons, on{' '}<a href={url('lessons/aspect-ratios')}>aspect ratios</a>,{' '}<a href={url('lessons/focal-length')}>focal length</a> and{' '}<a href={url('lessons/composition')}>composition</a>.</span>
         </p>
       </div>
     </div>
@@ -42,7 +42,7 @@ const pillars = [
   </section>
 
   <section aria-labelledby="pillars" class="mt-12 desktop:mt-16">
-    <h2 id="pillars" class="sr-only">What CapXer will do</h2>
+    <h2 id="pillars" class="sr-only">What CapXer does</h2>
     <ul class="grid gap-4 desktop:grid-cols-3 desktop:gap-6">
       {
         pillars.map((p) => (

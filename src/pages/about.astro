@@ -2,12 +2,14 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import DocPage from '../components/layout/DocPage.astro';
 import DocSection from '../components/layout/DocSection.astro';
-import { REPO_URL } from '../config/site.ts';
 import { t } from '../i18n/en.ts';
 import { devices, sensors } from '../data/index.ts';
 import { getReference, type Reference } from '../references/index.ts';
 import { SAFE_AREAS } from '../setup/presets.ts';
 import { BT709 } from '../analysis/levels.ts';
+import { CREDITS } from '../content/credits.ts';
+import { longDate } from '../content/lessons.ts';
+import { REPO_URL, VERSION } from '../config/site.ts';
 
 // Every source the camera and device database, the viewfinder's guides and the exposure aids cite, generated from the data so it never drifts.
 const citedIds = new Set([
@@ -21,15 +23,9 @@ const dataSources = [...citedIds]
   .filter((r): r is Reference => !!r)
   .sort((a, b) => (a.publisher ?? '').localeCompare(b.publisher ?? '') || a.title.localeCompare(b.title));
 
-// Keep in sync with THIRD_PARTY.md in the repo root.
-const software = [
-  { name: 'Astro', use: 'Site framework (build time)', licence: 'MIT', href: 'https://astro.build' },
-  { name: 'Svelte', use: 'Interactive components', licence: 'MIT', href: 'https://svelte.dev' },
-  { name: 'Workbox', use: 'Offline support', licence: 'MIT', href: 'https://github.com/GoogleChrome/workbox' },
-  { name: 'Tailwind CSS', use: 'Styling (build time)', licence: 'MIT', href: 'https://tailwindcss.com' },
-  { name: 'Figtree', use: 'Typeface', licence: 'SIL Open Font', href: 'https://github.com/erikdkennedy/figtree' },
-  { name: 'JetBrains Mono', use: 'Typeface for numbers', licence: 'SIL Open Font', href: 'https://github.com/JetBrains/JetBrainsMono' },
-];
+// Shared with THIRD_PARTY.md through tests/unit/credits.test.ts.
+const software = CREDITS.filter((c) => c.about);
+const built = longDate(new Date());
 ---
 
 <BaseLayout title="About" description="What CapXer is, who made it, and the software and data it builds on." dockLabel={t.dock.onThisPage}>
@@ -40,6 +36,7 @@ const software = [
     <a class="dock-tool" href="#install">Install</a>
     <a class="dock-tool" href="#exposure-aids">Exposure aids</a>
     <a class="dock-tool" href="#data-sources">Data sources</a>
+    <a class="dock-tool" href="#accessibility">Accessibility</a>
   </div>
   <DocPage
     title="About CapXer"
@@ -114,5 +111,22 @@ const software = [
         }
       </ul>
     </DocSection>
+
+    <DocSection id="accessibility" title="Accessibility">
+      <p>
+        CapXer aims to meet the Web Content Accessibility Guidelines (WCAG) 2.2 at level AA, in both the light and the
+        dark theme. Every page works with a keyboard, and every page is checked automatically for accessibility problems
+        before each release.
+      </p>
+      <p>
+        Some tools are visual by nature: the framing in the viewfinder and the exposure aids on the live camera describe
+        a picture, so they help most if you can see the screen. Their settings and readouts are available as text.
+      </p>
+      <p class="text-muted">
+        Found something that is hard to use? Please{' '}
+        <a href={`${REPO_URL}/issues`}>open an issue on GitHub</a>.
+      </p>
+    </DocSection>
   </DocPage>
+  <p class="mt-8 text-sm text-muted" data-testid="version">{t.about.version(VERSION, built)}</p>
 </BaseLayout>

@@ -25,7 +25,10 @@ import '../styles/viewfinder.css';
       setTimeout(() => delete document.documentElement.dataset.restoring, 3000);
     }
   </script>
-  <ViewfinderDock slot="dock" client:load />
+  <Fragment slot="old-browser">{t.oldBrowser.tool}</Fragment>
+  <div slot="dock" data-needs-modern><ViewfinderDock client:load /></div>
   <h1 class="sr-only">Viewfinder</h1>
-  <Viewfinder client:load lessons={lessons} />
+  <div data-needs-modern>
+    <Viewfinder client:load lessons={lessons} />
+  </div>
 </BaseLayout>

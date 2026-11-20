@@ -1,9 +1,26 @@
-# CapXer [early development]
+# CapXer
 
-A free director's viewfinder in your browser.
+A free director's viewfinder in your browser: https://kiarashfa.github.io/CapXer/
 
-Pick a sensor or film format, an aspect ratio and a focal length, and see the frame. Use your phone or webcam to check framing in a real location, with exposure aids. Short, cited lessons explain the ideas behind the tools.
+Pick a sensor or film format, an aspect ratio and a focal length, and see exactly what the lens frames.
+
+* **Viewfinder**: cited sensor sizes from phones to medium format, your own sensors and lenses, frame lines, composition guides and angle-of-view readouts, in cinema or stills terms.
+* **Live camera**: check framing in a real location through your phone or webcam, with a level, histogram, zebras, false colour and focus peaking.
+* **Lessons**: short lessons on aspect ratios, focal length and composition. Every fact links to the exact place in its source.
+* **Works offline**: install it as an app on your phone or computer.
+
+Your camera feed never leaves your device. No accounts, no ads, and analytics only runs if you allow it. Details are on the [privacy page](https://kiarashfa.github.io/CapXer/privacy/).
+
+Made for current versions of Chrome, Edge, Firefox and Safari. Not yet tested on a real iPhone.
 
 ## Licence
 
-CapXer is **source-available, not open source**. You can read the code, but use is limited by the terms in [LICENSE](LICENSE). Third-party software and data are credited in [THIRD_PARTY.md](THIRD_PARTY.md).
+CapXer is **source-available, not open source**.
+© 2026 Kiarash Farajzadehahary
+
+⚖ Licensed under the [KFA Source-Available License 1.0](LICENSE).
+
+Third-party software and data are credited in [THIRD\_PARTY.md](THIRD_PARTY.md).
+
+Made with ❤️ for directors and art students.
+

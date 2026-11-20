@@ -17,6 +17,8 @@ export default defineConfig({
   markdown: {
     processor: satteri({ mdastPlugins: [citations({ references: references.map((r) => r.id) }), tableWrap] }),
   },
+  // Content Security Policy: added after the build by scripts/build-csp.ts (Astro's own
+  // CSP option skips is:inline scripts and places the tag after them).
   integrations: [svelte(), mdx()],
   vite: { plugins: [tailwindcss()] },
 });

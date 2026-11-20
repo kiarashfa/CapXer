@@ -24,5 +24,5 @@
     }
   ],
   "confidence": "manufacturer",
-  "notes": "Apple publishes 35mm-equivalent focal lengths."
+  "notes": "Apple lists these focal lengths in mm without calling them 35mm equivalents. Treated as equivalents (our reading): real focal lengths of phone lenses are only a few mm, and the 120 degree Ultra Wide field of view Apple gives for the iPhone 17 matches about 13 mm on a 36 x 24 mm frame."
 }

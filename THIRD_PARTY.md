@@ -15,8 +15,10 @@ CapXer builds on the work below. Each item keeps its own licence. The CapXer lic
 |---|---|---|---|
 | Astro | Site framework | MIT | https://github.com/withastro/astro |
 | Tailwind CSS | Styling | MIT | https://github.com/tailwindlabs/tailwindcss |
+| Satteri | Markdown processing for lessons | MIT | https://github.com/bruits/satteri |
 | TypeScript | Type checking | Apache-2.0 | https://github.com/microsoft/TypeScript |
 | Vitest | Unit tests | MIT | https://github.com/vitest-dev/vitest |
+| jsdom | Browser environment for unit tests | MIT | https://github.com/jsdom/jsdom |
 | Playwright | Browser tests | Apache-2.0 | https://github.com/microsoft/playwright |
 | axe-core | Accessibility tests | MPL-2.0 | https://github.com/dequelabs/axe-core |
 | Zod | Data validation | MIT | https://github.com/colinhacks/zod |

@@ -76,3 +76,53 @@ test.describe('accessibility (WCAG 2.2 AA)', () => {
     }
   }
 });
+
+test.describe('old browsers', () => {
+  test('a modern browser sees no old-browser note', async ({ page }) => {
+    await page.goto('viewfinder/');
+    await expect(page.locator('html')).not.toHaveAttribute('data-old', '');
+    await expect(page.getByTestId('old-browser')).toBeHidden();
+    await expect(page.getByTestId('vf-stage')).toBeVisible();
+  });
+
+  test('a browser missing a needed feature gets a plain note and no broken viewfinder', async ({ page }) => {
+    // Stand-in for an old browser: remove one ES2022-era built-in before any page script runs.
+    await page.addInitScript(() => {
+      // @ts-expect-error test-only removal
+      delete window.structuredClone;
+    });
+    await page.goto('viewfinder/');
+    await expect(page.locator('html')).toHaveAttribute('data-old', '');
+    const note = page.getByTestId('old-browser');
+    await expect(note).toBeVisible();
+    await expect(note).toContainText('too old');
+    await expect(note).toContainText('viewfinder is switched off');
+    await expect(page.getByTestId('vf-stage')).toBeHidden();
+    await page.goto('about/');
+    await expect(page.getByTestId('old-browser')).toBeVisible();
+    await expect(page.getByTestId('old-browser')).not.toContainText('viewfinder');
+  });
+});
+
+test.describe('findable', () => {
+  test('the sitemap lists every built page except 404', async ({ request }) => {
+    const xml = await (await request.get('sitemap.xml')).text();
+    const locs = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => new URL(m[1]).pathname);
+    const expected = PAGES.filter((p) => p !== '404.html').map((p) => `/CapXer/${p === './' ? '' : p}`);
+    expect(locs.sort()).toEqual(expected.sort());
+  });
+
+  test('robots.txt points to the sitemap', async ({ request }) => {
+    const txt = await (await request.get('robots.txt')).text();
+    expect(txt).toContain('Sitemap: https://kiarashfa.github.io/CapXer/sitemap.xml');
+  });
+
+  test('pages carry a social preview image that exists', async ({ page, request }) => {
+    await page.goto('./');
+    const img = await page.locator('meta[property="og:image"]').getAttribute('content');
+    expect(img).toBe('https://kiarashfa.github.io/CapXer/social-card.png');
+    const res = await request.get('social-card.png');
+    expect(res.status()).toBe(200);
+    expect(res.headers()['content-type']).toContain('image/png');
+  });
+});

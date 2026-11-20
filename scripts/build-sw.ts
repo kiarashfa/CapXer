@@ -20,7 +20,8 @@ const { count, size, warnings } = await generateSW({
     '_astro/*-latin-wght-normal.*.woff2',
     '_astro/*-latin-ext-wght-normal.*.woff2',
   ],
-  globIgnores: ['sw.js', 'workbox-*.js', 'lab/**'],
+  // social-card.png is only for link previews; sitemap and robots are for crawlers.
+  globIgnores: ['sw.js', 'workbox-*.js', 'lab/**', 'social-card.png'],
   swDest: new URL('sw.js', dist).pathname.replace(/^\/([A-Za-z]:)/, '$1'),
   modifyURLPrefix: { '': base },
   // Hashed file names under _astro/ never change content; no extra revision needed.

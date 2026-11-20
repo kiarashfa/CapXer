@@ -96,6 +96,42 @@
     return () => ro.disconnect();
   });
 
+  // Phone/tablet: the viewfinder is pinned under the site bar. Keyboard focus and
+  // scrollIntoView must land below it, not behind it (WCAG 2.4.11), so the page's
+  // scroll padding grows to the pinned area's height while it is pinned.
+  $effect(() => {
+    const el = top;
+    if (!el) return;
+    const root = document.documentElement;
+    const fit = () => {
+      const cs = getComputedStyle(el);
+      if (cs.position === 'sticky') root.style.scrollPaddingTop = `${Math.ceil((parseFloat(cs.top) || 0) + el.offsetHeight + 12)}px`;
+      else root.style.removeProperty('scroll-padding-top');
+    };
+    // WebKit ignores scroll padding when focus moves, so nudge the page there too.
+    // Keyboard focus only (:focus-visible): scrolling during a tap would move the
+    // control away between press and release and lose the tap.
+    const onfocus = (e: FocusEvent) => {
+      const target = e.target;
+      if (!(target instanceof HTMLElement) || el.contains(target) || getComputedStyle(el).position !== 'sticky') return;
+      if (!target.matches(':focus-visible')) return;
+      const pin = el.getBoundingClientRect().bottom;
+      const r = target.getBoundingClientRect();
+      if (r.top < pin) window.scrollBy(0, r.top - pin - 12);
+    };
+    fit();
+    const ro = new ResizeObserver(fit);
+    ro.observe(el);
+    window.addEventListener('resize', fit);
+    document.addEventListener('focusin', onfocus);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener('resize', fit);
+      document.removeEventListener('focusin', onfocus);
+      root.style.removeProperty('scroll-padding-top');
+    };
+  });
+
   // Phone/tablet: the tab row scrolls when it is wider than the screen; keep the open tab in view.
   $effect(() => {
     const p = vf.panel;

@@ -1,6 +1,6 @@
 {
   "name": "capxer",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
   "type": "module",
   "engines": {
@@ -8,15 +8,16 @@
   },
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build && node scripts/build-sw.ts",
+    "build": "astro build && node scripts/build-csp.ts && node scripts/build-sw.ts",
     "preview": "astro preview",
     "check": "astro check && npm run check:emdash && npm run check:data",
     "check:data": "node scripts/check-data.ts",
     "check:emdash": "node scripts/check-emdash.ts",
     "check:emdash:dist": "node scripts/check-emdash.ts --dist",
+    "check:size": "node scripts/check-size.ts",
     "test": "vitest run --config tests/vitest.config.ts",
     "test:e2e": "playwright test --config tests/playwright.config.ts",
-    "ci": "npm run check && npm test && npm run build && npm run check:emdash:dist && npm run test:e2e"
+    "ci": "npm run check && npm test && npm run build && npm run check:emdash:dist && npm run check:size && npm run test:e2e"
   },
   "devDependencies": {
     "@astrojs/check": "0.9.12",

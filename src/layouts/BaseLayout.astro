@@ -51,6 +51,11 @@ const current = (href: string) => (path === href ? 'page' : path.startsWith(href
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={new URL(url('social-card.png'), Astro.site)} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={t.site.cardAlt} />
+    <meta name="twitter:card" content="summary_large_image" />
     <!-- Set the theme before first paint. Mirrors resolveTheme() in src/lib/theme.ts. -->
     <script is:inline define:vars={{ key: THEME_KEY }}>
       let stored = null;
@@ -59,9 +64,35 @@ const current = (href: string) => (path === href ? 'page' : path.startsWith(href
       document.documentElement.dataset.theme =
         stored === 'light' || stored === 'dark' ? stored : light ? 'light' : 'dark';
     </script>
+    <!-- Old-browser check: plain ES5 so it runs where our bundles cannot. Flags features the site
+         relies on (CSS container queries, :has(), dvh units, ES2022 built-ins). Note text in en.ts oldBrowser; test in site.spec.ts. -->
+    <script is:inline>
+      (function () {
+        var c = window.CSS && CSS.supports;
+        var ok = !!c &&
+          CSS.supports('container-type', 'inline-size') &&
+          CSS.supports('selector(:has(a))') &&
+          CSS.supports('height', '1dvh') &&
+          typeof window.structuredClone === 'function' &&
+          typeof Object.hasOwn === 'function' &&
+          typeof [].at === 'function';
+        if (!ok) document.documentElement.setAttribute('data-old', '');
+      })();
+    </script>
+    <style is:inline>
+      .old-browser { display: none; }
+      html[data-old] .old-browser { display: block; margin: 0; padding: 12px 16px; background: #fff4d6; color: #1c1c1c; border-bottom: 2px solid #b26b00; font: 16px/1.5 system-ui, sans-serif; }
+      html[data-old] .old-browser strong { display: block; }
+      [data-needs-modern] { display: contents; }
+      html[data-old] [data-needs-modern] { display: none !important; }
+    </style>
     <slot name="head" />
   </head>
   <body class="flex min-h-dvh flex-col bg-bg font-sans text-ink antialiased">
+    <p class="old-browser" role="note" data-testid="old-browser">
+      <strong>{t.oldBrowser.title}</strong>
+      {t.oldBrowser.body}{Astro.slots.has('old-browser') && ' '}<slot name="old-browser" />
+    </p>
     <a
       href="#main"
       class="sr-only rounded-full bg-ink px-4 py-2 text-bg no-underline focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50"
