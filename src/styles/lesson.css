@@ -178,3 +178,11 @@ a.cite:hover, a.cite[aria-expanded="true"] { background: var(--tint); }
 @media (prefers-reduced-motion: reduce) {
   a.cite, .lesson-sources li, .lesson-sources > summary svg { transition: none; }
 }
+
+/* FovWedges: angle-of-view wedges from one camera point. */
+.fw-wedge path { fill: var(--hatch); fill-opacity: 0.5; stroke: var(--strong); stroke-width: 1.5; stroke-dasharray: 6 4; }
+.fw-wedge text { font-family: var(--font-mono); font-size: 18px; font-weight: 500; fill: var(--muted); }
+.fw-strong path { fill: none; stroke: var(--accent); stroke-width: 2.5; stroke-dasharray: none; }
+.fw-strong text { fill: var(--accent); font-weight: 600; }
+.fw-camera { fill: var(--ink); }
+.lesson-card-art .fw-wedge text { display: none; }

@@ -6,10 +6,11 @@ import { TOPICS, type Topic } from '../../content/topics.ts';
 import { getLessons, lessonUrl, longDate, readingMinutes } from '../../content/lessons.ts';
 import { firstDrawing } from '../../content/drawings.ts';
 import RatioFrames from '../../components/lesson/RatioFrames.astro';
+import FovWedges from '../../components/lesson/FovWedges.astro';
 import '../../styles/lesson.css';
 
 // Card art: the drawing from each lesson's first figure (src/content/drawings.ts).
-const ART = { RatioFrames };
+const ART = { RatioFrames, FovWedges };
 
 const lessons = await Promise.all(
   (await getLessons()).map(async (l) => ({
@@ -42,7 +43,7 @@ const topics = (Object.keys(TOPICS) as Topic[])
               <li class="card lesson-card">
                 {Art && (
                   <div class="lesson-card-art">
-                    <Art {...(art!.props as { ratios: number[] })} decorative />
+                    <Art {...(art!.props as any)} decorative />
                   </div>
                 )}
                 <h3>

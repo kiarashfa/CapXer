@@ -1,0 +1,115 @@
+---
+title: Focal length and angle of view
+summary: What the millimetre number on a lens means, how it and the size of the sensor together set how much of the scene you see, and how equivalent focal lengths let you compare cameras.
+topic: framing
+tools: [lens, camera]
+published: 2026-11-20
+updated: 2026-11-20
+order: 2
+---
+
+## What focal length is
+
+Kodak's glossary defines focal length as the distance from the optical centre of a lens to the point where parallel rays of light passing through it converge, the focal point [@kodak-essential-reference-guide, p. 198]. Edmund Optics gives the same idea for a simple, thin convex lens: the distance from the back of the lens to the plane where an object infinitely far away forms its image [@edmund-optics-focal-length-fov, sec. Fixed Focal Length Lenses]. It adds that in general the distance is measured from the rear principal plane, which is rarely at the mechanical back of a lens [@edmund-optics-focal-length-fov, sec. Fixed Focal Length Lenses].
+
+Put simply, focal length describes how strongly a lens bends light. A short focal length bends light at sharp angles, and a long one bends it gradually [@edmund-optics-focal-length-fov, sec. Focal Length].
+
+It is measured in millimetres and printed on the lens, for example 24 mm, 50 mm, 24–70 mm or 200 mm [@nikon-understanding-focal-length, sec. What is focal length? (para. 1)]. Kodak says lenses are identified by their focal length and their maximum aperture, as in a 50 mm/f1.4 lens [@kodak-essential-reference-guide, p. 67].
+
+Do not expect the number to match the length of the lens barrel. In a simple one-piece lens the focal length would be the distance from lens to sensor when the image is sharp, but Nikon says that in modern multi-element lenses the focal length and the physical length are not related [@nikon-understanding-focal-length, sec. What is focal length? (paras. 2 and 3)]. Its example is the NIKKOR Z 600mm f/6.3 VR S, which is less than 300 mm long, half its focal length [@nikon-understanding-focal-length, sec. What is focal length? (para. 3)].
+
+## Angle of view
+
+The angle of view is how much of the scene a lens takes in. Edmund Optics gives it as AFOV = 2 x arctan(H / 2f), where f is the focal length and H is the sensor size [@edmund-optics-focal-length-fov, sec. Fixed Focal Length Lenses]. Stanford's imaging course writes the same formula as FOV = 2 arctan(h / 2f) [@stanford-cs178-image-formation-2014, p. 30]. Two things set the angle, then: the focal length and the size of the image area.
+
+For a given sensor size, the shorter the focal length, the wider the angle [@edmund-optics-focal-length-fov, sec. Fixed Focal Length Lenses]. Stanford's slide on changing the focal length puts it this way: if the sensor size is constant, the field of view becomes smaller [@stanford-cs178-image-formation-2014, p. 30].
+
+<Figure title="Three focal lengths on a full-frame width">
+
+<FovWedges width={36} focals={[24, 50, 100]} />
+
+The wedges use a 36 mm image width, the width of the FX image area of the Nikon Z6III [@nikon-z6iii-manual-image-area, sec. Choose Image Area], and the angle formula 2 x arctan(H / 2f) [@edmund-optics-focal-length-fov, sec. Fixed Focal Length Lenses].
+
+</Figure>
+
+An angle needs a direction. Edmund Optics says the angle of view is typically given for the horizontal dimension, the width, of the sensor [@edmund-optics-focal-length-fov, sec. Fixed Focal Length Lenses]. Field of view can also be given as a physical area in millimetres or as an angle in degrees [@edmund-optics-focal-length-fov, sec. Field of View]. The same equations give the vertical angle if you use the sensor's height instead of its width [@edmund-optics-focal-length-fov, sec. Using WD and FOV to Determine Focal Length].
+
+Makers therefore publish several numbers for one lens. When we checked in November 2026, Canon's page for the RF 50mm f/1.8 STM listed 46° diagonal, 40° horizontal and 27°30′ vertical [@canon-rf-50mm-f1-8-stm-specs, sec. Specifications]. When you compare angles, check which one is being quoted.
+
+<Try>
+
+Stay on one camera and change only the lens. Compare how much of the scene fits at 24 mm and at 100 mm.
+
+<TryLink mode="stills" cam="nikon/z6iii" fmt="fx" ar="3:2" mm={24}>Open 24 mm</TryLink> <TryLink mode="stills" cam="nikon/z6iii" fmt="fx" ar="3:2" mm={100}>Open 100 mm</TryLink>
+
+</Try>
+
+## Wide, normal and long
+
+Zeiss says a "standard lens" is usually understood to be one whose focal length is about as long as the diagonal of the image field. The 24 x 36 mm format has a diagonal of 43.3 mm and APS-C has 28.4 mm [@zeiss-nasse-lens-names-2011, p. 2]. By that definition the standard focal length depends on the format: about 43.3 mm for 24 x 36 mm [@zeiss-nasse-lens-names-2011, p. 2].
+
+Wide and long are relative to the format too. Zeiss describes a wide-angle lens as one whose focal length is significantly shorter than the diagonal of the picture format. A focal length about the same as the long side makes a moderate wide-angle, and super wide-angle lenses lie between the short side and half the diagonal [@zeiss-nasse-lens-names-2011, p. 2]. Zeiss also says the line between "super" and "extreme" is fluid and partly a matter of taste [@zeiss-nasse-lens-names-2011, p. 2]. Kodak puts the same idea in terms of the picture: normal lenses give a perspective that approximates human vision, shorter ones give a wider angle of view, and longer ones give a narrower view that magnifies the subject [@kodak-essential-reference-guide, p. 67].
+
+In everyday use, Nikon lists typical groupings. They are Nikon's own, not a standard, and they overlap at their edges [@nikon-understanding-focal-length, sec. Common focal lengths and what they're good for].
+
+| Nikon's grouping | Typical range |
+| --- | --- |
+| Ultra-wide | 8–24 mm [@nikon-understanding-focal-length, sec. Common focal lengths and what they're good for] |
+| Wide angle | 24–35 mm [@nikon-understanding-focal-length, sec. Common focal lengths and what they're good for] |
+| Standard | 35–70 mm [@nikon-understanding-focal-length, sec. Common focal lengths and what they're good for] |
+| Telephoto | 70–200 mm [@nikon-understanding-focal-length, sec. Common focal lengths and what they're good for] |
+| Super-telephoto | 300 mm and longer [@nikon-understanding-focal-length, sec. Common focal lengths and what they're good for] |
+
+Nikon says its standard range is closest to how the human eye sees, and that a fast 50 mm lens is often called the "nifty fifty" [@nikon-understanding-focal-length, sec. Common focal lengths and what they're good for]. For context, the first Leica, on sale from 1925, set the 24 x 36 mm small format [@swiss-camera-museum-leica, para. 1] and was equipped with a 50 mm lens [@swiss-camera-museum-leica, fig. Illustration caption].
+
+A prime lens has one fixed focal length, such as 24, 50 or 85 mm, while a zoom has a variable one, such as 24–70 mm or 70–200 mm [@nikon-understanding-focal-length, sec. What is focal length? (para. 4)]. Edmund Optics notes that zoom and varifocal lenses give a variable angle of view but often have size and cost drawbacks compared with fixed lenses [@edmund-optics-focal-length-fov, sec. Fixed Focal Length Lenses].
+
+## Perspective and distance
+
+Longer lenses bring distant things closer. Nikon says a longer focal length makes distant objects appear closer, and that as the angle of view goes down, magnification goes up [@nikon-understanding-focal-length, sec. Why focal length matters (item 2, Subject size)].
+
+What happens to the look of a scene is described in two ways. Stanford's imaging course explains that changing the focal length lets you move back from a subject while keeping its size in the image, but that moving back changes perspective relationships [@stanford-cs178-image-formation-2014, p. 36]. The same lecture names the opposite move, going forward while shortening the focal length so objects at one depth keep the same size. In cinematography it is called the dolly-zoom, or "Vertigo effect", after Alfred Hitchcock's film [@stanford-cs178-image-formation-2014, p. 37].
+
+Kodak, in its own description, says wide-angle lenses make background objects appear further away, while telephoto lenses compress distance and make the background appear closer [@kodak-essential-reference-guide, p. 67]. So the two sources frame it differently: Kodak ties the look to the type of lens [@kodak-essential-reference-guide, p. 67], while Stanford ties it to where the camera stands [@stanford-cs178-image-formation-2014, p. 36]. Kodak also says that moving the camera towards a subject in a dolly move gives a look very different from zooming from a stationary position [@kodak-essential-reference-guide, p. 67].
+
+<Try>
+
+Frame the same scene at 24 mm and then at 100 mm, and think about where you would have to stand to keep a subject the same size in both.
+
+<TryLink mode="stills" cam="nikon/z6iii" fmt="fx" ar="3:2" mm={24}>Open 24 mm</TryLink> <TryLink mode="stills" cam="nikon/z6iii" fmt="fx" ar="3:2" mm={100}>Open 100 mm</TryLink>
+
+</Try>
+
+## Sensor size and equivalence
+
+The angle formula has the image size in it, so the same lens sees differently on different sensors. Edmund Optics says the larger the sensor, the larger the obtainable angle of view for the same focal length. Its example is a 25 mm lens on a sensor 6.4 mm wide and a 35 mm lens on one 8.8 mm wide, which give about the same 14.5° [@edmund-optics-focal-length-fov, sec. Using WD and FOV to Determine Focal Length]. Stanford says the same: with a smaller sensor, the field of view is smaller too [@stanford-cs178-image-formation-2014, p. 33].
+
+Nikon explains what is happening. On its smaller DX sensor, the camera records only a tighter area in the middle of the image circle the lens projects [@nikon-crop-factor-dx-fx, sec. Crop factor vs focal length (para. 2)]. The lens itself does not change; Nikon says crop factor does not physically alter a lens's optical characteristics or design [@nikon-crop-factor-dx-fx, sec. Crop factor vs focal length (para. 1)].
+
+To compare cameras, people quote an equivalent focal length. Nikon defines crop factor as the ratio between a sensor's size and a 35 mm full-frame sensor of 36 x 24 mm, and says its DX sensors measure about 24 x 16 mm [@nikon-crop-factor-dx-fx, sec. What is crop factor?]. Nikon's exact method divides the full-frame diagonal by the camera's sensor diagonal, which for DX (28.4 mm) gives 1.52x [@nikon-crop-factor-dx-fx, sec. What is crop factor?]. Stanford defines it by the widths instead, and multiplies the focal length by it to compare angles of view, quoting about 1.5x for APS-C and about 2x for micro 4/3 [@stanford-cs178-image-formation-2014, p. 34]. The methods differ, but the results agree closely: 1.52x for DX by Nikon's diagonals [@nikon-crop-factor-dx-fx, sec. What is crop factor?] and about 1.5x for APS-C by Stanford's widths [@stanford-cs178-image-formation-2014, p. 34].
+
+Nikon's worked example: a 50 mm lens on a DX body gives an angle of view equivalent to a 75 mm lens (50 x 1.5) on a full-frame FX camera [@nikon-crop-factor-dx-fx, sec. Crop factor vs focal length (para. 2)]. The Z6III manual says the same for its DX area, where you multiply by 1.5 to get the approximate 35 mm-format focal length [@nikon-z6iii-manual-image-area, sec. Choose Image Area].
+
+OM System does it for Micro Four Thirds. The OM-1 Mark II has a 4:3 sensor area of 17.3 x 13.0 mm, and OM System quotes a 40 mm lens as "35mm equivalent: 80mm" and a 150 mm lens as "35mm equivalent: 300mm" [@om-system-om-1-mark-ii, sec. Technical specifications]. It also says that thanks to the 2x crop of Micro Four Thirds, its 150–400 mm lens delivers a 300–800 mm equivalent reach [@om-system-om-1-mark-ii, item 1].
+
+Cinema sensors differ too. ARRI lists the ALEXA 35 sensor as 27.99 x 19.22 mm [@arri-alexa-35, sec. Technical Data] and the ALEXA Mini LF sensor as 36.70 x 25.54 mm [@arri-alexa-mini-lf, sec. Technical Data]. With the same focal length, the formula gives the Mini LF's wider sensor a wider angle of view, as long as the lens covers that larger sensor, whose diagonal ARRI gives as 44.71 mm [@arri-alexa-mini-lf, sec. Technical Data].
+
+Phone makers describe their cameras in different ways. When we checked in November 2026, Apple's iPhone 17 page listed a Main camera at 26 mm and an Ultra Wide at 13 mm with a 120° field of view [@apple-iphone-17-specs, sec. Camera]. Google's Pixel 10 page listed field of view in degrees, 82°, 120° and 23° for its three rear cameras, together with sensor sizes, rather than a focal length in millimetres [@google-pixel-10-specs, sec. Rear camera].
+
+<Try>
+
+Keep the same 35 mm lens and swap between a full-frame camera and a Micro Four Thirds one. Compare the two views: the Micro Four Thirds one should look tighter.
+
+<TryLink mode="stills" cam="nikon/z6iii" fmt="fx" ar="3:2" mm={35}>Full frame, 35 mm</TryLink> <TryLink mode="stills" cam="om-system/om-1-mark-ii" fmt="4-3" ar="4:3" mm={35}>Micro Four Thirds, 35 mm</TryLink>
+
+</Try>
+
+## Choosing a focal length
+
+<OurView>
+
+In our view, start with the picture you want, then choose the lens and the camera position together. We like to decide first where to stand, since that sets how near and far things relate (see Perspective and distance above), and then pick the focal length that keeps as much of the scene as the shot needs.
+
+When you compare cameras, we find it easiest to convert everything to one reference. In the viewfinder you can enter either the actual focal length or the full-frame equivalent. Try a few focal lengths with your own camera there, and notice which ones you keep coming back to: those are probably the lenses worth owning.
+
+</OurView>

@@ -1,0 +1,60 @@
+---
+// Angle-of-view wedges for several focal lengths on one image width, on grid paper.
+// The angles are computed (src/optics angleOfView: 2 * atan(width / (2 * f))), never
+// drawn by hand, so the figure is exactly as true as the numbers given to it.
+import { angleOfView } from '../../optics/index.ts';
+
+interface Props {
+  /** Image width in mm across which the angle is measured (36 for full frame). */
+  width: number;
+  /** Focal lengths in mm. */
+  focals: number[];
+  /** Labels in the same order; default "24 mm, 74°". */
+  labels?: string[];
+  /** On a Lessons page card: decorative and hidden from screen readers. */
+  decorative?: boolean;
+}
+const { width, focals, labels, decorative = false } = Astro.props;
+if (!(width > 0) || !focals.length || focals.some((f) => !(f > 0))) throw new Error(`FovWedges: bad width ${width} or focals ${focals.join(', ')}`);
+
+const W = 640;
+const H = 400;
+const cx = W / 2;
+const cy = H - 28;
+const R = 330;
+const wedges = focals
+  .map((f, i) => ({ f, a: angleOfView(width, f), label: labels?.[i] }))
+  .sort((p, q) => q.a - p.a)
+  .map((w, i, all) => {
+    // Wider wedges are shorter so every label has room; the narrowest is drawn strong.
+    const r = R * (all.length === 1 ? 1 : 0.62 + (0.38 * i) / (all.length - 1));
+    const half = ((w.a / 2) * Math.PI) / 180;
+    const x1 = cx - r * Math.sin(half);
+    const x2 = cx + r * Math.sin(half);
+    const y = cy - r * Math.cos(half);
+    const large = w.a > 180 ? 1 : 0;
+    return {
+      ...w,
+      d: `M ${cx} ${cy} L ${x1.toFixed(1)} ${y.toFixed(1)} A ${r} ${r} 0 ${large} 1 ${x2.toFixed(1)} ${y.toFixed(1)} Z`,
+      lx: x2 + 8,
+      ly: y + 4,
+      text: w.label ?? `${w.f} mm, ${Math.round(w.a)}°`,
+      strong: i === all.length - 1,
+    };
+  });
+const aria = `Horizontal angle of view across a ${width} mm wide image: ${wedges.map((w) => `${w.f} mm, ${w.a.toFixed(1)} degrees`).join('; ')}.`;
+---
+
+<div class="grid-paper lesson-drawing">
+  <svg viewBox={`0 0 ${W} ${H}`} role={decorative ? undefined : 'img'} aria-label={decorative ? undefined : aria} aria-hidden={decorative ? 'true' : undefined}>
+    {
+      wedges.map((w) => (
+        <g class:list={['fw-wedge', w.strong && 'fw-strong']}>
+          <path d={w.d} />
+          <text x={Math.min(w.lx, W - 8)} y={w.ly} text-anchor={w.lx > W - 150 ? 'end' : 'start'}>{w.text}</text>
+        </g>
+      ))
+    }
+    <circle class="fw-camera" cx={cx} cy={cy} r="6" />
+  </svg>
+</div>

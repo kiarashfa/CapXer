@@ -284,5 +284,56 @@
     "issued": { "date-parts": [[1932, 8]] },
     "URL": "https://archive.org/details/journalofsociety19socirich",
     "accessed": { "date-parts": [[2026, 11, 20]] }
+  },
+  {
+    "id": "nikon-understanding-focal-length",
+    "type": "webpage",
+    "title": "What is focal length in photography? A guide for beginners",
+    "author": [{ "literal": "Nikon Team" }],
+    "container-title": "Nikon Learn & Explore",
+    "publisher": "Nikon",
+    "issued": { "date-parts": [[2026, 6, 9]] },
+    "URL": "https://www.nikon.co.uk/en_GB/learn-and-explore/magazine/tips-and-tricks/understanding-focal-length",
+    "accessed": { "date-parts": [[2026, 11, 20]] }
+  },
+  {
+    "id": "nikon-crop-factor-dx-fx",
+    "type": "webpage",
+    "title": "What is crop factor and how do I calculate it? DX and FX explained",
+    "author": [{ "family": "Antcliffe", "given": "Scott" }],
+    "container-title": "Nikon Learn & Explore",
+    "publisher": "Nikon",
+    "issued": { "date-parts": [[2024, 6, 21]] },
+    "URL": "https://nikon.nl/nl_NL/learn-and-explore/magazine/tips-and-tricks/what-is-crop-factor-and-how-do-i-calculate-it-dx-and-fx-explained",
+    "accessed": { "date-parts": [[2026, 11, 20]] }
+  },
+  {
+    "id": "canon-rf-50mm-f1-8-stm-specs",
+    "type": "webpage",
+    "title": "RF50mm f/1.8 STM: Specifications",
+    "publisher": "Canon Thailand",
+    "URL": "https://th.canon/en/consumer/rf50mm-f-1-8-stm/specification",
+    "accessed": { "date-parts": [[2026, 11, 20]] }
+  },
+  {
+    "id": "zeiss-nasse-lens-names-2011",
+    "type": "report",
+    "title": "From the series of articles on lens names: Distagon, Biogon and Hologon",
+    "author": [{ "family": "Nasse", "given": "H. H." }],
+    "container-title": "Camera Lens News",
+    "publisher": "Carl Zeiss AG, Camera Lens Division",
+    "issued": { "date-parts": [[2011, 12]] },
+    "URL": "https://lenspire.zeiss.com/photo/app/uploads/2018/02/en_CLB41_Nasse_LensNames_Distagon.pdf",
+    "accessed": { "date-parts": [[2026, 11, 20]] }
+  },
+  {
+    "id": "stanford-cs178-image-formation-2014",
+    "type": "report",
+    "title": "Image formation (lecture slides, CS 178 Digital Photography, Spring 2014)",
+    "author": [{ "family": "Levoy", "given": "Marc" }],
+    "publisher": "Stanford University, Computer Science Department",
+    "issued": { "date-parts": [[2014, 4, 1]] },
+    "URL": "http://graphics.stanford.edu/courses/cs178-14/lectures/image-formation-01apr14.pdf",
+    "accessed": { "date-parts": [[2026, 11, 20]] }
   }
 ]

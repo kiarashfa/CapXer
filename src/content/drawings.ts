@@ -3,7 +3,7 @@
 // (ratios={[1.375, 1.85]} labels={["1.37:1", "1.85:1"]}), so they can be read here
 // without running the MDX. tests/unit/lessons.test.ts checks every lesson has one.
 
-export const DRAWINGS = ['RatioFrames'] as const;
+export const DRAWINGS = ['RatioFrames', 'FovWedges'] as const;
 export type DrawingName = (typeof DRAWINGS)[number];
 
 export interface Drawing {
