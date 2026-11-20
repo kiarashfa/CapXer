@@ -45,7 +45,7 @@ export const en = {
   lessons: {
     title: 'Lessons',
     lead: 'Short lessons on the ideas behind the tools. Every fact links to the exact place in its source, so you can check it yourself.',
-    topics: { framing: 'Framing' },
+    topics: { framing: 'Framing', composition: 'Composition' },
     minutes: (n: number) => `${n} min read`,
     sources: (n: number) => (n === 1 ? '1 source' : `${n} sources`),
     updated: 'Updated',

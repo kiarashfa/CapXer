@@ -4,6 +4,7 @@ import LessonLayout from '../../layouts/LessonLayout.astro';
 import Figure from '../../components/lesson/Figure.astro';
 import RatioFrames from '../../components/lesson/RatioFrames.astro';
 import FovWedges from '../../components/lesson/FovWedges.astro';
+import GuideFrame from '../../components/lesson/GuideFrame.astro';
 import Try from '../../components/lesson/Try.astro';
 import TryLink from '../../components/lesson/TryLink.astro';
 import OurView from '../../components/lesson/OurView.astro';
@@ -21,7 +22,7 @@ export async function getStaticPaths() {
 const { lesson, next } = Astro.props as { lesson: Lesson; next?: Lesson };
 const { Content, headings, remarkPluginFrontmatter } = await render(lesson);
 // Components every lesson can use without importing them.
-const components = { Figure, RatioFrames, FovWedges, Try, TryLink, OurView };
+const components = { Figure, RatioFrames, FovWedges, GuideFrame, Try, TryLink, OurView };
 ---
 
 <LessonLayout lesson={lesson} minutes={readingMinutes(lesson.body ?? '')} headings={headings}

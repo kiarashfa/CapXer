@@ -6,7 +6,7 @@ import { defaultSetup, aspectPreset, SQUEEZES } from '../../setup/presets.ts';
 import { getSensor } from '../../data/index.ts';
 import { encodeLink } from '../../storage/link.ts';
 import { url } from '../../lib/url.ts';
-import type { Mode } from '../../setup/types.ts';
+import type { Guides, Mode } from '../../setup/types.ts';
 
 interface Props {
   mode?: Mode;
@@ -20,8 +20,10 @@ interface Props {
   mm?: number;
   /** Anamorphic squeeze. */
   sq?: number;
+  /** Guides to switch on, comma list of thirds, golden, centre, safe ("none" = all off). Others are switched off. */
+  guides?: string;
 }
-const { mode = 'cinema', cam, fmt, ar, mm, sq } = Astro.props;
+const { mode = 'cinema', cam, fmt, ar, mm, sq, guides } = Astro.props;
 const where = `TryLink in ${Astro.url.pathname}`;
 const setup = defaultSetup(mode);
 if (cam) {
@@ -42,6 +44,14 @@ if (mm !== undefined) {
 if (sq !== undefined) {
   if (!SQUEEZES.includes(sq)) throw new Error(`${where}: squeeze ${sq} is not one of ${SQUEEZES.join(', ')}`);
   setup.squeeze = sq;
+}
+if (guides !== undefined) {
+  const names = Object.keys(setup.guides) as (keyof Guides)[];
+  const wanted = guides === 'none' ? [] : guides.split(',').map((g) => g.trim());
+  const bad = wanted.filter((g) => !names.includes(g as keyof Guides));
+  if (!wanted.length && guides !== 'none') throw new Error(`${where}: guides is empty (use "none")`);
+  if (bad.length) throw new Error(`${where}: unknown guides ${bad.join(', ')}; use ${names.join(', ')} or none`);
+  for (const g of names) setup.guides[g] = wanted.includes(g);
 }
 const href = `${url('viewfinder')}#${encodeLink(setup)}`;
 ---

@@ -7,10 +7,11 @@ import { getLessons, lessonUrl, longDate, readingMinutes } from '../../content/l
 import { firstDrawing } from '../../content/drawings.ts';
 import RatioFrames from '../../components/lesson/RatioFrames.astro';
 import FovWedges from '../../components/lesson/FovWedges.astro';
+import GuideFrame from '../../components/lesson/GuideFrame.astro';
 import '../../styles/lesson.css';
 
 // Card art: the drawing from each lesson's first figure (src/content/drawings.ts).
-const ART = { RatioFrames, FovWedges };
+const ART = { RatioFrames, FovWedges, GuideFrame };
 
 const lessons = await Promise.all(
   (await getLessons()).map(async (l) => ({

@@ -335,5 +335,144 @@
     "issued": { "date-parts": [[2014, 4, 1]] },
     "URL": "http://graphics.stanford.edu/courses/cs178-14/lectures/image-formation-01apr14.pdf",
     "accessed": { "date-parts": [[2026, 11, 20]] }
+  },
+  {
+    "id": "smith-remarks-rural-scenery-1797",
+    "type": "book",
+    "title": "Remarks on Rural Scenery: with twenty etchings of cottages, from nature; and some observations and precepts relative to the pictoresque",
+    "author": [{ "family": "Smith", "given": "John Thomas" }],
+    "publisher": "Nathaniel Smith",
+    "publisher-place": "London",
+    "issued": { "date-parts": [[1797]] },
+    "URL": "https://archive.org/details/remarksonruralsc00smit",
+    "accessed": { "date-parts": [[2026, 11, 20]] }
+  },
+  {
+    "id": "markowsky-1992-misconceptions",
+    "type": "article-journal",
+    "title": "Misconceptions about the Golden Ratio",
+    "author": [{ "family": "Markowsky", "given": "George" }],
+    "container-title": "The College Mathematics Journal",
+    "volume": "23",
+    "issue": "1",
+    "page": "2-19",
+    "publisher": "Mathematical Association of America",
+    "issued": { "date-parts": [[1992, 1]] },
+    "URL": "http://www.jstor.org/stable/2686193",
+    "accessed": { "date-parts": [[2026, 11, 20]] }
+  },
+  {
+    "id": "markowsky-2005-livio-review",
+    "type": "article-journal",
+    "title": "Book Review: The Golden Ratio (by Mario Livio)",
+    "author": [{ "family": "Markowsky", "given": "George" }],
+    "container-title": "Notices of the American Mathematical Society",
+    "volume": "52",
+    "issue": "3",
+    "page": "344-347",
+    "publisher": "American Mathematical Society",
+    "issued": { "date-parts": [[2005, 3]] },
+    "URL": "https://www.goldennumber.net/wp-content/uploads/Livio-Golden-Ratio-book-review-by-Markowsky.pdf",
+    "accessed": { "date-parts": [[2026, 11, 20]] }
+  },
+  {
+    "id": "euclid-elements-joyce",
+    "type": "webpage",
+    "title": "Euclid's Elements, Book VI, Definition 3",
+    "author": [{ "family": "Joyce", "given": "David E." }],
+    "container-title": "Euclid's Elements (web edition)",
+    "publisher": "Clark University",
+    "URL": "https://mathcs.clarku.edu/~djoyce/elements/bookVI/defVI3.html",
+    "accessed": { "date-parts": [[2026, 11, 20]] }
+  },
+  {
+    "id": "tate-composition",
+    "type": "webpage",
+    "title": "Composition",
+    "container-title": "Art Terms",
+    "publisher": "Tate",
+    "URL": "https://www.tate.org.uk/art/art-terms/c/composition",
+    "accessed": { "date-parts": [[2026, 11, 20]] }
+  },
+  {
+    "id": "nikon-5-easy-composition-guidelines",
+    "type": "webpage",
+    "title": "5 Easy Composition Guidelines",
+    "author": [{ "family": "Berkenfeld", "given": "Diane" }],
+    "container-title": "Nikon Learn & Explore",
+    "publisher": "Nikon",
+    "URL": "https://www.nikonusa.com/learn-and-explore/c/tips-and-techniques/5-easy-composition-guidelines",
+    "accessed": { "date-parts": [[2026, 11, 20]] }
+  },
+  {
+    "id": "nikon-center-composition-portrait",
+    "type": "webpage",
+    "title": "When Center Composition can Elevate a Portrait",
+    "author": [{ "family": "Lackey", "given": "Tamara" }],
+    "container-title": "Nikon Learn & Explore",
+    "publisher": "Nikon",
+    "URL": "https://www.nikonusa.com/en/learn-and-explore/a/tips-and-techniques/when-center-composition-can-elevate-a-portrait.html",
+    "accessed": { "date-parts": [[2026, 11, 20]] }
+  },
+  {
+    "id": "nikon-essential-composition-techniques",
+    "type": "webpage",
+    "title": "Essential composition techniques",
+    "author": [{ "family": "Bogna", "given": "John" }],
+    "container-title": "Nikon Learn & Explore",
+    "publisher": "Nikon",
+    "issued": { "date-parts": [[2025, 5, 29]] },
+    "URL": "https://www.nikon.co.uk/en_GB/learn-and-explore/magazine/tips-and-tricks/essential-composition-techniques",
+    "accessed": { "date-parts": [[2026, 11, 20]] }
+  },
+  {
+    "id": "nikon-7-composition-grids",
+    "type": "webpage",
+    "title": "7 composition grids to try for better food photography",
+    "author": [{ "family": "Verdinelli", "given": "Giulia" }],
+    "container-title": "Nikon Learn & Explore",
+    "publisher": "Nikon",
+    "issued": { "date-parts": [[2024, 12, 6]] },
+    "URL": "https://nikon.co.il/en_IL/learn-and-explore/magazine/tips-and-tricks/7-composition-grids-to-try-for-better-food-photography",
+    "accessed": { "date-parts": [[2026, 11, 20]] }
+  },
+  {
+    "id": "reid-sanders-2021-documentary-making-ch10",
+    "type": "chapter",
+    "title": "10. Composing a Shot: Tips and Techniques",
+    "author": [
+      { "family": "Reid", "given": "Darren R." },
+      { "family": "Sanders", "given": "Brett" }
+    ],
+    "container-title": "Documentary Making for Digital Humanists",
+    "page": "103-110",
+    "publisher": "Open Book Publishers",
+    "publisher-place": "Cambridge",
+    "issued": { "date-parts": [[2021]] },
+    "DOI": "10.11647/OBP.0255.10",
+    "URL": "https://doi.org/10.11647/OBP.0255.10",
+    "accessed": { "date-parts": [[2026, 11, 20]] }
+  },
+  {
+    "id": "libretexts-ccsf-video-composition",
+    "type": "webpage",
+    "title": "8.5: Video Composition",
+    "container-title": "Video Production Handbook I",
+    "publisher": "LibreTexts, City College of San Francisco",
+    "URL": "https://human.libretexts.org/Courses/City_College_of_San_Francisco/Video_Production_Handbook_I/08%3A_Video_Aesthetics/8.05%3A_Video_Composition",
+    "accessed": { "date-parts": [[2026, 11, 20]] }
+  },
+  {
+    "id": "jones-technique-television-cameraman-1972",
+    "type": "book",
+    "title": "The Technique of the Television Cameraman",
+    "author": [{ "family": "Jones", "given": "Peter" }],
+    "editor": [{ "family": "Thomas", "given": "Edward" }],
+    "edition": "3rd",
+    "publisher": "Focal Press",
+    "publisher-place": "London and New York",
+    "issued": { "date-parts": [[1972]] },
+    "URL": "https://worldradiohistory.com/Bookshelf/Education/The-Technique-of-the-Television-Cameraman-Jones-1965.pdf",
+    "accessed": { "date-parts": [[2026, 11, 20]] }
   }
 ]

@@ -186,3 +186,9 @@ a.cite:hover, a.cite[aria-expanded="true"] { background: var(--tint); }
 .fw-strong text { fill: var(--accent); font-weight: 600; }
 .fw-camera { fill: var(--ink); }
 .lesson-card-art .fw-wedge text { display: none; }
+.gf-frame { fill: none; stroke: var(--strong); stroke-width: 2.5; }
+.gf-thirds { stroke: var(--strong); stroke-width: 1.5; stroke-dasharray: 6 4; }
+.gf-golden { stroke: var(--accent); stroke-width: 2; }
+.gf-centre { fill: none; stroke: var(--ink); stroke-width: 2; }
+.gf-label, .gf-key text { font-family: var(--font-mono); font-size: 18px; font-weight: 500; fill: var(--muted); }
+.lesson-card-art .gf-label, .lesson-card-art .gf-key { display: none; }
