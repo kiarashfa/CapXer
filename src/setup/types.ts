@@ -5,7 +5,7 @@
 export type Mode = 'cinema' | 'stills';
 export type FocalEntry = 'actual' | 'equivalent';
 export type FrameColor = 'accent' | 'amber' | 'white' | 'red';
-export type PanelId = 'camera' | 'frame' | 'lens' | 'guides' | 'live' | 'exposure' | 'info';
+export type PanelId = 'camera' | 'frame' | 'lens' | 'guides' | 'live' | 'exposure' | 'info' | 'saved';
 
 export interface Guides {
   thirds: boolean;
@@ -17,7 +17,7 @@ export interface Guides {
 export interface Setup {
   v: 1;
   mode: Mode;
-  /** "<maker>/<model>" from the database, or "custom/<n>" for a custom sensor. */
+  /** "<maker>/<model>" from the database, or "custom/<random id>" for a custom sensor. */
   sensorId: string;
   formatId: string;
   /** Aspect preset id (see presets.ts); "full" means the format's own shape. */
@@ -35,7 +35,7 @@ export interface Setup {
   distance: number;
 }
 
-/** A sensor the user typed in. Lives for the session only in P3 (saving comes in P6). */
+/** A sensor the user typed in; saved with the rest of the save file (src/storage). */
 export interface CustomSensor {
   id: string;
   name: string;

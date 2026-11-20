@@ -39,6 +39,9 @@ const current = (href: string) => (path === href ? 'page' : undefined);
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
     <link rel="icon" href={url('favicon.svg')} type="image/svg+xml" />
+    <link rel="manifest" href={url('manifest.webmanifest')} />
+    <link rel="apple-touch-icon" href={url('icons/apple-touch-icon.png')} />
+    <meta name="apple-mobile-web-app-title" content={SITE_NAME} />
     <meta name="theme-color" content="#10151d" media="(prefers-color-scheme: dark)" />
     <meta name="theme-color" content="#f4f6f8" media="(prefers-color-scheme: light)" />
     <meta property="og:type" content="website" />
@@ -54,6 +57,7 @@ const current = (href: string) => (path === href ? 'page' : undefined);
       document.documentElement.dataset.theme =
         stored === 'light' || stored === 'dark' ? stored : light ? 'light' : 'dark';
     </script>
+    <slot name="head" />
   </head>
   <body class="flex min-h-dvh flex-col bg-bg font-sans text-ink antialiased">
     <a
@@ -79,6 +83,10 @@ const current = (href: string) => (path === href ? 'page' : undefined);
             </ul>
           </nav>
           <div class="bar-toggles">
+            <button type="button" class="btn btn-secondary install-btn" data-install hidden>
+              <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="3" width="12" height="18" rx="2.5"></rect><path d="M12 8v6M9.5 11.5 12 14l2.5-2.5"></path></svg>
+              {t.pwa.install}
+            </button>
             <ThemeToggle client:load />
             <button type="button" class="menu-btn" data-menu-toggle aria-expanded="false" aria-controls="site-menu" aria-label={t.nav.menu}>
               <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"></path></svg>
@@ -118,6 +126,10 @@ const current = (href: string) => (path === href ? 'page' : undefined);
       </div>
       <nav id="site-menu" class="card menu-sheet" aria-label={t.nav.menuLabel} hidden>
         {pages.map((p) => <a href={p.href} aria-current={current(p.href)}>{p.label}</a>)}
+        <button type="button" class="menu-install" data-install hidden>
+          <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="3" width="12" height="18" rx="2.5"></rect><path d="M12 8v6M9.5 11.5 12 14l2.5-2.5"></path></svg>
+          {t.pwa.install}
+        </button>
       </nav>
     </header>
 
@@ -140,6 +152,19 @@ const current = (href: string) => (path === href ? 'page' : undefined);
 
     <ConsentBanner client:load />
 
+    <!-- Notes at the bottom of the screen: the update note here, page notes (src/storage) join it. -->
+    <div id="toasts" class="toasts" aria-live="polite">
+      <div class="toast" data-update hidden>
+        <div class="toast-msg"><b>{t.pwa.update[0]}</b><span>{t.pwa.update[1]}</span></div>
+        <div class="toast-acts">
+          <button type="button" class="main" data-update-reload>{t.pwa.reload}</button>
+          <button type="button" class="x" data-update-later aria-label={t.pwa.later} title={t.pwa.later}>
+            <svg aria-hidden="true" viewBox="0 0 24 24" class="size-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"></path></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
     <script define:vars={{ eventName: CONSENT_OPEN_EVENT }} is:inline>
       document.querySelectorAll('[data-open-consent]').forEach((el) =>
         el.addEventListener('click', () => window.dispatchEvent(new Event(eventName))),
@@ -147,7 +172,9 @@ const current = (href: string) => (path === href ? 'page' : undefined);
     </script>
     <script>
       import { initSiteBar } from '../lib/site-bar.ts';
+      import { initPwa } from '../lib/pwa.ts';
       initSiteBar();
+      initPwa();
     </script>
   </body>
 </html>

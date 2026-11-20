@@ -25,6 +25,7 @@ const dataSources = [...citedIds]
 const software = [
   { name: 'Astro', use: 'Site framework (build time)', licence: 'MIT', href: 'https://astro.build' },
   { name: 'Svelte', use: 'Interactive components', licence: 'MIT', href: 'https://svelte.dev' },
+  { name: 'Workbox', use: 'Offline support', licence: 'MIT', href: 'https://github.com/GoogleChrome/workbox' },
   { name: 'Tailwind CSS', use: 'Styling (build time)', licence: 'MIT', href: 'https://tailwindcss.com' },
   { name: 'Figtree', use: 'Typeface', licence: 'SIL Open Font', href: 'https://github.com/erikdkennedy/figtree' },
   { name: 'JetBrains Mono', use: 'Typeface for numbers', licence: 'SIL Open Font', href: 'https://github.com/JetBrains/JetBrainsMono' },
@@ -36,6 +37,7 @@ const software = [
     <span class="dock-label">{t.dock.onThisPage}</span>
     <a class="dock-tool" href="#licence">Licence</a>
     <a class="dock-tool" href="#credits">Credits</a>
+    <a class="dock-tool" href="#install">Install</a>
     <a class="dock-tool" href="#exposure-aids">Exposure aids</a>
     <a class="dock-tool" href="#data-sources">Data sources</a>
   </div>
@@ -70,7 +72,19 @@ const software = [
       </ul>
     </DocSection>
 
-    <DocSection id="exposure-aids" title="Exposure aids" wide>
+    <DocSection id="install" title="Install the app">
+      <p>
+        CapXer works as an app on your phone or computer. Installed, it opens straight into the viewfinder and works
+        without a connection, live camera included.
+      </p>
+      <ul class="list-disc space-y-1 pl-5">
+        <li>Android, and Chrome or Edge on a computer: choose {t.pwa.install} in CapXer's menu or top bar, or your browser's own install option.</li>
+        <li>iPhone and iPad: open CapXer in Safari, tap Share, then Add to Home Screen.</li>
+      </ul>
+      <p class="text-muted">New versions download by themselves. When one is ready, a note offers to reload.</p>
+    </DocSection>
+
+    <DocSection id="exposure-aids" title="Exposure aids">
       <p>
         The histogram, zebras, false colour and focus peaking on the live camera are measured on the video your browser
         receives. That picture has already been through your phone's or webcam's own automatic exposure and processing.

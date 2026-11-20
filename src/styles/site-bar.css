@@ -37,6 +37,11 @@
 .menu-sheet { position: absolute; left: 8px; right: 8px; top: calc(var(--bar-h) + 8px); padding: 8px; }
 .menu-sheet a { display: flex; align-items: center; min-height: 48px; padding: 0 14px; border-radius: 12px; color: var(--ink); text-decoration: none; font-weight: 600; }
 .menu-sheet a[aria-current="page"] { background: var(--tint); color: var(--accent); }
+/* Install item: only shown where the browser offers installing (src/lib/pwa.ts). */
+.menu-install { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 48px; margin-top: 4px; padding: 0 14px; border: 0; border-top: 1px solid var(--line); border-radius: 0 0 12px 12px; background: none; color: var(--ink); font: inherit; font-weight: 600; cursor: pointer; }
+.menu-install[hidden], .install-btn[hidden] { display: none; }
+.menu-install svg { width: 20px; height: 20px; color: var(--accent); }
+.install-btn { display: none; }
 
 .bar-hang, .dock-tools { display: none; }
 
@@ -44,6 +49,8 @@
   .site-bar { --bar-h: 64px; }
   .bar-inner { padding: 0 32px; }
   .menu-btn, .menu-sheet { display: none !important; }
+  .install-btn:not([hidden]) { display: inline-flex; min-height: 2.5rem; padding: 0 14px; border-radius: 9999px; font-size: 0.875rem; gap: 6px; }
+  .install-btn svg { width: 18px; height: 18px; }
 
   .bar-pages { display: flex; align-items: center; transition: opacity 200ms ease, transform var(--dur) var(--ease); }
   .bar-pages .divider { width: 1px; height: 24px; margin: 0 10px; background: var(--line); }
@@ -56,7 +63,7 @@
   /* The step: curve | body | curve, hanging under the centre of the bar. */
   .site-bar[data-dock] { --hd: 20px; --hw: 140px; --cw: 96px; }
   .site-bar[data-dock="open"] { --hd: 44px; --hw: max(160px, calc(var(--dock-w, 640px) - 80px)); --cw: 110px; }
-  .bar-hang { position: absolute; z-index: 1; left: 50%; top: var(--bar-h); transform: translateX(-50%); display: flex; align-items: flex-start; height: var(--hd); transition: height var(--dur) var(--ease); }
+  .bar-hang { position: absolute; z-index: 1; left: calc(50% + var(--dock-shift, 0px)); top: var(--bar-h); transform: translateX(-50%); display: flex; align-items: flex-start; height: var(--hd); transition: height var(--dur) var(--ease); }
   .bar-hang .curve { display: block; flex: none; width: var(--cw); height: 100%; margin: 0 -0.5px; fill: var(--surface); transition: width var(--dur) var(--ease); }
   .bar-hang .hang-body { display: grid; place-items: start center; width: var(--hw); height: 100%; background: var(--surface); transition: width var(--dur) var(--ease); }
   .dock-handle { display: inline-grid; place-items: center; width: 64px; height: 20px; border: 0; border-radius: 0 0 12px 12px; background: transparent; color: var(--muted); cursor: pointer; transition: opacity 160ms ease; }
@@ -67,7 +74,7 @@
   /* The page's tools, across the bar line. */
   /* Faded as one group: Astro wraps islands in display:contents elements,
      which ignore opacity, so per-child fades would not apply to island tools. */
-  .dock-tools { position: absolute; z-index: 2; left: 50%; top: 34px; transform: translate(-50%, -6px); display: flex; align-items: center; gap: 2px; white-space: nowrap; color: var(--ink);
+  .dock-tools { position: absolute; z-index: 2; left: calc(50% + var(--dock-shift, 0px)); top: 34px; transform: translate(-50%, -6px); display: flex; align-items: center; gap: 2px; white-space: nowrap; color: var(--ink);
     opacity: 0; visibility: hidden; pointer-events: none; transition: opacity 200ms ease, transform var(--dur) var(--ease), visibility 0s linear var(--dur); }
   .site-bar[data-dock="open"] .dock-tools { opacity: 1; visibility: visible; pointer-events: auto; transform: translate(-50%, 0); transition-delay: 60ms, 0s, 0s; }
   .site-bar[data-dock="open"] .bar-pages { visibility: hidden; transition: opacity 200ms ease, transform var(--dur) var(--ease), visibility 0s linear 200ms; }
@@ -76,9 +83,12 @@
 /* Shared tool styles: used by the static dock links and the Svelte dock islands. */
 .dock-row { display: flex; align-items: center; gap: 2px; }
 .dock-label { padding: 0 8px 0 4px; font-family: "JetBrains Mono Variable", ui-monospace, monospace; font-size: 0.6875rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
-.dock-tool { display: inline-flex; align-items: center; gap: 7px; min-height: 40px; padding: 0 12px; border: 0; border-radius: 9999px; background: transparent; color: var(--ink); font-size: 0.875rem; font-weight: 600; text-decoration: none; cursor: pointer; }
+.dock-tool { display: inline-flex; align-items: center; gap: 7px; min-height: 40px; padding: 0 10px; border: 0; border-radius: 9999px; background: transparent; color: var(--ink); font-size: 0.875rem; font-weight: 600; text-decoration: none; cursor: pointer; }
 .dock-tool svg { width: 20px; height: 20px; }
 .dock-tool:hover { background: var(--tint); }
+/* Not enough room for every name (src/lib/site-bar.ts): icon-only tools, names kept for assistive tech. */
+.site-bar[data-compact] .dock-tool .dock-text { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.site-bar[data-compact] .dock-tool:has(.dock-text) { min-width: 40px; padding: 0 10px; justify-content: center; }
 .dock-tool[aria-expanded="true"] { background: var(--tint); color: var(--accent); }
 .dock-sep { width: 1px; height: 26px; margin: 0 6px; background: var(--line); }
 .dock-icon { display: inline-grid; place-items: center; width: 36px; height: 36px; border: 0; border-radius: 9999px; background: transparent; color: var(--muted); cursor: pointer; }

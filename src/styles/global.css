@@ -175,6 +175,101 @@
   .hatch {
     background: repeating-linear-gradient(135deg, var(--hatch) 0 1px, transparent 1px 6px);
   }
+
+  /* Notes at the bottom of the screen ("Link copied", "Update ready"): inverse ink, never modal.
+     The stack rises above the consent banner while it shows (--toasts-bottom). */
+  .toasts {
+    position: fixed;
+    z-index: 70;
+    left: 12px;
+    right: 12px;
+    bottom: max(var(--toasts-bottom, 12px), env(safe-area-inset-bottom));
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    pointer-events: none;
+  }
+  .toast {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 10px;
+    padding: 10px 10px 10px 16px;
+    border-radius: 18px;
+    background: var(--ink);
+    color: var(--bg);
+    box-shadow: 0 12px 34px rgb(0 0 0 / 0.35);
+    font-size: 0.875rem;
+    pointer-events: auto;
+  }
+  .toast[hidden] {
+    display: none;
+  }
+  .toast-msg {
+    flex: 1 1 12rem;
+    min-width: 0;
+  }
+  .toast-msg b {
+    display: block;
+    font-weight: 700;
+  }
+  .toast-msg span {
+    display: block;
+    overflow-wrap: anywhere;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    opacity: 0.85;
+  }
+  .toast-link {
+    width: 100%;
+    margin-top: 6px;
+    padding: 6px 10px;
+    border: 1px solid color-mix(in srgb, var(--bg) 45%, transparent);
+    border-radius: 10px;
+    background: transparent;
+    color: var(--bg);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+  }
+  .toast-acts {
+    display: flex;
+    gap: 6px;
+    margin-left: auto;
+  }
+  .toast button {
+    min-height: 40px;
+    padding: 0 14px;
+    border: 1px solid color-mix(in srgb, var(--bg) 45%, transparent);
+    border-radius: 9999px;
+    background: transparent;
+    color: var(--bg);
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .toast button.main {
+    border-color: var(--bg);
+    background: var(--bg);
+    color: var(--ink);
+  }
+  .toast button.x {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    padding: 0;
+    border-color: transparent;
+  }
+  .toast :focus-visible {
+    outline-color: var(--bg);
+  }
+  @media (min-width: 64rem) {
+    .toasts {
+      left: 50%;
+      right: auto;
+      bottom: var(--toasts-bottom, 24px);
+      width: min(560px, calc(100vw - 48px));
+      transform: translateX(-50%);
+    }
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

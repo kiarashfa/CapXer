@@ -137,8 +137,15 @@
 .vf-mini b { font-weight: 500; color: var(--ink); }
 .vf-mini .ctx { width: 100%; text-align: right; font-size: 0.6875rem; }
 .vf-hud { display: none; }
-.vf-tabs { display: flex; gap: 2px; margin-top: 14px; padding: 3px; border-radius: 9999px; background: var(--tint); }
-.vf-tabs button { flex: 1; min-height: 40px; padding: 0 4px; border: 0; border-radius: 9999px; background: transparent; color: var(--ink); font-size: 0.875rem; font-weight: 500; cursor: pointer; }
+/* Eight tools do not fit a narrow phone: the row scrolls sideways (wider screens share it out evenly). */
+.vf-tabs { display: flex; gap: 2px; margin-top: 14px; padding: 3px; overflow-x: auto; scrollbar-width: none; overscroll-behavior-x: contain; border-radius: 9999px; background: var(--tint); }
+.vf-tabs::-webkit-scrollbar { display: none; }
+.vf-tabs.more-l { mask-image: linear-gradient(to right, transparent, #000 32px); }
+.vf-tabs.more-r { mask-image: linear-gradient(to left, transparent, #000 32px); }
+.vf-tabs.more-l.more-r { mask-image: linear-gradient(to right, transparent, #000 32px, #000 calc(100% - 32px), transparent); }
+/* With the camera on, the phone bar holds the shutter and Full view; Share stays in the Saved tab. */
+.vf-bar-share.live { display: none; }
+.vf-tabs button { flex: 1 0 auto; min-height: 40px; padding: 0 12px; border: 0; border-radius: 9999px; background: transparent; color: var(--ink); font-size: 0.875rem; font-weight: 500; cursor: pointer; }
 .vf-tabs button[aria-selected="true"] { background: var(--surface); color: var(--accent); font-weight: 700; box-shadow: 0 1px 3px rgb(0 0 0 / 0.15); }
 .vf-pane { padding: 8px 0; }
 .vf-pane[hidden] { display: none; }
@@ -150,6 +157,47 @@
   .vf-top { position: static; }
   .vf-stagebox { width: min(100%, calc((100dvh - 140px) * var(--aspect))); margin-inline: auto; }
 }
+
+/* ---------- saved setups (P6) ---------- */
+/* Hidden until the saved setup is restored, so the default never flashes (viewfinder.astro). */
+html[data-restoring] .vf-page { visibility: hidden; }
+.sv-sum { font-family: "JetBrains Mono Variable", ui-monospace, monospace; font-size: 0.75rem; color: var(--muted); }
+.sv-save, .sv-rename { display: flex; gap: 8px; }
+.sv-save .field-input, .sv-rename .field-input { flex: 1; min-width: 0; }
+.sv-rename { flex: 1; padding: 6px; }
+.btn svg { width: 18px; height: 18px; flex: none; }
+.sv-wide { width: 100%; }
+.sv-head { display: flex; align-items: baseline; justify-content: space-between; }
+.sv-head h3 { font-size: 0.9375rem; font-weight: 700; letter-spacing: 0; }
+.sv-list { display: flex; flex-direction: column; gap: 6px; margin: 0; padding: 0; list-style: none; }
+.sv-list li { position: relative; display: flex; flex-wrap: wrap; align-items: stretch; gap: 4px; border: 1px solid var(--control); border-radius: 14px; background: var(--surface); }
+.sv-list li.current { border-color: var(--accent); background: var(--tint); }
+.sv-item { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; padding: 9px 4px 9px 14px; border: 0; border-radius: 14px; background: transparent; color: var(--ink); text-align: left; cursor: pointer; }
+.sv-item .nm { display: flex; align-items: center; gap: 8px; min-width: 0; font-size: 0.9375rem; font-weight: 600; }
+.sv-name, .sv-item .sv-sum { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.sv-tag { flex: none; padding: 0 7px; border-radius: 9999px; background: var(--tint); color: var(--accent); font-family: "JetBrains Mono Variable", ui-monospace, monospace; font-size: 0.6875rem; font-weight: 500; }
+li.current .sv-tag { background: var(--surface); }
+.sv-more { align-self: center; flex: none; margin-right: 4px; border-color: transparent; background: transparent; }
+.sv-more:hover, .sv-more[aria-expanded="true"] { background: var(--tint); }
+.sv-more svg { width: 20px; height: 20px; }
+.sv-menu { flex-basis: 100%; display: flex; flex-wrap: wrap; gap: 6px; padding: 2px 10px 10px 14px; }
+.sv-menu .chip:hover { background: var(--tint); }
+.sv-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.sv-actions .btn { padding: 0 12px; }
+.sv-clear { align-self: flex-start; min-height: 44px; padding: 0; border: 0; background: none; color: var(--accent); text-decoration: underline; text-underline-offset: 3px; font-size: 0.875rem; cursor: pointer; }
+.sv-dlg-body { padding: 0 20px 4px; }
+.sv-dlg-text { margin: 0 0 8px; color: var(--muted); font-size: 0.9375rem; }
+.sv-file { margin: 0 0 10px; overflow-wrap: anywhere; font-family: "JetBrains Mono Variable", ui-monospace, monospace; font-size: 0.8125rem; color: var(--muted); }
+.sv-facts { margin: 0 0 12px; padding: 0; list-style: none; border-top: 1px solid var(--line); }
+.sv-facts li { display: flex; justify-content: space-between; gap: 12px; padding: 9px 0; border-bottom: 1px solid var(--line); font-size: 0.875rem; }
+.sv-facts li span { color: var(--muted); text-align: right; }
+.sv-how { display: flex; flex-direction: column; gap: 8px; margin: 4px 0 8px; padding: 0; border: 0; }
+.sv-opt { display: flex; gap: 10px; align-items: flex-start; padding: 10px 12px; border: 1px solid var(--control); border-radius: 14px; cursor: pointer; }
+.sv-opt:has(input:checked) { border-color: var(--accent); background: var(--tint); }
+.sv-opt input { margin-top: 3px; accent-color: var(--accent); }
+.sv-opt b { display: block; font-size: 0.9375rem; }
+.sv-opt small { display: block; color: var(--muted); font-size: 0.8125rem; }
+.sv-dlg-foot { display: flex; justify-content: flex-end; gap: 8px; padding: 8px 20px 18px; }
 
 /* ---------- desktop: side panel beside the viewfinder ---------- */
 /* One workbench: the viewfinder column on the left, a fixed-width panel on the right while a dock
@@ -174,6 +222,10 @@
   .vf-inst, .vf-tabs { display: none; }
   .vf-hud { grid-row: 2; grid-column: 1; align-self: center; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px 16px; margin: 0; font-size: 0.8125rem; color: var(--muted); }
   .vf-hud b { font-weight: 500; color: var(--ink); }
+  /* Narrower column while a panel is open: camera on one line, the numbers on the next. */
+  .vf-page.has-panel .vf-hud { justify-content: flex-start; gap: 2px 14px; }
+  .vf-page.has-panel .vf-hud > span:first-child { flex-basis: 100%; }
+  .vf-bar-share.live { display: inline-grid; }
   .vf-side { position: relative; display: block; min-width: 0; overflow: hidden; }
   .vf-pane { position: absolute; top: 0; bottom: 0; left: var(--panel-gap); width: var(--panel-w); padding: 0 20px 8px; overflow: auto;
     border: 1px solid var(--line); border-radius: 20px; background: var(--surface); }
@@ -194,6 +246,10 @@
   .vf-pane .vf-legend i { height: 10px; }
   .vf-pane .vf-row { padding: 7px 0; }
   .vf-pane .vf-row > .vf-num { flex: none; white-space: nowrap; }
+  .vf-pane .sv-item { padding-top: 7px; padding-bottom: 7px; }
+  .vf-pane .sv-item .nm { font-size: 0.875rem; }
+  .vf-pane .sv-more { width: 2.25rem; height: 2.25rem; }
+  .vf-pane .sv-clear { min-height: 32px; }
   .vf-hist { width: 168px; height: 56px; }
   .vf-level-tag.raised { bottom: 72px; }
 }

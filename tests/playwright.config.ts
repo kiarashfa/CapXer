@@ -16,12 +16,17 @@ export default defineConfig({
   testDir: 'e2e',
   outputDir: '.results',
   fullyParallel: true,
+  // The fake-webcam tests draw with software WebGL; many browsers at once starve each other
+  // and time out on a many-core machine (half of 20 cores = 10 browsers). CI keeps its default.
+  workers: CI ? undefined : 4,
   forbidOnly: CI,
   retries: CI ? 1 : 0,
   reporter: CI ? [['github'], ['html', { open: 'never', outputFolder: '.report' }]] : 'list',
   use: {
     baseURL: `http://localhost:${PORT}${BASE_PATH}`,
     trace: 'retain-on-failure',
+    // The site's service worker would sit between the page and request stubs; pwa.spec.ts allows it.
+    serviceWorkers: 'block',
   },
   projects: [
     { name: 'desktop-chromium', use: { ...devices['Desktop Chrome'], ...fakeCamera } },

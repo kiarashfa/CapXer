@@ -20,10 +20,13 @@
   import InfoPane from './InfoPane.svelte';
   import CameraPicker from './CameraPicker.svelte';
   import DevicePicker from './DevicePicker.svelte';
+  import SavedPane from './SavedPane.svelte';
+  import SavedNotice from './SavedNotice.svelte';
+  import { startPersistence, share } from '../../storage/persist.svelte.ts';
 
   // One set of panes, two presentations: tabs below the pinned viewfinder on
   // phone/tablet, a fixed-size side panel opened from the site bar's dock on desktop.
-  const panels: PanelId[] = ['camera', 'frame', 'lens', 'guides', 'live', 'exposure', 'info'];
+  const panels: PanelId[] = ['camera', 'frame', 'lens', 'guides', 'live', 'exposure', 'info', 'saved'];
   let desktop = $state(false);
   let picker = $state<ReturnType<typeof CameraPicker>>();
   let devicePicker = $state<ReturnType<typeof DevicePicker>>();
@@ -47,6 +50,8 @@
     apply();
     mq.addEventListener('change', apply);
     live.phone = matchMedia('(pointer: coarse)').matches;
+    // Restores the saved setup (and opens a share link) once the device kind is known.
+    const stopPersistence = startPersistence();
 
     // The camera is released whenever the page is not visible.
     const onvis = () => (document.hidden ? live.pause() : live.resume());
@@ -62,6 +67,7 @@
       document.removeEventListener('visibilitychange', onvis);
       window.removeEventListener('pagehide', onhide);
       document.removeEventListener('fullscreenchange', onfs);
+      stopPersistence();
       live.stop();
     };
   });
@@ -69,6 +75,34 @@
   // The site bar keeps its dock open while a desktop panel is open.
   $effect(() => {
     document.body.dataset.panelOpen = String(desktop && vf.panel !== null);
+  });
+
+  // The tab row fades at an edge where more tabs are scrolled out of sight.
+  let tabsEl = $state<HTMLElement>();
+  let more = $state({ l: false, r: false });
+  function edges() {
+    const el = tabsEl;
+    if (!el) return;
+    more = { l: el.scrollLeft > 2, r: el.scrollLeft + el.clientWidth < el.scrollWidth - 2 };
+  }
+  $effect(() => {
+    if (!tabsEl) return;
+    const ro = new ResizeObserver(edges);
+    ro.observe(tabsEl);
+    return () => ro.disconnect();
+  });
+
+  // Phone/tablet: the tab row scrolls when it is wider than the screen; keep the open tab in view.
+  $effect(() => {
+    const p = vf.panel;
+    if (desktop || !p) return;
+    const tab = document.getElementById(`vf-tab-${p}`);
+    const row = tab?.parentElement;
+    if (!tab || !row) return;
+    const left = tab.offsetLeft - row.offsetLeft;
+    if (left < row.scrollLeft || left + tab.offsetWidth > row.scrollLeft + row.clientWidth) {
+      row.scrollTo({ left: left - (row.clientWidth - tab.offsetWidth) / 2, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+    }
   });
 
   // Level: device orientation while the switch is on.
@@ -176,6 +210,9 @@
           {t.vf.live.fullView}
         </button>
       {/if}
+      <button type="button" class="icon-btn vf-bar-btn vf-bar-share" class:live={live.showing} aria-label={t.vf.saved.shareBar} title={t.vf.saved.shareBar} onclick={() => share()} data-testid="vf-share">
+        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V4M8 8l4-4 4 4"></path><path d="M5 12v7h14v-7"></path></svg>
+      </button>
     </div>
     <div class="vf-view"><Stage /></div>
     {#if live.fullView}
@@ -229,7 +266,7 @@
     {#if !live.showing}<p class="vf-caption">{SCENE_CAPTION}</p>{/if}
   </div>
 
-  <div class="vf-tabs" role="tablist" aria-label={t.vf.tools}>
+  <div class="vf-tabs" class:more-l={more.l} class:more-r={more.r} role="tablist" aria-label={t.vf.tools} bind:this={tabsEl} onscroll={edges}>
     {#each panels as p, i}
       <button
         type="button"
@@ -266,6 +303,7 @@
       {:else if p === 'guides'}<GuidesPane />
       {:else if p === 'live'}<LivePane onpick={() => devicePicker?.open()} />
       {:else if p === 'exposure'}<ExposurePane />
+      {:else if p === 'saved'}<SavedPane />
       {:else}<InfoPane />{/if}
     </section>
   {/each}
@@ -273,4 +311,5 @@
 
   <CameraPicker bind:this={picker} />
   <DevicePicker bind:this={devicePicker} />
+  <SavedNotice />
 </div>

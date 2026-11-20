@@ -7,6 +7,14 @@
 
   let open = $state(false);
   let region = $state<HTMLElement>();
+  let height = $state(0);
+
+  // Notes at the bottom of the screen (BaseLayout #toasts) sit above the banner while it shows.
+  $effect(() => {
+    const root = document.documentElement.style;
+    if (open && height) root.setProperty('--toasts-bottom', `${height + 24}px`);
+    else root.removeProperty('--toasts-bottom');
+  });
 
   onMount(() => {
     const rec = readConsent();
@@ -33,6 +41,7 @@
 {#if open}
   <section
     bind:this={region}
+    bind:offsetHeight={height}
     tabindex="-1"
     aria-labelledby="consent-title"
     data-testid="consent-banner"

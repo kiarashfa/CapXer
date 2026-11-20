@@ -7,6 +7,7 @@ CapXer builds on the work below. Each item keeps its own licence. The CapXer lic
 | Name | Use | Licence | Link |
 |---|---|---|---|
 | Svelte | Interactive components | MIT | https://github.com/sveltejs/svelte |
+| Workbox | Offline support (service worker, built in by workbox-build) | MIT | https://github.com/GoogleChrome/workbox |
 
 ## Build and development tools
 
@@ -19,6 +20,7 @@ CapXer builds on the work below. Each item keeps its own licence. The CapXer lic
 | Playwright | Browser tests | Apache-2.0 | https://github.com/microsoft/playwright |
 | axe-core | Accessibility tests | MPL-2.0 | https://github.com/dequelabs/axe-core |
 | Zod | Data validation | MIT | https://github.com/colinhacks/zod |
+| sharp | Making the app icons (`scripts/make-icons.ts`) | Apache-2.0 | https://github.com/lovell/sharp |
 
 ## Services
 

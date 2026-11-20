@@ -3,6 +3,7 @@ import { derive } from './derive.ts';
 import { focalRange, fromEntry, stepFocal } from './focal.ts';
 import { aspectPreset, defaultSetup, LENS_STOPS } from './presets.ts';
 import type { CustomSensor, FocalEntry, Mode, PanelId, Setup } from './types.ts';
+import { newId } from '../storage/schema.ts';
 
 // One viewfinder store shared by every island on the page (the dock tools in
 // the header and the viewfinder in the page import the same module instance).
@@ -85,7 +86,7 @@ class ViewfinderStore {
   }
 
   addCustomSensor(input: Omit<CustomSensor, 'id'>): string {
-    const id = `custom/${this.customs.length + 1}`;
+    const id = `custom/${newId()}`;
     this.customs.push({ ...input, id });
     this.setCamera(id);
     return id;

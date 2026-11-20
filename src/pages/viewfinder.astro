@@ -2,6 +2,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Viewfinder from '../components/viewfinder/Viewfinder.svelte';
 import ViewfinderDock from '../components/viewfinder/ViewfinderDock.svelte';
+import { SAVE_KEY } from '../storage/local.ts';
 import { t } from '../i18n/en.ts';
 import '../styles/viewfinder.css';
 ---
@@ -11,6 +12,16 @@ import '../styles/viewfinder.css';
   description="Pick a camera, format, frame and focal length, and see exactly what the lens frames, with guides and live angle-of-view readouts."
   dockLabel={t.vf.tools}
 >
+  <!-- A saved setup or a share link replaces the default once the page starts:
+       keep the viewfinder hidden until then (src/storage/persist.svelte.ts), at most 3 s. -->
+  <script is:inline slot="head" define:vars={{ key: SAVE_KEY }}>
+    let has = /(^#|&)v=\d/.test(location.hash);
+    try { has = has || !!localStorage.getItem(key); } catch {}
+    if (has) {
+      document.documentElement.dataset.restoring = '';
+      setTimeout(() => delete document.documentElement.dataset.restoring, 3000);
+    }
+  </script>
   <ViewfinderDock slot="dock" client:load />
   <h1 class="sr-only">Viewfinder</h1>
   <Viewfinder client:load />

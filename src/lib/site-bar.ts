@@ -62,8 +62,30 @@ function initDock(): void {
   let timer: ReturnType<typeof setTimeout> | undefined;
   let hoverOpenedAt = 0;
 
-  // The open step is as wide as the tools it holds.
-  new ResizeObserver(() => bar.style.setProperty('--dock-w', `${tools.scrollWidth}px`)).observe(tools);
+  // The open step is as wide as the tools it holds. When the tools do not fit between the
+  // logo and the toggles, labelled tools show their icon only (data-compact; the name stays
+  // for screen readers and as a tooltip). Decided by the space, not by a screen-width tier.
+  const inner = bar.querySelector<HTMLElement>('.bar-inner');
+  const brand = bar.querySelector<HTMLElement>('.bar-brand');
+  const toggles = bar.querySelector<HTMLElement>('.bar-toggles');
+  // The dock is centred in the free space between them (a few pixels off the page centre,
+  // because the logo is wider than the toggles).
+  const fit = () => {
+    if (inner && brand && toggles) {
+      delete bar.dataset.compact;
+      const box = bar.getBoundingClientRect();
+      const left = brand.getBoundingClientRect().right + 12;
+      const right = toggles.getBoundingClientRect().left - 12;
+      if (tools.scrollWidth > right - left) bar.dataset.compact = '';
+      const shift = Math.round((left + right) / 2 - (box.left + box.width / 2));
+      bar.style.setProperty('--dock-shift', `${shift}px`);
+    }
+    bar.style.setProperty('--dock-w', `${tools.scrollWidth}px`);
+  };
+  const ro = new ResizeObserver(fit);
+  ro.observe(tools);
+  if (inner) ro.observe(inner);
+  if (toggles) ro.observe(toggles);
 
   const isOpen = () => bar.dataset.dock === 'open';
   const panelOpen = () => document.body.dataset.panelOpen === 'true';

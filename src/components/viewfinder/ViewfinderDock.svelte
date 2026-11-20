@@ -18,8 +18,8 @@
 </script>
 
 {#snippet tool(p: PanelId, icon: string)}
-  <button type="button" class="dock-tool" aria-expanded={vf.panel === p} aria-controls={`vf-pane-${p}`} onclick={() => toggle(p)}>
-    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">{@html icon}</svg>{t.vf.panels[p]}
+  <button type="button" class="dock-tool" title={t.vf.panels[p]} aria-expanded={vf.panel === p} aria-controls={`vf-pane-${p}`} onclick={() => toggle(p)}>
+    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">{@html icon}</svg><span class="dock-text">{t.vf.panels[p]}</span>
   </button>
 {/snippet}
 
@@ -47,4 +47,5 @@
   </button>
   <span class="dock-sep" aria-hidden="true"></span>
   {@render tool('info', '<circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/>')}
+  {@render tool('saved', '<path d="M7 4h10v16l-5-4-5 4z"/>')}
 </div>

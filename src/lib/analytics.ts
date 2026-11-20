@@ -34,6 +34,8 @@ export function enableAnalytics(): void {
   window.gtag('config', GA_MEASUREMENT_ID, {
     // Scope cookies to this project, not every site on the same github.io host.
     cookie_path: BASE_PATH,
+    // Only the page path: a share link's setup (after "#") or any query never reaches GA.
+    page_location: location.origin + location.pathname,
     allow_google_signals: false,
     allow_ad_personalization_signals: false,
   });

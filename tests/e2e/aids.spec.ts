@@ -40,14 +40,6 @@ test('the Exposure panel says the aids need Live, and keeps the choices', async 
   await expect(page.getByTestId('vf-aids')).toHaveCount(0);
 });
 
-test('the phone tab row fits all seven tools', async ({ page, isMobile }) => {
-  test.skip(!isMobile, 'tabs are the phone layout');
-  await page.setViewportSize({ width: 360, height: 780 });
-  await page.goto('viewfinder/');
-  const overflow = await page.locator('.vf-tabs').evaluate((el) => [...el.children].some((b) => b.scrollWidth > b.clientWidth + 1));
-  expect(overflow).toBe(false);
-});
-
 test.describe('with the fake webcam', () => {
   test.skip(({ browserName }) => browserName !== 'chromium', 'only Chromium has a fake camera');
 
