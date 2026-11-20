@@ -6,14 +6,17 @@ import { url } from '../lib/url.ts';
 const pillars = [
   {
     title: 'Viewfinder',
+    href: url('viewfinder'),
     body: 'Choose a sensor or film format, an aspect ratio and a focal length, and see the exact frame with frame lines and composition guides.',
   },
   {
     title: 'Live camera',
+    href: url('viewfinder'),
     body: 'Point your phone or webcam at a real location and check framing with exposure aids such as a histogram, zebras and focus peaking.',
   },
   {
     title: 'Lessons',
+    href: url('lessons'),
     body: 'Short, cited lessons on the ideas behind the tools, starting with aspect ratios.',
   },
 ];
@@ -31,7 +34,7 @@ const pillars = [
         <a class="btn btn-primary" href={url('viewfinder')}>Open the viewfinder</a>
         <p class="inline-flex items-center gap-3 rounded-full bg-tint py-2 pr-4 pl-2 text-sm">
           <span class="rounded-full bg-surface px-2 py-0.5 font-mono text-label tracking-wide text-accent uppercase">Status</span>
-          Saving and sharing comes next.
+          New: a first lesson, on{' '}<a href={url('lessons/aspect-ratios')}>aspect ratios</a>.
         </p>
       </div>
     </div>
@@ -44,7 +47,7 @@ const pillars = [
       {
         pillars.map((p) => (
           <li class="card p-6">
-            <h3 class="text-lg font-bold">{p.title}</h3>
+            <h3 class="text-lg font-bold"><a href={p.href}>{p.title}</a></h3>
             <p class="mt-2 leading-relaxed text-muted">{p.body}</p>
           </li>
         ))

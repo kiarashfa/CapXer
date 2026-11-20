@@ -1,0 +1,37 @@
+---
+// Frames of several aspect ratios drawn at the same width on grid paper, so the
+// height a wider ratio gives up is plain to see. Pure geometry from the numbers given.
+interface Props {
+  ratios: number[];
+  /** Labels in the same order; default "2.39:1". */
+  labels?: string[];
+}
+const { ratios, labels } = Astro.props;
+if (!ratios.length || ratios.some((r) => !(r > 0.2 && r < 5))) throw new Error(`RatioFrames: bad ratios ${ratios.join(', ')}`);
+
+const W = 640;
+const PAD = 24;
+const frameW = W - PAD * 2;
+const tallest = frameW / Math.min(...ratios);
+const H = Math.round(tallest + PAD * 2);
+const fmt = (r: number) => `${Number(r.toFixed(r < 10 ? 3 : 2))}:1`;
+// Widest (shortest) frame drawn last, on top.
+const frames = ratios
+  .map((r, i) => ({ r, label: labels?.[i] ?? fmt(r), h: frameW / r }))
+  .sort((a, b) => b.h - a.h)
+  .map((f, i, all) => ({ ...f, y: (H - f.h) / 2, strong: i === all.length - 1 }));
+const aria = `Frames of ${frames.map((f) => f.label).join(', ')} drawn at the same width.`;
+---
+
+<div class="grid-paper lesson-drawing">
+  <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label={aria}>
+    {
+      frames.map((f) => (
+        <g class:list={['rf-frame', f.strong && 'rf-strong']}>
+          <rect x={PAD} y={f.y} width={frameW} height={f.h} rx="4" />
+          <text x={PAD + 12} y={f.y + 26}>{f.label}</text>
+        </g>
+      ))
+    }
+  </svg>
+</div>

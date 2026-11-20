@@ -4,6 +4,9 @@ import Viewfinder from '../components/viewfinder/Viewfinder.svelte';
 import ViewfinderDock from '../components/viewfinder/ViewfinderDock.svelte';
 import { SAVE_KEY } from '../storage/local.ts';
 import { t } from '../i18n/en.ts';
+import { lessonLinksByPanel } from '../content/lessons.ts';
+
+const lessons = await lessonLinksByPanel();
 import '../styles/viewfinder.css';
 ---
 
@@ -24,5 +27,5 @@ import '../styles/viewfinder.css';
   </script>
   <ViewfinderDock slot="dock" client:load />
   <h1 class="sr-only">Viewfinder</h1>
-  <Viewfinder client:load />
+  <Viewfinder client:load lessons={lessons} />
 </BaseLayout>

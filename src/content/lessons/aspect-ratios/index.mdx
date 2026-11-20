@@ -1,0 +1,112 @@
+---
+title: Aspect ratios
+summary: What an aspect ratio is, the ratios you will meet most often, where they came from, and how a chosen ratio sits on a sensor and reaches the screen.
+topic: framing
+tools: [frame]
+published: 2026-11-20
+updated: 2026-11-20
+order: 1
+---
+
+## What an aspect ratio is
+
+An aspect ratio is the relationship between the width and the height of an image. A picture that is twice as wide as it is high has an aspect ratio of 2:1 [@kodak-essential-reference-guide, p. 36]. The digital cinema specification puts it the same way: the ratio of width to height, written as a decimal [@dci-dcss-1-1, sec. 3.2.1.8].
+
+You will see ratios written in two styles. Film people usually set the height to 1, as in 1.78:1. Television and HD people tend to use whole numbers, as in 16:9 [@kodak-essential-reference-guide, p. 36]. Both describe the same shape, so 1.78:1 and 16:9 are one ratio in two notations.
+
+The ratio is also separate from the width of the film, its gauge. A single gauge such as 35 mm can carry several image formats, because aspect ratio is independent of gauge [@kodak-essential-reference-guide, p. 36].
+
+## Common ratios
+
+| Ratio | Also written | Where you meet it |
+| --- | --- | --- |
+| 1.33:1 | 4:3 | Standard TV and video, regular 16 mm and Super 8 [@kodak-essential-reference-guide, p. 37] |
+| 1.37:1 | Academy aperture [@kodak-essential-reference-guide, p. 189] | 35 mm sound films up to 1953 [@kodak-essential-reference-guide, p. 37] |
+| 3:2 | 36 x 24 mm | Full-frame stills cameras such as the Nikon Z6III [@nikon-z6iii-specs, sec. Image size (pixels)] |
+| 1.66:1 | – | Common in Europe, native to Super 16 [@kodak-essential-reference-guide, p. 38] |
+| 1.78:1 | 16:9 | HDTV [@itu-r-bt709-6, item 2.1] and YouTube on a computer [@youtube-help-aspect-ratios, sec. How your video will display] |
+| 1.85:1 | Flat | 35 mm projection in the United States [@kodak-essential-reference-guide, p. 37] |
+| 2:1 | Twice as wide as high | Increasingly popular with TV series [@arri-alexa-lf-anamorphic-2018, p. 7] |
+| 2.39:1 | 2.40:1, scope [@kodak-essential-reference-guide, p. 37] | CinemaScope widescreen films [@arri-alexa-lf-anamorphic-2018, p. 9; @kodak-essential-reference-guide, p. 38] |
+| 1:1 | Square | A 24 x 24 mm area on the Nikon Z6III [@nikon-z6iii-specs, sec. Image size (pixels)] |
+| 9:16 | Vertical | Vertical video on YouTube [@youtube-help-aspect-ratios, sec. How your video will display] |
+
+Two details in that table are easy to trip over. First, 1.66:1 is very close to the HDTV shape of 1.78:1 [@kodak-essential-reference-guide, p. 38]. Second, the scope ratio has two labels: ARRI calls it 2.39:1 [@arri-alexa-lf-anamorphic-2018, p. 9] and Kodak calls it 2.40:1 [@kodak-essential-reference-guide, p. 37]. Digital cinema sizes use 2.39 [@dci-dcss-1-1, table 3]. Both labels trace back to CinemaScope [@arri-alexa-lf-anamorphic-2018, p. 9; @kodak-essential-reference-guide, p. 38], and in practice they name the same scope format.
+
+Kodak's glossary uses "widescreen" for any film presentation wider than 1.33:1 [@kodak-essential-reference-guide, p. 212]. Taken literally, that includes even the 1.37:1 Academy ratio.
+
+<Figure title="Three cinema ratios at the same width">
+
+<RatioFrames ratios={[1.375, 1.85, 2.39]} labels={["1.37:1", "1.85:1", "2.39:1"]} />
+
+The Academy aperture gives about 1.37:1 [@kodak-essential-reference-guide, p. 189], 1.85:1 is the flat projection ratio [@kodak-essential-reference-guide, p. 37] and 2.39:1 is the traditional CinemaScope ratio [@arri-alexa-lf-anamorphic-2018, p. 9].
+
+</Figure>
+
+<Try>
+
+Open a full-frame stills camera at its native 3:2, then switch to square. Watch which edges of the frame disappear. In the Frame panel, try 9:16 as well.
+
+<TryLink mode="stills" cam="nikon/z6iii" fmt="fx" ar="3:2" mm={35}>Open 3:2</TryLink> <TryLink mode="stills" cam="nikon/z6iii" fmt="fx" ar="1:1" mm={35}>Open 1:1</TryLink>
+
+</Try>
+
+## A short history
+
+The early Edison and Dickson Kinetograph camera used film 35 mm wide, with a frame 24 mm wide by 18 mm tall [@kodak-essential-reference-guide, p. 7]. That is a 4:3 shape.
+
+Then came sound. Technicians found a way to record it photographically along the edge of the film [@kodak-essential-reference-guide, p. 11]. In March 1932 the Standards Committee of the Society of Motion Picture Engineers, following recommendations from the Academy of Motion Picture Arts and Sciences, agreed to recommend a projector aperture of 0.600 by 0.825 inch and a camera aperture of 0.631 by 0.868 inch [@jsmpe-1932-04-standards-committee, p. 538]. That year's progress report said the new apertures were expected to remove the worst problems studios and theatres had faced since sound arrived, and gave the sound track width as 0.100 inch [@jsmpe-1932-08-progress-report, p. 124]. The SMPTE 59 standard gives the camera aperture as 22.0 by 16.0 mm [@smpte-st-59-1998, table 1], a ratio of 1.375.
+
+Still photography took a different path. The Leica went on sale in 1925, and Oskar Barnack doubled the cinema negative to get a 24 x 36 mm format. He felt the two-thirds ratio between the sides was more harmonious [@swiss-camera-museum-leica, para. 1; @swiss-camera-museum-leica, para. 3]. That is the 3:2 shape of full-frame cameras today.
+
+For films, 1.37:1 stayed the standard from the arrival of sound until CinemaScope appeared in 1953 [@kodak-essential-reference-guide, p. 37]. Theatre owners who wanted a wider screen made 1.85:1 by cutting off the top and bottom of the 1.37:1 image [@kodak-essential-reference-guide, p. 37]. CinemaScope went wider in a different way. It was shot through an anamorphic lens that squeezed the image sideways on the film, and an attachment on the projector restored the proper proportions [@fox-cinemascope-theatre-1954, p. 7]. Fox's 1954 guide for theatres gave the screen width as the picture height times 2.55, roughly twice as wide as the old picture at the same height [@fox-cinemascope-theatre-1954, p. 6]. Today's 2.40:1 scope image grew out of CinemaScope's original 2.35:1 [@kodak-essential-reference-guide, p. 38].
+
+Television has its own story. The conventional TV systems all used a 4/3 picture [@itu-r-bt470-6, p. 1], while the HDTV standard sets 16:9 with 1920 by 1080 square pixels [@itu-r-bt709-6, item 2.1–2.5]. In 2017 the EBU noted that HD productions also fed standard-definition services still reaching 4:3 screens, and that earlier versions of the EBU's safe area advice protected 16:9 programmes for 4:3 and 14:9 presentation [@ebu-r95-2017, p. 3]. Online video adds a vertical shape. YouTube names 9:16 for vertical video [@youtube-help-aspect-ratios, sec. How your video will display], and a YouTube Short must be square or vertical [@youtube-help-upload-shorts, sec. Upload Shorts].
+
+## Ratio, sensor and lens
+
+Every sensor has its own shape. The ARRI ALEXA 35 sensor measures 27.99 x 19.22 mm, and its full "4.6K 3:2 Open Gate" area is 28.0 x 19.2 mm [@arri-alexa-35, sec. Technical Data]. Other ratios are taken from inside that area. Its 4.6K 16:9 mode keeps the full 28.0 mm width but uses only 15.7 mm of height, and its 3K 1:1 mode uses an 18.7 mm square [@arri-alexa-35, sec. Technical Data].
+
+Stills cameras work the same way. On the Nikon Z6III, choosing 16:9 changes the image area from 36 x 24 mm to 36 x 20 mm, so you lose some height. Choosing 1:1 gives 24 x 24 mm, so you lose some width [@nikon-z6iii-manual-image-area, sec. Choose Image Area].
+
+A smaller image area changes what a lens sees. Nikon says that in its DX area you multiply the focal length by 1.5 to get the 35 mm-format equivalent [@nikon-z6iii-manual-image-area, sec. Choose Image Area]. The angle of view is 2 x arctan(H / 2f), where f is the focal length and H is the sensor size, so a larger sensor gives a wider view at the same focal length [@edmund-optics-focal-length-fov, sec. Fixed Focal Length Lenses]. Apply that to height alone and you can see what a top and bottom crop does: the same lens keeps its horizontal angle but loses some of its vertical one [@edmund-optics-focal-length-fov, sec. Calculating FOV Using a Lens with a Fixed Magnification]. ARRI uses this idea in practice. To match one camera's 6:5 mode on an ALEXA LF, you shoot a mode with the same height and crop the left and right sides in post [@arri-alexa-lf-anamorphic-2018, p. 14].
+
+<Try>
+
+Keep the same 35 mm lens and switch between 16:9 and 2.39:1. Notice that the sides stay put while the top and bottom of the scene are cut away.
+
+<TryLink cam="arri/alexa-35" fmt="4k-16-9" ar="16:9" mm={35}>Open 16:9</TryLink> <TryLink cam="arri/alexa-35" fmt="4k-16-9" ar="2.39" mm={35}>Open 2.39:1</TryLink>
+
+</Try>
+
+Anamorphic lenses are the exception to the rule that a lens keeps the scene's shape. Spherical lenses keep the width-to-height relationship, but anamorphic lenses squeeze the image, so a round object becomes a tall oval on the sensor. Most squeeze by a factor of two [@arri-alexa-lf-anamorphic-2018, p. 5]. ARRI points out that, strictly, the image is stretched vertically rather than squeezed sideways, but the industry keeps the old word [@arri-alexa-lf-anamorphic-2018, pp. 14–15]. On film, that 2-to-1 squeeze used as much of the negative as possible while leaving room for a sound track [@kodak-essential-reference-guide, p. 190], and a film shot with a 2 to 1 compression had to be projected with the same expansion [@fox-cinemascope-theatre-1954, p. 39].
+
+Because of the squeeze, the area you use on the sensor is narrower than the final picture. With a 2x lens, ARRI uses a 1:1 area for a 2:1 result. For 2.39:1 it uses an area about half as wide as that shape: 3148 x 2636 photosites, close to 1.19:1 [@arri-alexa-lf-anamorphic-2018, p. 9; @arri-alexa-lf-anamorphic-2018, p. 12]. Other squeeze factors exist too. The ALEXA LF can de-squeeze its monitor image at 2x, 1.5x, 1.3x and 1.25x, though ARRI says 2.0x covers 90% of anamorphic lenses [@arri-alexa-lf-anamorphic-2018, p. 6].
+
+The squeezed image has to be undone somewhere. The ALEXA LF records exactly what the lens projects, with no in-camera de-squeeze for the recording [@arri-alexa-lf-anamorphic-2018, p. 6]. Some cameras can do it inside for certain formats: the ALEXA 35 lists a ProRes format that records its 3.3K 6:5 area as a 3840 x 1608, 2.39:1 image for 2x anamorphic [@arri-alexa-35, sec. Technical Data]. In the film days the projector lens did the job, but digital cinema allows only a de-squeezed image, so the work now happens in post [@arri-alexa-lf-anamorphic-2018, p. 5].
+
+## Cinema containers
+
+Digital cinema delivers pictures inside fixed containers. DCI defines a 2K container of 2048 x 1080 and a 4K container of 4096 x 2160 [@dci-dcss-1-5-1, sec. 4.3.1]. The picture fills the container fully in either width or height. A 4K image at 2.39:1, for example, is 4096 x 1716 and uses the full width [@dci-dcss-1-1, sec. 3.2.1.2].
+
+DCI's published examples give the usual sizes. Scope (2.39:1) is 2048 x 858 at 2K, and flat (1.85:1) is 1998 x 1080. At 4K they are 4096 x 1716 and 3996 x 2160, all with square pixels [@dci-dcss-1-1, table 3]. So scope keeps the full width and gives up height, while flat keeps the full height and gives up a little width. The current DCI specification no longer lists these sizes itself and points to SMPTE ST 428-1 for image characteristics [@dci-dcss-1-5-1, sec. 3.2.1].
+
+## Safe areas and delivery
+
+On film, the cinematographer frames for the final ratio, and several ratios can be taken from one 4-perf 35 mm frame: 1.37:1, 1.85:1, 1.66:1 and 1.78:1 [@kodak-essential-reference-guide, p. 39]. Super 35 uses the whole frame, including the space usually kept for the soundtrack. A 2.40:1 picture is extracted from it, and 1.85:1 and 1.78:1 can come from the same frame [@kodak-essential-reference-guide, p. 40].
+
+Television adds safe areas. EBU R 95 asks for two of them in 16:9 production: essential action inside the Action Safe Area and graphics inside the Graphics Safe Area [@ebu-r95-2017, p. 3]. The action safe margin is 3.5% and the graphics safe margin is 5%, at the top, bottom and sides [@ebu-r95-2017, p. 4]. The same recommendation asks that the centre of the image stays in place through production unless there is a creative reason to move it [@ebu-r95-2017, p. 3].
+
+When a wide film meets a narrower screen, there are two classic answers. Letterboxing keeps the whole image with black bands at the top and bottom, preserving the original composition [@kodak-essential-reference-guide, p. 201]. Pan and scan fills the height of a 1.33:1 screen and moves across the wide frame to pick the best part of each scene [@kodak-essential-reference-guide, p. 205].
+
+Online, the player often adapts for you. YouTube resizes its player to suit videos that are not 16:9 [@youtube-help-aspect-ratios, sec. How your video will display]. It advises against adding black bars or padding into the video itself, because that stops the player adapting to your video and the viewer's device [@youtube-help-aspect-ratios, sec. How your video will display].
+
+## Choosing a ratio
+
+<OurView>
+
+Start with where the work will be seen, then let the story push you wider or narrower. A wide ratio suits landscapes and groups of people spread across the frame. A taller or squarer frame suits single faces and vertical subjects. Whatever you pick, decide before the shoot and frame for it from the first recce, rather than cropping later and hoping it works.
+
+If you must deliver several ratios, choose one as the master and protect the others inside it. Keep important action and text away from the edges, and keep the centre of interest near the centre of the frame, so a later crop does not cut off what matters. Finally, try your ratio with your actual lens in the viewfinder: the same focal length can feel very different once the top and bottom are gone.
+
+</OurView>

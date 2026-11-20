@@ -23,6 +23,10 @@
   import SavedPane from './SavedPane.svelte';
   import SavedNotice from './SavedNotice.svelte';
   import { startPersistence, share } from '../../storage/persist.svelte.ts';
+  import type { LessonLink } from '../../content/lessons.ts';
+
+  // "Learn" links per panel, from the lessons' front matter (built in viewfinder.astro).
+  let { lessons = {} }: { lessons?: Partial<Record<PanelId, LessonLink[]>> } = $props();
 
   // One set of panes, two presentations: tabs below the pinned viewfinder on
   // phone/tablet, a fixed-size side panel opened from the site bar's dock on desktop.
@@ -305,6 +309,12 @@
       {:else if p === 'exposure'}<ExposurePane />
       {:else if p === 'saved'}<SavedPane />
       {:else}<InfoPane />{/if}
+      {#each lessons[p] ?? [] as l}
+        <a class="vf-learn" href={l.href}>
+          <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5A1.5 1.5 0 0 1 5.5 4H11v16H5.5A1.5 1.5 0 0 1 4 18.5Z"></path><path d="M20 5.5A1.5 1.5 0 0 0 18.5 4H13v16h5.5a1.5 1.5 0 0 0 1.5-1.5Z"></path></svg>
+          <span class="vf-txt"><b>{t.lessons.learn}: {l.title}</b><span>{t.lessons.minutes(l.minutes)}</span></span>
+        </a>
+      {/each}
     </section>
   {/each}
   </div>

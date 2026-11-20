@@ -25,9 +25,11 @@ const path = Astro.url.pathname;
 const hasDock = Astro.slots.has('dock');
 const pages = [
   { href: url('viewfinder'), label: t.nav.viewfinder },
+  { href: url('lessons'), label: t.nav.lessons },
   { href: url('about'), label: t.nav.about },
 ];
-const current = (href: string) => (path === href ? 'page' : undefined);
+// A section page (a lesson under /lessons/) marks its section as current too.
+const current = (href: string) => (path === href ? 'page' : path.startsWith(href) && href !== url() ? 'true' : undefined);
 ---
 
 <!doctype html>

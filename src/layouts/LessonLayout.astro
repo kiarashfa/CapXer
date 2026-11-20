@@ -1,0 +1,121 @@
+---
+// One lesson: title block, cited text, and the numbered Sources list.
+// Desktop: text left, Sources in a sticky rail on the right (a citation highlights
+// its entry). Phone/tablet: one column; a citation opens a small popover, and the
+// full list follows the text. Same markup for both; without JavaScript every
+// citation is a plain link to its entry.
+import BaseLayout from './BaseLayout.astro';
+import { t } from '../i18n/en.ts';
+import { url } from '../lib/url.ts';
+import { REPO_URL } from '../config/site.ts';
+import { getReference } from '../references/index.ts';
+import { formatReference } from '../content/cite/format.ts';
+import { longDate, type Lesson } from '../content/lessons.ts';
+import '../styles/lesson.css';
+
+interface Props {
+  lesson: Lesson;
+  minutes: number;
+  headings: { depth: number; slug: string; text: string }[];
+  /** Reference keys in order of first citation (from the citation plugin). */
+  sources: string[];
+}
+const { lesson, minutes, headings, sources } = Astro.props;
+const { title, summary, topic, updated } = lesson.data;
+const sections = headings.filter((h) => h.depth === 2);
+const list = sources.map((id, i) => {
+  const ref = getReference(id);
+  if (!ref) throw new Error(`Lesson ${lesson.id}: source ${id} missing from the reference library`);
+  return { n: i + 1, id, f: formatReference(ref) };
+});
+---
+
+<BaseLayout title={title} description={summary} dockLabel={t.dock.onThisPage}>
+  {
+    sections.length > 0 && (
+      <div slot="dock" class="dock-row">
+        {/* Lessons have more sections than fit in the bar: one "On this page" menu, plus Sources. */}
+        <details class="dock-toc">
+          <summary class="dock-tool">
+            {t.dock.onThisPage}
+            <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"></path></svg>
+          </summary>
+          <ol class="card dock-toc-list">
+            {sections.map((h) => <li><a href={`#${h.slug}`}>{h.text}</a></li>)}
+          </ol>
+        </details>
+        {list.length > 0 && <a class="dock-tool" href="#sources">{t.lessons.sourcesTitle}</a>}
+      </div>
+    )
+  }
+  <article class="lesson" data-lesson={lesson.id}>
+    <header class="lesson-head">
+      <p class="lesson-crumb"><a href={url('lessons')}>{t.lessons.title}</a><span aria-hidden="true">/</span>{t.lessons.topics[topic]}</p>
+      <h1 class="text-h1 leading-tight font-extrabold text-balance desktop:text-h1-desktop">{title}</h1>
+      <p class="lesson-lead">{summary}</p>
+      <p class="lesson-meta">
+        <span>{t.lessons.minutes(minutes)}</span>
+        <span>{t.lessons.sources(list.length)}</span>
+        <span>{t.lessons.updated} <time datetime={updated.toISOString().slice(0, 10)}>{longDate(updated)}</time></span>
+      </p>
+    </header>
+
+    <div class="lesson-body prose">
+      <slot />
+      <p class="lesson-report">
+        {t.lessons.mistake}{' '}
+        <a href={`${REPO_URL}/issues`}>{t.lessons.report}</a>.
+      </p>
+    </div>
+
+    {
+      list.length > 0 && (
+        <aside class="lesson-sources" aria-labelledby="sources">
+          <div class="lesson-sources-inner">
+            <h2 id="sources">{t.lessons.sourcesTitle}</h2>
+            <p class="lesson-sources-hint">{t.lessons.sourcesHint}</p>
+            <ol>
+              {list.map(({ n, id, f }) => (
+                <li id={`source-${n}`} data-ref={id}>
+                  <span class="src-n">{n}</span>
+                  <div class="src-body">
+                    <p class="src-text">
+                      {f.authors && <>{f.authors}, </>}
+                      {f.italic ? <cite>{f.title}</cite> : <>"{f.title}"</>}
+                      {f.details && <>, {f.details}</>}.
+                    </p>
+                    <p class="src-links">
+                      {f.url && <a href={f.url} rel="noopener">{t.lessons.openSource}</a>}
+                      {f.accessed && <span>{f.accessed}</span>}
+                    </p>
+                    <p class="src-at" hidden>
+                      {t.lessons.citedAt}: <b />
+                    </p>
+                  </div>
+                </li>
+              ))}
+            </ol>
+          </div>
+        </aside>
+      )
+    }
+  </article>
+
+  <div class="cite-pop card" data-cited-at={t.lessons.citedAt} role="dialog" aria-modal="false" aria-labelledby="cite-pop-title" hidden>
+    <div class="cite-pop-head">
+      <span class="cite-pop-label">{t.lessons.source}</span><span id="cite-pop-title" class="cite-pop-title"></span>
+      <button type="button" class="cite-pop-x" aria-label={t.lessons.close} title={t.lessons.close}>
+        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"></path></svg>
+      </button>
+    </div>
+    <div class="cite-pop-body"></div>
+    <p class="cite-pop-at"></p>
+    <p class="cite-pop-links"><a class="cite-pop-all" href="#sources">{t.lessons.allSources}</a></p>
+  </div>
+</BaseLayout>
+
+<script>
+  import { initCitations, initLessonToc } from '../lib/citations.ts';
+  initCitations();
+  initLessonToc();
+</script>

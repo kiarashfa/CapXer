@@ -36,7 +36,7 @@
 .menu-btn svg { width: 22px; height: 22px; }
 .menu-sheet { position: absolute; left: 8px; right: 8px; top: calc(var(--bar-h) + 8px); padding: 8px; }
 .menu-sheet a { display: flex; align-items: center; min-height: 48px; padding: 0 14px; border-radius: 12px; color: var(--ink); text-decoration: none; font-weight: 600; }
-.menu-sheet a[aria-current="page"] { background: var(--tint); color: var(--accent); }
+.menu-sheet a[aria-current] { background: var(--tint); color: var(--accent); }
 /* Install item: only shown where the browser offers installing (src/lib/pwa.ts). */
 .menu-install { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 48px; margin-top: 4px; padding: 0 14px; border: 0; border-top: 1px solid var(--line); border-radius: 0 0 12px 12px; background: none; color: var(--ink); font: inherit; font-weight: 600; cursor: pointer; }
 .menu-install[hidden], .install-btn[hidden] { display: none; }
@@ -57,7 +57,7 @@
   .bar-pages ul { list-style: none; margin: 0; padding: 0; display: flex; gap: 2px; }
   .bar-pages a { display: inline-flex; align-items: center; min-height: 40px; padding: 0 14px; border-radius: 9999px; color: var(--ink); text-decoration: none; font-weight: 500; }
   .bar-pages a:hover { background: var(--tint); }
-  .bar-pages a[aria-current="page"] { background: var(--tint); color: var(--accent); font-weight: 700; }
+  .bar-pages a[aria-current] { background: var(--tint); color: var(--accent); font-weight: 700; }
   .site-bar[data-dock="open"] .bar-pages { opacity: 0; transform: translateY(-8px); pointer-events: none; }
 
   /* The step: curve | body | curve, hanging under the centre of the bar. */

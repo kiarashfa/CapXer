@@ -1,0 +1,59 @@
+---
+import { render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { t } from '../../i18n/en.ts';
+import { TOPICS, type Topic } from '../../content/topics.ts';
+import { getLessons, lessonUrl, longDate, readingMinutes } from '../../content/lessons.ts';
+import '../../styles/lesson.css';
+
+const lessons = await Promise.all(
+  (await getLessons()).map(async (l) => ({
+    l,
+    minutes: readingMinutes(l.body ?? ''),
+    sources: ((await render(l)).remarkPluginFrontmatter.sources ?? []).length as number,
+  })),
+);
+const topics = (Object.keys(TOPICS) as Topic[])
+  .map((topic) => ({ topic, items: lessons.filter((x) => x.l.data.topic === topic) }))
+  .filter((g) => g.items.length);
+---
+
+<BaseLayout title={t.lessons.title} description={t.lessons.lead}>
+  <div class="space-y-8 desktop:space-y-10">
+    <header class="space-y-3 border-b border-line pb-6">
+      <h1 class="text-h1 leading-tight font-extrabold desktop:text-h1-desktop">{t.lessons.title}</h1>
+      <p class="text-lg leading-relaxed text-muted">{t.lessons.lead}</p>
+    </header>
+
+    {
+      topics.map(({ topic, items }, i) => (
+        <section aria-labelledby={`topic-${topic}`} class="space-y-4">
+          <h2 id={`topic-${topic}`} class="lesson-topic">{t.lessons.topics[topic]}</h2>
+          <ul class="lesson-cards">
+            {items.map(({ l, minutes, sources }) => (
+              <li class="card lesson-card">
+                <h3>
+                  <a href={lessonUrl(l.id)}>{l.data.title}</a>
+                </h3>
+                <p class="lesson-card-summary">{l.data.summary}</p>
+                <p class="lesson-meta">
+                  <span>{t.lessons.minutes(minutes)}</span>
+                  <span>{t.lessons.sources(sources)}</span>
+                  <span>
+                    {t.lessons.updated} <time datetime={l.data.updated.toISOString().slice(0, 10)}>{longDate(l.data.updated)}</time>
+                  </span>
+                </p>
+              </li>
+            ))}
+            {i === topics.length - 1 && (
+              <li class="note lesson-card lesson-card-more">
+                <h3>{t.lessons.more[0]}</h3>
+                <p class="lesson-card-summary">{t.lessons.more[1]}</p>
+              </li>
+            )}
+          </ul>
+        </section>
+      ))
+    }
+  </div>
+</BaseLayout>

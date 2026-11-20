@@ -1,0 +1,23 @@
+---
+import { render } from 'astro:content';
+import LessonLayout from '../../layouts/LessonLayout.astro';
+import Figure from '../../components/lesson/Figure.astro';
+import RatioFrames from '../../components/lesson/RatioFrames.astro';
+import Try from '../../components/lesson/Try.astro';
+import TryLink from '../../components/lesson/TryLink.astro';
+import OurView from '../../components/lesson/OurView.astro';
+import { getLessons, readingMinutes, type Lesson } from '../../content/lessons.ts';
+
+export async function getStaticPaths() {
+  return (await getLessons()).map((lesson) => ({ params: { slug: lesson.id }, props: { lesson } }));
+}
+
+const { lesson } = Astro.props as { lesson: Lesson };
+const { Content, headings, remarkPluginFrontmatter } = await render(lesson);
+// Components every lesson can use without importing them.
+const components = { Figure, RatioFrames, Try, TryLink, OurView };
+---
+
+<LessonLayout lesson={lesson} minutes={readingMinutes(lesson.body ?? '')} headings={headings} sources={remarkPluginFrontmatter.sources ?? []}>
+  <Content components={components} />
+</LessonLayout>

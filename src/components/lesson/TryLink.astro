@@ -1,0 +1,52 @@
+---
+// A button inside <Try> that opens the viewfinder already set up, through a P6
+// share link (the reader's own setup is kept: "Back to mine"). Unknown cameras,
+// formats or frames fail the build, so a lesson link can never open the wrong thing.
+import { defaultSetup, aspectPreset, SQUEEZES } from '../../setup/presets.ts';
+import { getSensor } from '../../data/index.ts';
+import { encodeLink } from '../../storage/link.ts';
+import { url } from '../../lib/url.ts';
+import type { Mode } from '../../setup/types.ts';
+
+interface Props {
+  mode?: Mode;
+  /** Camera id, e.g. "arri/alexa-35". */
+  cam?: string;
+  /** Format id of that camera, e.g. "4k-16-9". Defaults to its first (full) format. */
+  fmt?: string;
+  /** Aspect preset id, e.g. "2.39", "16:9". */
+  ar?: string;
+  /** Actual focal length in mm. */
+  mm?: number;
+  /** Anamorphic squeeze. */
+  sq?: number;
+}
+const { mode = 'cinema', cam, fmt, ar, mm, sq } = Astro.props;
+const where = `TryLink in ${Astro.url.pathname}`;
+const setup = defaultSetup(mode);
+if (cam) {
+  const sensor = getSensor(cam);
+  if (!sensor) throw new Error(`${where}: unknown camera "${cam}"`);
+  setup.sensorId = cam;
+  setup.formatId = fmt ?? sensor.formats[0]!.id;
+  if (!sensor.formats.some((f) => f.id === setup.formatId)) throw new Error(`${where}: ${cam} has no format "${fmt}"`);
+} else if (fmt) throw new Error(`${where}: fmt needs cam`);
+if (ar) {
+  if (!aspectPreset(mode, ar)) throw new Error(`${where}: no ${mode} frame "${ar}"`);
+  setup.aspect = ar;
+}
+if (mm !== undefined) {
+  if (!(mm >= 1 && mm <= 2000)) throw new Error(`${where}: focal length ${mm} mm out of range`);
+  setup.focal = mm;
+}
+if (sq !== undefined) {
+  if (!SQUEEZES.includes(sq)) throw new Error(`${where}: squeeze ${sq} is not one of ${SQUEEZES.join(', ')}`);
+  setup.squeeze = sq;
+}
+const href = `${url('viewfinder')}#${encodeLink(setup)}`;
+---
+
+<a class="btn btn-primary lesson-trylink" href={href}>
+  <slot />
+  <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+</a>

@@ -1,0 +1,144 @@
+/* Lessons: the Lessons page and one lesson page.
+   Two views only (see global.css). Phone/tablet: one column, Sources after the text.
+   Desktop: text left, Sources in a sticky rail right; the article fills the 1200 px container. */
+
+/* ---------- Lessons page ---------- */
+.lesson-topic { font-family: var(--font-mono); font-size: var(--text-label); font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.lesson-cards { display: grid; gap: 16px; }
+.lesson-card { position: relative; display: flex; flex-direction: column; gap: 10px; padding: 24px; }
+.lesson-card h3 { font-size: var(--text-h3); font-weight: 800; line-height: 1.2; }
+.lesson-card h3 a { color: var(--ink); text-decoration: none; }
+/* The whole card is the link target; the title keeps the accessible name. */
+.lesson-card h3 a::after { content: ""; position: absolute; inset: 0; border-radius: var(--radius-card); }
+.lesson-card:has(a:hover) { box-shadow: 0 0 0 1px var(--control); }
+.lesson-card h3 a:hover { text-decoration: underline; text-underline-offset: 3px; }
+.lesson-card h3 a:focus-visible { outline: none; }
+.lesson-card h3 a:focus-visible::after { outline: 2px solid var(--accent); outline-offset: 2px; }
+.lesson-card-summary { color: var(--muted); line-height: 1.6; flex: 1; }
+.lesson-card-more h3 { font-size: 1.125rem; font-weight: 700; }
+
+.lesson-meta { display: flex; flex-wrap: wrap; gap: 4px 18px; font-family: var(--font-mono); font-size: var(--text-label); color: var(--muted); }
+
+/* ---------- Lesson page ---------- */
+.lesson { display: grid; gap: 32px; counter-reset: figure; }
+.lesson-head { display: grid; gap: 12px; padding-bottom: 24px; border-bottom: 1px solid var(--line); }
+.lesson-crumb { display: flex; gap: 8px; font-family: var(--font-mono); font-size: var(--text-label); letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+.lesson-crumb a { color: var(--accent); }
+.lesson-lead { font-size: 1.125rem; line-height: 1.6; color: var(--muted); }
+
+/* Reading text. */
+.prose { font-size: 1.0625rem; line-height: 1.7; min-width: 0; }
+.prose > * + * { margin-top: 1.1em; }
+.prose h2 { margin-top: 2.2em; font-size: var(--text-h3); font-weight: 800; line-height: 1.25; scroll-margin-top: 6rem; }
+.prose h3 { margin-top: 1.8em; font-size: 1.1875rem; font-weight: 700; line-height: 1.3; }
+.prose h2 + *, .prose h3 + * { margin-top: 0.6em; }
+.prose > :first-child { margin-top: 0; }
+.prose ul, .prose ol { padding-left: 1.4em; }
+.prose ul { list-style: disc; }
+.prose ol { list-style: decimal; }
+.prose li + li { margin-top: 0.4em; }
+.prose li::marker { color: var(--muted); }
+.prose strong { font-weight: 700; }
+.prose code { font-family: var(--font-mono); font-size: 0.9em; }
+.prose blockquote { padding-left: 16px; border-left: 2px solid var(--line); color: var(--muted); }
+
+/* Tables: data table from the design system (card, hairline rows, mono numbers). */
+.table-wrap { overflow-x: auto; background: var(--surface); border-radius: var(--radius-card); box-shadow: 0 0 0 1px var(--line); }
+.prose table { width: 100%; border-collapse: collapse; font-size: 0.9375rem; line-height: 1.5; }
+.prose thead th { font-family: var(--font-mono); font-size: var(--text-label); font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); text-align: left; }
+.prose th, .prose td { padding: 10px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
+.prose tbody tr:last-child td { border-bottom: 0; }
+.prose td:first-child { font-family: var(--font-mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+/* Citations: mono, accent, dotted underline (colour is not the only cue). */
+a.cite { font-family: var(--font-mono); font-size: 0.8em; font-weight: 500; text-decoration: underline dotted; text-underline-offset: 3px; border-radius: 4px; padding: 0 1px; transition: background-color 150ms; }
+a.cite:hover, a.cite.is-active { background: var(--tint); }
+
+/* Figures: title bar, grid-paper drawing, cited caption. Numbered in order. */
+.lesson-figure { counter-increment: figure; display: grid; gap: 10px; margin-top: 1.6em; margin-bottom: 0.4em; }
+.lesson-figure-title { font-weight: 700; font-size: 0.9375rem; }
+.lesson-figure-n { font-family: var(--font-mono); font-size: var(--text-label); font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); margin-right: 6px; }
+.lesson-figure-n::after { content: " " counter(figure); }
+.lesson-figure > p { font-size: 0.9375rem; line-height: 1.55; color: var(--muted); }
+.lesson-drawing { border-radius: var(--radius-frame); box-shadow: 0 0 0 1px var(--line); padding: 8px; }
+.lesson-drawing svg { display: block; width: 100%; height: auto; max-height: 24rem; margin: 0 auto; }
+.rf-frame rect { fill: none; stroke: var(--strong); stroke-width: 1.5; stroke-dasharray: 6 4; }
+.rf-frame text { font-family: var(--font-mono); font-size: 20px; font-weight: 500; fill: var(--muted); }
+.rf-strong rect { stroke: var(--accent); stroke-width: 2.5; stroke-dasharray: none; fill: var(--hatch); fill-opacity: 0; }
+.rf-strong text { fill: var(--accent); font-weight: 600; }
+
+/* Try it and Our view: visibly not sourced facts. */
+.lesson-box { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding: 18px 20px; margin-top: 1.6em; }
+.lesson-box > :not(.lesson-trylink) { flex-basis: 100%; }
+.lesson-box > * + * { margin-top: 0; }
+.lesson-box ul, .lesson-box ol { padding-left: 1.4em; }
+.lesson-tag { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; font-family: var(--font-mono); font-size: var(--text-label); font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); }
+.lesson-tag svg { width: 18px; height: 18px; flex: none; }
+.lesson-tag-hint { font-family: var(--font-sans); font-size: 0.8125rem; font-weight: 400; letter-spacing: 0; text-transform: none; color: var(--muted); }
+.lesson-ourview { border-radius: var(--radius-card); border: 1px dashed var(--control); background: var(--surface); }
+.lesson-ourview .lesson-tag { color: var(--ink); }
+.lesson-trylink { margin-top: 4px; font-size: 0.9375rem; }
+.lesson-trylink svg { width: 18px; height: 18px; }
+
+.lesson-report { margin-top: 2.4em !important; padding-top: 16px; border-top: 1px solid var(--line); font-size: 0.9375rem; color: var(--muted); }
+
+/* Sources list. */
+.lesson-sources h2 { font-size: var(--text-h3); font-weight: 800; }
+.lesson-sources-hint { margin-top: 6px; font-size: 0.875rem; line-height: 1.5; color: var(--muted); }
+.lesson-sources ol { margin-top: 12px; border-top: 1px solid var(--line); }
+.lesson-sources li { display: grid; grid-template-columns: 2rem 1fr; gap: 10px; padding: 12px 8px; border-bottom: 1px solid var(--line); border-radius: 10px; scroll-margin-top: 6rem; transition: background-color 150ms; }
+.lesson-sources li:target, .lesson-sources li.is-active, .lesson-sources li.is-hover { background: var(--tint); }
+.src-n { display: inline-grid; place-items: center; height: 1.6rem; min-width: 1.6rem; border-radius: 9999px; background: var(--tint); font-family: var(--font-mono); font-size: var(--text-label); font-weight: 600; color: var(--accent); }
+.lesson-sources li.is-active .src-n, .lesson-sources li:target .src-n { background: var(--accent); color: var(--on-accent); }
+.src-body { display: grid; gap: 4px; min-width: 0; font-size: 0.875rem; line-height: 1.5; }
+.src-text { overflow-wrap: anywhere; }
+.src-text cite { font-style: italic; }
+.src-links { display: flex; flex-wrap: wrap; gap: 2px 12px; font-size: 0.8125rem; color: var(--muted); }
+.src-at { font-family: var(--font-mono); font-size: var(--text-label); color: var(--accent); }
+.src-at b { font-weight: 600; }
+
+/* Phone/tablet popover for a tapped citation. */
+.cite-pop { position: absolute; z-index: 60; width: min(22rem, calc(100vw - 32px)); padding: 12px 14px 14px; display: grid; gap: 8px; font-size: 0.875rem; line-height: 1.5; box-shadow: 0 0 0 1px var(--control), 0 8px 28px rgb(0 0 0 / 0.25); }
+.cite-pop[hidden] { display: none; }
+.cite-pop-head { display: flex; align-items: center; gap: 8px; }
+.cite-pop-label { font-family: var(--font-mono); font-size: var(--text-label); font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.cite-pop-title { display: inline-grid; place-items: center; height: 1.6rem; min-width: 1.6rem; border-radius: 9999px; background: var(--accent); color: var(--on-accent); font-family: var(--font-mono); font-size: var(--text-label); font-weight: 600; }
+.cite-pop-x { margin-left: auto; display: inline-grid; place-items: center; width: 44px; height: 44px; margin-top: -8px; margin-right: -8px; border: 0; border-radius: 9999px; background: transparent; color: var(--muted); cursor: pointer; }
+.cite-pop-x:hover { background: var(--tint); color: var(--ink); }
+.cite-pop-x svg { width: 20px; height: 20px; }
+.cite-pop-body { display: grid; gap: 4px; }
+.cite-pop-at { font-family: var(--font-mono); font-size: var(--text-label); font-weight: 600; color: var(--accent); }
+.cite-pop-links { font-size: 0.8125rem; }
+
+@media (min-width: 64rem) {
+  /* Three per row once there are enough lessons; fewer cards stretch to fill the row. */
+  .lesson-cards { grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr)); gap: 24px; }
+
+  .lesson { grid-template-columns: minmax(0, 1fr) 22rem; column-gap: 48px; row-gap: 40px; align-items: start; }
+  .lesson-head { grid-column: 1 / -1; }
+  .lesson-body { grid-column: 1; grid-row: 2; }
+  .lesson-sources { grid-column: 2; grid-row: 2; position: sticky; top: calc(var(--bar-h, 60px) + 2.5rem); }
+  .lesson-sources-inner { max-height: calc(100dvh - var(--bar-h, 60px) - 4rem); overflow-y: auto; overscroll-behavior: contain; padding-right: 4px; }
+  .lesson-sources h2 { font-size: 1.125rem; }
+  .lesson-sources li { padding: 10px 8px; }
+  /* The popover is a phone/tablet thing; desktop highlights the rail instead. */
+  .cite-pop { display: none !important; }
+}
+
+/* Dock "On this page" menu (desktop bar only). */
+.dock-toc { position: relative; }
+.dock-toc summary { list-style: none; }
+.dock-toc summary::-webkit-details-marker { display: none; }
+.dock-toc summary svg { width: 16px; height: 16px; transition: transform 150ms; }
+.dock-toc[open] summary { background: var(--tint); color: var(--accent); }
+.dock-toc[open] summary svg { transform: rotate(180deg); }
+.dock-toc-list { position: absolute; top: calc(100% + 10px); left: 50%; transform: translateX(-50%); min-width: 16rem; padding: 6px; list-style: none; white-space: normal; box-shadow: 0 0 0 1px var(--control), 0 8px 28px rgb(0 0 0 / 0.25); counter-reset: toc; }
+.dock-toc-list li { counter-increment: toc; }
+.dock-toc-list a { display: flex; align-items: center; gap: 10px; min-height: 40px; padding: 6px 12px; border-radius: 10px; color: var(--ink); font-size: 0.875rem; font-weight: 600; text-decoration: none; }
+.dock-toc-list a::before { content: counter(toc); min-width: 1.2em; font-family: var(--font-mono); font-size: var(--text-label); color: var(--muted); }
+.dock-toc-list a:hover { background: var(--tint); }
+
+@media (prefers-reduced-motion: reduce) {
+  .dock-toc summary svg { transition: none; }
+  a.cite, .lesson-sources li { transition: none; }
+}

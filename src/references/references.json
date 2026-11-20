@@ -150,5 +150,139 @@
     "publisher": "Logitech",
     "URL": "https://www.logitech.com/en-us/products/webcams/c920-pro-hd-webcam.960-000764.html",
     "accessed": { "date-parts": [[2026, 10, 28]] }
+  },
+  {
+    "id": "kodak-essential-reference-guide",
+    "type": "book",
+    "title": "The Essential Reference Guide for Filmmakers",
+    "author": [{ "literal": "Eastman Kodak Company" }],
+    "publisher": "Eastman Kodak Company",
+    "number": "H-845",
+    "issued": { "date-parts": [[2007]] },
+    "URL": "https://www.kodak.com/content/products-brochures/Film/kodak-essential-reference-guide-for-filmmakers.pdf",
+    "accessed": { "date-parts": [[2026, 11, 20]] }
+  },
+  {
+    "id": "itu-r-bt470-6",
+    "type": "standard",
+    "title": "Conventional television systems",
+    "author": [{ "literal": "International Telecommunication Union" }],
+    "publisher": "International Telecommunication Union",
+    "number": "ITU-R BT.470-6",
+    "issued": { "date-parts": [[1998, 11]] },
+    "URL": "https://www.itu.int/rec/R-REC-BT.470-6-199811-S/en",
+    "accessed": { "date-parts": [[2026, 11, 20]] }
+  },
+  {
+    "id": "dci-dcss-1-1",
+    "type": "standard",
+    "title": "Digital Cinema System Specification, Version 1.1",
+    "author": [{ "literal": "Digital Cinema Initiatives, LLC" }],
+    "publisher": "Digital Cinema Initiatives, LLC",
+    "number": "Version 1.1",
+    "issued": { "date-parts": [[2007, 4, 12]] },
+    "URL": "https://www.dcimovies.com/assets/DCI_DCinema_System_Spec_v1_1.xBYiscHL.pdf",
+    "accessed": { "date-parts": [[2026, 11, 20]] }
+  },
+  {
+    "id": "dci-dcss-1-5-1",
+    "type": "standard",
+    "title": "Digital Cinema System Specification, Version 1.5.1",
+    "author": [{ "literal": "Digital Cinema Initiatives, LLC" }],
+    "publisher": "Digital Cinema Initiatives, LLC",
+    "number": "Version 1.5.1",
+    "issued": { "date-parts": [[2026, 10, 20]] },
+    "URL": "https://documents.dcimovies.com/DCSS/release/1.5.1/",
+    "accessed": { "date-parts": [[2026, 11, 20]] }
+  },
+  {
+    "id": "arri-alexa-lf-anamorphic-2018",
+    "type": "report",
+    "title": "ALEXA LF & Anamorphic Lenses: White Paper",
+    "author": [{ "family": "Shipman-Mueller", "given": "Marc" }],
+    "publisher": "ARRI",
+    "issued": { "date-parts": [[2018, 7, 27]] },
+    "URL": "https://100-assets.arri.de/arri_assets/lf_assets/downloads/en/ALEXA_LF_&_Anamorphic_Lenses_-_White_Paper.pdf",
+    "accessed": { "date-parts": [[2026, 11, 20]] }
+  },
+  {
+    "id": "nikon-z6iii-manual-image-area",
+    "type": "webpage",
+    "title": "Nikon Z6III Online Manual: Image Recording Options (Image Area, Quality, and Size)",
+    "publisher": "Nikon",
+    "URL": "https://onlinemanual.nikonimglib.com/z6III/en/image_area_quality_and_size_36.html",
+    "accessed": { "date-parts": [[2026, 11, 20]] }
+  },
+  {
+    "id": "edmund-optics-focal-length-fov",
+    "type": "webpage",
+    "title": "Understanding Focal Length and Field of View",
+    "publisher": "Edmund Optics",
+    "URL": "https://www.edmundoptics.co.uk/resources/application-notes/imaging/understanding-focal-length-and-field-of-view/",
+    "accessed": { "date-parts": [[2026, 11, 20]] }
+  },
+  {
+    "id": "youtube-help-aspect-ratios",
+    "type": "webpage",
+    "title": "Video resolution & aspect ratios",
+    "container-title": "YouTube Help",
+    "publisher": "Google",
+    "URL": "https://support.google.com/youtube/answer/6375112?hl=en",
+    "accessed": { "date-parts": [[2026, 11, 20]] }
+  },
+  {
+    "id": "youtube-help-upload-shorts",
+    "type": "webpage",
+    "title": "Upload YouTube Shorts",
+    "container-title": "YouTube Help",
+    "publisher": "Google",
+    "URL": "https://support.google.com/youtube/answer/12779649?hl=en",
+    "accessed": { "date-parts": [[2026, 11, 20]] }
+  },
+  {
+    "id": "swiss-camera-museum-leica",
+    "type": "webpage",
+    "title": "Leica: “small negatives, large photographs”",
+    "publisher": "Swiss Camera Museum",
+    "publisher-place": "Vevey",
+    "URL": "https://www.cameramuseum.ch/en/discover/permanent-exhibition/the-century-of-the-film/lleica-small-negatives-large-photographs/",
+    "accessed": { "date-parts": [[2026, 11, 20]] }
+  },
+  {
+    "id": "fox-cinemascope-theatre-1954",
+    "type": "book",
+    "title": "CinemaScope: Information for the Theatre",
+    "author": [{ "literal": "Twentieth Century-Fox Film Corporation, Research and Development Division" }],
+    "publisher": "Twentieth Century-Fox Film Corporation",
+    "edition": "3rd rev.",
+    "issued": { "date-parts": [[1954, 10]] },
+    "URL": "https://archive.org/details/cinema-scope-info-4-theatre",
+    "accessed": { "date-parts": [[2026, 11, 20]] }
+  },
+  {
+    "id": "jsmpe-1932-04-standards-committee",
+    "type": "article-journal",
+    "title": "Society Announcements: Standards Committee",
+    "container-title": "Journal of the Society of Motion Picture Engineers",
+    "volume": "18",
+    "issue": "4",
+    "page": "538",
+    "issued": { "date-parts": [[1932, 4]] },
+    "DOI": "10.5594/J01350",
+    "URL": "https://archive.org/details/journalofsociety18socirich",
+    "accessed": { "date-parts": [[2026, 11, 20]] }
+  },
+  {
+    "id": "jsmpe-1932-08-progress-report",
+    "type": "article-journal",
+    "title": "Progress in the Motion Picture Industry: Report of the Progress Committee",
+    "author": [{ "literal": "SMPE Progress Committee" }],
+    "container-title": "Journal of the Society of Motion Picture Engineers",
+    "volume": "19",
+    "issue": "2",
+    "page": "117-159",
+    "issued": { "date-parts": [[1932, 8]] },
+    "URL": "https://archive.org/details/journalofsociety19socirich",
+    "accessed": { "date-parts": [[2026, 11, 20]] }
   }
 ]
