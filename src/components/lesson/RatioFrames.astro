@@ -5,8 +5,10 @@ interface Props {
   ratios: number[];
   /** Labels in the same order; default "2.39:1". */
   labels?: string[];
+  /** On a Lessons page card: decorative and hidden from screen readers (the card title names it). */
+  decorative?: boolean;
 }
-const { ratios, labels } = Astro.props;
+const { ratios, labels, decorative = false } = Astro.props;
 if (!ratios.length || ratios.some((r) => !(r > 0.2 && r < 5))) throw new Error(`RatioFrames: bad ratios ${ratios.join(', ')}`);
 
 const W = 640;
@@ -24,7 +26,7 @@ const aria = `Frames of ${frames.map((f) => f.label).join(', ')} drawn at the sa
 ---
 
 <div class="grid-paper lesson-drawing">
-  <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label={aria}>
+  <svg viewBox={`0 0 ${W} ${H}`} role={decorative ? undefined : 'img'} aria-label={decorative ? undefined : aria} aria-hidden={decorative ? 'true' : undefined}>
     {
       frames.map((f) => (
         <g class:list={['rf-frame', f.strong && 'rf-strong']}>

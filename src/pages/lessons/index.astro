@@ -4,12 +4,18 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import { t } from '../../i18n/en.ts';
 import { TOPICS, type Topic } from '../../content/topics.ts';
 import { getLessons, lessonUrl, longDate, readingMinutes } from '../../content/lessons.ts';
+import { firstDrawing } from '../../content/drawings.ts';
+import RatioFrames from '../../components/lesson/RatioFrames.astro';
 import '../../styles/lesson.css';
+
+// Card art: the drawing from each lesson's first figure (src/content/drawings.ts).
+const ART = { RatioFrames };
 
 const lessons = await Promise.all(
   (await getLessons()).map(async (l) => ({
     l,
     minutes: readingMinutes(l.body ?? ''),
+    art: firstDrawing(l.body ?? ''),
     sources: ((await render(l)).remarkPluginFrontmatter.sources ?? []).length as number,
   })),
 );
@@ -30,8 +36,15 @@ const topics = (Object.keys(TOPICS) as Topic[])
         <section aria-labelledby={`topic-${topic}`} class="space-y-4">
           <h2 id={`topic-${topic}`} class="lesson-topic">{t.lessons.topics[topic]}</h2>
           <ul class="lesson-cards">
-            {items.map(({ l, minutes, sources }) => (
+            {items.map(({ l, minutes, sources, art }) => {
+              const Art = art ? ART[art.name] : null;
+              return (
               <li class="card lesson-card">
+                {Art && (
+                  <div class="lesson-card-art">
+                    <Art {...(art!.props as { ratios: number[] })} decorative />
+                  </div>
+                )}
                 <h3>
                   <a href={lessonUrl(l.id)}>{l.data.title}</a>
                 </h3>
@@ -44,7 +57,8 @@ const topics = (Object.keys(TOPICS) as Topic[])
                   </span>
                 </p>
               </li>
-            ))}
+              );
+            })}
             {i === topics.length - 1 && (
               <li class="note lesson-card lesson-card-more">
                 <h3>{t.lessons.more[0]}</h3>

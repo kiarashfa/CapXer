@@ -9,15 +9,24 @@ import OurView from '../../components/lesson/OurView.astro';
 import { getLessons, readingMinutes, type Lesson } from '../../content/lessons.ts';
 
 export async function getStaticPaths() {
-  return (await getLessons()).map((lesson) => ({ params: { slug: lesson.id }, props: { lesson } }));
+  const all = await getLessons();
+  // "Next lesson" follows the Lessons page order and wraps around; none while there is one lesson.
+  return all.map((lesson, i) => ({
+    params: { slug: lesson.id },
+    props: { lesson, next: all.length > 1 ? all[(i + 1) % all.length] : undefined },
+  }));
 }
 
-const { lesson } = Astro.props as { lesson: Lesson };
+const { lesson, next } = Astro.props as { lesson: Lesson; next?: Lesson };
 const { Content, headings, remarkPluginFrontmatter } = await render(lesson);
 // Components every lesson can use without importing them.
 const components = { Figure, RatioFrames, Try, TryLink, OurView };
 ---
 
-<LessonLayout lesson={lesson} minutes={readingMinutes(lesson.body ?? '')} headings={headings} sources={remarkPluginFrontmatter.sources ?? []}>
+<LessonLayout lesson={lesson} minutes={readingMinutes(lesson.body ?? '')} headings={headings}
+  sources={remarkPluginFrontmatter.sources ?? []}
+  citedAt={remarkPluginFrontmatter.citedAt ?? []}
+  next={next}
+>
   <Content components={components} />
 </LessonLayout>

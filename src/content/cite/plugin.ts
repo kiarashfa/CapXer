@@ -26,6 +26,8 @@ export interface CitationOptions {
 export interface CitationData {
   /** Reference keys in order of first citation; source n is sources[n - 1]. */
   sources: string[];
+  /** For each source (same order), every place cited, sorted naturally ("p. 7", "p. 36", "table 3"). */
+  citedAt: string[][];
 }
 
 export const isLesson = (file: string) => /[\\/]src[\\/]content[\\/]lessons[\\/]/.test(file);
@@ -76,19 +78,28 @@ export function citations(options: CitationOptions) {
       return false;
     };
 
-    const link = (item: CiteItem, n: number) => ({
+    const places = new Map<string, string[]>();
+
+    // Raised source numbers (owner's choice, 2026-11-20): "decimal" + superscript 2, several at
+    // once "6,1". The number names the source; the exact place is in the link (popover) and in
+    // the source's "Cited at" list.
+    const link = (n: number, locators: string[]) => ({
       type: 'link',
       url: `#source-${n}`,
       data: {
         hProperties: {
           className: ['cite'],
           'data-source': String(n),
-          'data-locator': item.locator,
-          'aria-label': `Source ${n}, ${item.locator}`,
+          'data-locator': locators.join(', '),
+          'aria-label': `Source ${n}, ${locators.join(', ')}`,
         },
       },
-      // Non-breaking spaces keep "[1, p. 12" together; a long section name may still wrap.
-      children: [{ type: 'text', value: `[${n}, ${item.label} ${item.value}]` }],
+      children: [{ type: 'text', value: String(n) }],
+    });
+    const group = (links: unknown[]) => ({
+      type: 'citeGroup',
+      data: { hName: 'sup', hProperties: { className: ['cites'] } },
+      children: links.flatMap((l, k) => (k ? [{ type: 'text', value: ',' }, l] : [l])),
     });
 
     return {
@@ -112,15 +123,22 @@ export function citations(options: CitationOptions) {
             for (const i of unknown) errors.push(`${at(node)}  [@${i.key}] is not in src/references/references.json`);
             continue;
           }
-          if (m.index > last) out.push({ type: 'text', value: value.slice(last, m.index) });
-          const group = parsed.items.map((item) => {
+          // The raised number sits right after the word: drop the space before the marker.
+          const before = value.slice(last, m.index).trimEnd();
+          if (before) out.push({ type: 'text', value: before });
+          // One source cited twice in one marker shows one number with both places.
+          const byKey = new Map<string, CiteItem[]>();
+          for (const item of parsed.items) {
             if (!order.has(item.key)) order.set(item.key, order.size + 1);
-            return link(item, order.get(item.key)!);
-          });
-          group.forEach((l, i) => {
-            if (i > 0) out.push({ type: 'text', value: ' ' });
-            out.push(l);
-          });
+            byKey.set(item.key, [...(byKey.get(item.key) ?? []), item]);
+            const list = places.get(item.key) ?? [];
+            if (!list.includes(item.locator)) places.set(item.key, [...list, item.locator]);
+          }
+          const links = [...byKey].map(([key, items]) => link(order.get(key)!, items.map((it) => it.locator)));
+          // Two markers in a row ("[@a, p. 1] [@b, p. 2]") join one group, never "12".
+          const prev = out.at(-1) as { type?: string; children?: unknown[] } | undefined;
+          if (!before && prev?.type === 'citeGroup') prev.children!.push(...links.flatMap((l) => [{ type: 'text', value: ',' }, l]));
+          else out.push(group(links));
           last = m.index + m[0].length;
           opened++;
         }
@@ -155,9 +173,14 @@ export function citations(options: CitationOptions) {
               `Every factual paragraph and table needs [@key, locator]; instructions go in <Try>, opinion in <OurView>.`,
           );
         }
-        const data: CitationData = { sources: [...order.keys()] };
+        const natural = (a: string, b: string) => a.localeCompare(b, 'en', { numeric: true });
+        const sources = [...order.keys()];
+        const data: CitationData = { sources, citedAt: sources.map((k) => [...(places.get(k) ?? [])].sort(natural)) };
         const astro = ctx.data.astro;
-        if (astro?.frontmatter) astro.frontmatter.sources = data.sources;
+        if (astro?.frontmatter) {
+          astro.frontmatter.sources = data.sources;
+          astro.frontmatter.citedAt = data.citedAt;
+        }
         ctx.data.citations = data;
       },
     };

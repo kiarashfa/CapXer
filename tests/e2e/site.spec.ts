@@ -48,7 +48,9 @@ test.describe('pages', () => {
     test(`${path} has no words glued to links or buttons`, async ({ page }) => {
       await page.goto(path);
       const html = await page.locator('main').innerHTML();
-      expect(html.match(/[A-Za-z0-9,.:;!?]<(a|button|code|strong|em)\b[^>]*>.{0,30}/g) ?? []).toEqual([]);
+      // Lesson citations are raised numbers joined by commas ("6,1") on purpose.
+      const glued = (html.match(/[A-Za-z0-9,.:;!?]<(a|button|code|strong|em)\b[^>]*>.{0,30}/g) ?? []).filter((m) => !/class="cite"/.test(m));
+      expect(glued).toEqual([]);
     });
   }
 

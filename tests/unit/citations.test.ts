@@ -1,6 +1,6 @@
 import { pathToFileURL } from 'node:url';
 import { describe, expect, it } from 'vitest';
-import { mdxToJs } from 'satteri';
+import { markdownToHtml, mdxToJs } from 'satteri';
 import { citations, formatReference, parseMarker, type CitationData } from '../../src/content/cite/index.ts';
 import { references } from '../../src/references/index.ts';
 import { ReferenceSchema } from '../../src/references/schema.ts';
@@ -19,6 +19,8 @@ function compile(src: string, opts: Partial<Parameters<typeof citations>[0]> = {
   return { code: code.replace(/\\xA0|\u00a0/g, ' '), data };
 }
 const fails = (src: string, opts = {}) => () => compile(src, opts);
+// The same plugin through the Markdown entry point, to assert on the HTML a reader gets.
+const html = (src: string) => markdownToHtml(src, { mdastPlugins: [citations({ references: KEYS })], fileURL: LESSON }).html;
 
 describe('citation markers', () => {
   it('parses one or several citations with locators', () => {
@@ -38,17 +40,33 @@ describe('citation markers', () => {
 
 describe('citation plugin', () => {
   it('numbers sources by first appearance and reuses a number', () => {
-    const { code, data } = compile(
-      'First [@ebu-r95-2017, sec. 2].\n\nSecond [@smpte-st-59-1998, table 1; @ebu-r95-2017, sec. 3].\n',
-    );
+    const src = 'First [@ebu-r95-2017, sec. 2].\n\nSecond [@smpte-st-59-1998, table 1; @ebu-r95-2017, sec. 3].\n';
+    const { code, data } = compile(src);
     expect(data.citations?.sources).toEqual(['ebu-r95-2017', 'smpte-st-59-1998']);
     expect(data.astro.frontmatter.sources).toEqual(['ebu-r95-2017', 'smpte-st-59-1998']);
-    expect(code).toContain('"[1, sec. 2]"');
-    expect(code).toContain('"[2, table 1]"');
-    expect(code).toContain('"[1, sec. 3]"');
-    expect(code).toContain('href: "#source-2"');
-    expect(code).toContain('"aria-label": "Source 2, table 1"');
+    expect(data.astro.frontmatter.citedAt).toEqual([['sec. 2', 'sec. 3'], ['table 1']]);
     expect(code).not.toContain('[@');
+    const out = html(src);
+    // Raised source numbers right after the word; several sources joined in one group.
+    expect(out).toContain(
+      'First<sup class="cites"><a href="#source-1" class="cite" data-source="1" data-locator="sec. 2" aria-label="Source 1, sec. 2">1</a></sup>.',
+    );
+    expect(out).toContain(
+      'Second<sup class="cites"><a href="#source-2" class="cite" data-source="2" data-locator="table 1" aria-label="Source 2, table 1">2</a>,<a href="#source-1"',
+    );
+  });
+
+  it('merges places of one source and joins markers in a row', () => {
+    const out = html('A [@ebu-r95-2017, p. 3; @ebu-r95-2017, p. 4] and B [@ebu-r95-2017, p. 9] [@smpte-st-59-1998, table 1].\n');
+    expect(out).toContain('data-locator="p. 3, p. 4"');
+    expect(out.match(/class="cite"/g)).toHaveLength(3);
+    expect(out).toContain('>1</a>,<a href="#source-2"');
+    expect(out).not.toContain('</sup><sup');
+  });
+
+  it('sorts the places of a source naturally', () => {
+    const { data } = compile('A [@ebu-r95-2017, p. 36]. B [@ebu-r95-2017, p. 7]. C [@ebu-r95-2017, p. 189].\n');
+    expect(data.citations?.citedAt).toEqual([['p. 7', 'p. 36', 'p. 189']]);
   });
 
   it('fails on an unknown key, with file and line', () => {
@@ -92,7 +110,7 @@ describe('citation plugin', () => {
   it('ignores markers in code', () => {
     const { code } = compile('Write `[@key, p. 1]` to cite [@ebu-r95-2017, sec. 2].\n\n```\n[@also-ignored]\n```\n');
     expect(code).toContain('[@key, p. 1]');
-    expect(code).toContain('[1, sec. 2]');
+    expect(html('Write `[@key, p. 1]` to cite [@ebu-r95-2017, sec. 2].\n')).toContain('<code>[@key, p. 1]</code> to cite<sup class="cites">');
   });
 
   it('can relax the paragraph rule to warnings, but never unknown keys', () => {

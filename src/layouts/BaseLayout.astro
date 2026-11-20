@@ -128,6 +128,7 @@ const current = (href: string) => (path === href ? 'page' : path.startsWith(href
       </div>
       <nav id="site-menu" class="card menu-sheet" aria-label={t.nav.menuLabel} hidden>
         {pages.map((p) => <a href={p.href} aria-current={current(p.href)}>{p.label}</a>)}
+        <slot name="menu" />
         <button type="button" class="menu-install" data-install hidden>
           <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="3" width="12" height="18" rx="2.5"></rect><path d="M12 8v6M9.5 11.5 12 14l2.5-2.5"></path></svg>
           {t.pwa.install}

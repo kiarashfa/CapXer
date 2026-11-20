@@ -1,16 +1,20 @@
 ---
-// One lesson: title block, cited text, and the numbered Sources list.
-// Desktop: text left, Sources in a sticky rail on the right (a citation highlights
-// its entry). Phone/tablet: one column; a citation opens a small popover, and the
-// full list follows the text. Same markup for both; without JavaScript every
-// citation is a plain link to its entry.
+// One lesson (design E, owner 2026-11-20).
+// - Citations are raised source numbers; a click or tap opens a popover with the
+//   source and the exact place. Without JavaScript each is a plain link to its entry.
+// - Desktop: "On this page" contents list on the left, following the reader.
+// - Sources: one entry per source with every place cited, after the text, in a
+//   collapsible block that starts open.
+// - Text size buttons: dock on desktop, menu sheet on phone/tablet.
 import BaseLayout from './BaseLayout.astro';
+import TextSize from '../components/lesson/TextSize.astro';
 import { t } from '../i18n/en.ts';
 import { url } from '../lib/url.ts';
 import { REPO_URL } from '../config/site.ts';
+import { TEXT_SIZE_KEY, TEXT_STEPS } from '../lib/text-size.ts';
 import { getReference } from '../references/index.ts';
 import { formatReference } from '../content/cite/format.ts';
-import { longDate, type Lesson } from '../content/lessons.ts';
+import { lessonUrl, longDate, type Lesson } from '../content/lessons.ts';
 import '../styles/lesson.css';
 
 interface Props {
@@ -19,35 +23,38 @@ interface Props {
   headings: { depth: number; slug: string; text: string }[];
   /** Reference keys in order of first citation (from the citation plugin). */
   sources: string[];
+  /** Every place cited, per source, same order (from the citation plugin). */
+  citedAt: string[][];
+  /** The lesson after this one; undefined while there is only one lesson. */
+  next?: Lesson;
 }
-const { lesson, minutes, headings, sources } = Astro.props;
+const { lesson, minutes, headings, sources, citedAt, next } = Astro.props;
 const { title, summary, topic, updated } = lesson.data;
-const sections = headings.filter((h) => h.depth === 2);
+const sections = headings.filter((h) => h.depth === 2 && h.slug !== 'sources');
 const list = sources.map((id, i) => {
   const ref = getReference(id);
   if (!ref) throw new Error(`Lesson ${lesson.id}: source ${id} missing from the reference library`);
-  return { n: i + 1, id, f: formatReference(ref) };
+  return { n: i + 1, id, f: formatReference(ref), at: citedAt[i] ?? [] };
 });
 ---
 
-<BaseLayout title={title} description={summary} dockLabel={t.dock.onThisPage}>
-  {
-    sections.length > 0 && (
-      <div slot="dock" class="dock-row">
-        {/* Lessons have more sections than fit in the bar: one "On this page" menu, plus Sources. */}
-        <details class="dock-toc">
-          <summary class="dock-tool">
-            {t.dock.onThisPage}
-            <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"></path></svg>
-          </summary>
-          <ol class="card dock-toc-list">
-            {sections.map((h) => <li><a href={`#${h.slug}`}>{h.text}</a></li>)}
-          </ol>
-        </details>
-        {list.length > 0 && <a class="dock-tool" href="#sources">{t.lessons.sourcesTitle}</a>}
-      </div>
-    )
-  }
+<BaseLayout title={title} description={summary} dockLabel={t.dock.label}>
+  <script is:inline slot="head" define:vars={{ key: TEXT_SIZE_KEY, steps: TEXT_STEPS }}>
+    try {
+      const z = Number(localStorage.getItem(key));
+      if (steps.includes(z)) document.documentElement.style.setProperty('--text-zoom', String(z));
+    } catch {}
+  </script>
+  <div slot="dock" class="dock-row">
+    <span class="dock-label">{t.lessons.textSize}</span>
+    <TextSize />
+    {list.length > 0 && <><span class="dock-sep" aria-hidden="true"></span><a class="dock-tool" href="#sources">{t.lessons.sourcesTitle}</a></>}
+  </div>
+  <div slot="menu" class="menu-text-size">
+    <span>{t.lessons.textSize}</span>
+    <TextSize />
+  </div>
+
   <article class="lesson" data-lesson={lesson.id}>
     <header class="lesson-head">
       <p class="lesson-crumb"><a href={url('lessons')}>{t.lessons.title}</a><span aria-hidden="true">/</span>{t.lessons.topics[topic]}</p>
@@ -60,22 +67,62 @@ const list = sources.map((id, i) => {
       </p>
     </header>
 
+    {
+      sections.length > 0 && (
+        <nav class="lesson-toc" aria-labelledby="toc-title">
+          <p id="toc-title" class="lesson-toc-title">{t.dock.onThisPage}</p>
+          <ol>
+            {sections.map((h) => (
+              <li>
+                <a href={`#${h.slug}`}>{h.text}</a>
+              </li>
+            ))}
+            {list.length > 0 && (
+              <li class="toc-sources">
+                <a href="#sources">{t.lessons.sourcesTitle}</a>
+              </li>
+            )}
+          </ol>
+        </nav>
+      )
+    }
+
     <div class="lesson-body prose">
       <slot />
+
+      {
+        next && (
+          <nav class="lesson-next" aria-label={t.lessons.next}>
+            <a href={lessonUrl(next.id)}>
+              <small>{t.lessons.next}</small>
+              <b>{next.data.title}</b>
+              <span>{next.data.summary}</span>
+            </a>
+            <a href={url('viewfinder')}>
+              <small>{t.lessons.tool}</small>
+              <b>{t.nav.viewfinder}</b>
+              <span>{t.lessons.toolHint}</span>
+            </a>
+          </nav>
+        )
+      }
+
       <p class="lesson-report">
         {t.lessons.mistake}{' '}
         <a href={`${REPO_URL}/issues`}>{t.lessons.report}</a>.
       </p>
-    </div>
 
-    {
-      list.length > 0 && (
-        <aside class="lesson-sources" aria-labelledby="sources">
-          <div class="lesson-sources-inner">
-            <h2 id="sources">{t.lessons.sourcesTitle}</h2>
+      {
+        list.length > 0 && (
+          <details class="lesson-sources" open>
+            <summary>
+              <h2 id="sources">{t.lessons.sourcesTitle}</h2>
+              <span class="lesson-sources-count">{list.length}</span>
+              <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"></path></svg>
+            </summary>
             <p class="lesson-sources-hint">{t.lessons.sourcesHint}</p>
             <ol>
-              {list.map(({ n, id, f }) => (
+              {list.map(({ n, id, f, at }) => (
                 <li id={`source-${n}`} data-ref={id}>
                   <span class="src-n">{n}</span>
                   <div class="src-body">
@@ -88,22 +135,22 @@ const list = sources.map((id, i) => {
                       {f.url && <a href={f.url} rel="noopener">{t.lessons.openSource}</a>}
                       {f.accessed && <span>{f.accessed}</span>}
                     </p>
-                    <p class="src-at" hidden>
-                      {t.lessons.citedAt}: <b />
+                    <p class="src-at">
+                      {t.lessons.citedAt}: <b>{at.join(', ')}</b>
                     </p>
                   </div>
                 </li>
               ))}
             </ol>
-          </div>
-        </aside>
-      )
-    }
+          </details>
+        )
+      }
+    </div>
   </article>
 
-  <div class="cite-pop card" data-cited-at={t.lessons.citedAt} role="dialog" aria-modal="false" aria-labelledby="cite-pop-title" hidden>
+  <div class="cite-pop card" data-cited-at={t.lessons.citedHere} role="dialog" aria-modal="false" aria-labelledby="cite-pop-label" hidden>
     <div class="cite-pop-head">
-      <span class="cite-pop-label">{t.lessons.source}</span><span id="cite-pop-title" class="cite-pop-title"></span>
+      <span id="cite-pop-label" class="cite-pop-label">{t.lessons.source}</span><span class="cite-pop-title"></span>
       <button type="button" class="cite-pop-x" aria-label={t.lessons.close} title={t.lessons.close}>
         <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"></path></svg>
       </button>
@@ -116,6 +163,8 @@ const list = sources.map((id, i) => {
 
 <script>
   import { initCitations, initLessonToc } from '../lib/citations.ts';
+  import { initTextSize } from '../lib/text-size.ts';
   initCitations();
   initLessonToc();
+  initTextSize();
 </script>
