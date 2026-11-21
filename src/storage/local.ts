@@ -5,7 +5,8 @@ import type { SaveAdapter, SaveFile } from './schema.ts';
 // The save file in this browser's localStorage. Reads are also offered
 // synchronously, so the viewfinder can restore before its first paint.
 
-export const SAVE_KEY = 'capxer.save';
+export { SAVE_KEY } from './schema.ts';
+import { SAVE_KEY } from './schema.ts';
 
 type Store = Pick<Storage, 'getItem' | 'setItem' | 'removeItem'>;
 

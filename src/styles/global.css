@@ -25,6 +25,10 @@
   --accent: #9db0ff;
   --on-accent: #0c1222;
   --tint: #1f2847;
+  /* Cloud-save dot on the profile circle (non-text, >= 3:1 on surface). */
+  --ok: #51cf66;
+  --wait: #fab005;
+  --act: #ff6b6b;
 }
 
 [data-theme="light"] {
@@ -41,6 +45,9 @@
   --accent: #3451d1;
   --on-accent: #ffffff;
   --tint: #e9edfb;
+  --ok: #2b8a3e;
+  --wait: #b86e00;
+  --act: #d42a2a;
 }
 
 /* Layout: exactly two views.

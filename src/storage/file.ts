@@ -97,8 +97,11 @@ export function mergeSave(mine: SaveFile, theirs: SaveFile, how: 'merge' | 'repl
   for (const c of theirs.gear.cameras) if (!cameras.some((m) => m.id === c.id) && cameras.length < LIMITS.cameras) cameras.push(c);
   const lenses = [...mine.gear.lenses];
   for (const l of theirs.gear.lenses) if (!lenses.includes(l) && lenses.length < LIMITS.lenses) lenses.push(l);
+  // A profile only comes in when you have none, or theirs is newer.
+  const profile = theirs.profile && (!mine.profile || Date.parse(theirs.profile.changedAt) > Date.parse(mine.profile.changedAt)) ? theirs.profile : mine.profile;
   return structuredClone({
     ...mine,
+    ...(profile ? { profile } : {}),
     savedAt: now.toISOString(),
     setups,
     gear: { cameras, lenses },

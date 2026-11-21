@@ -5,7 +5,7 @@ import { aspectPreset, defaultSetup, FRAME_COLORS } from '../setup/presets.ts';
 import type { Calibration } from '../camera/lens.ts';
 import { ZEBRA_LEVELS } from '../analysis/levels.ts';
 import type { CustomSensor, FrameColor, Mode, Setup } from '../setup/types.ts';
-import { APP_ID, LIMITS, SAVE_VERSION, type AidsPrefs, type Calibrations, type SaveFile, type SavedSetup } from './schema.ts';
+import { APP_ID, DELETED_DAYS, LIMITS, SAVE_VERSION, TINTS, type AidsPrefs, type Calibrations, type Deleted, type Profile, type SaveFile, type SavedSetup } from './schema.ts';
 
 // Everything read from storage, a file or a link is untrusted: it may be old,
 // hand-edited, cut off or hostile. These functions never throw; they keep what
@@ -121,6 +121,61 @@ export function sanitizeAids(raw: unknown): AidsPrefs {
 
 const ISO = (v: unknown, fallback: string) => (typeof v === 'string' && !Number.isNaN(Date.parse(v)) ? new Date(v).toISOString() : fallback);
 
+/** A small picture as a base64 data: URL. Anything else (remote links, SVG, huge strings) is dropped. */
+const PICTURE = /^data:image\/(webp|jpeg|png);base64,[A-Za-z0-9+/]+={0,2}$/;
+
+/** One or two letters or digits, upper case ("SK", "K", "7"). */
+export function cleanInitials(v: unknown): string {
+  if (typeof v !== 'string') return '';
+  return [...v.normalize('NFC').replace(/[^\p{L}\p{N}]/gu, '')].slice(0, 2).join('').toLocaleUpperCase('en-GB');
+}
+
+/** "Sam Kade" -> "SK", "Sam" -> "SA", "" -> "". */
+export function initialsOf(name: string): string {
+  const words = name.trim().split(/\s+/).map((w) => w.replace(/[^\p{L}\p{N}]/gu, '')).filter(Boolean);
+  if (words.length === 0) return '';
+  const first = [...words[0]!];
+  const last = words.length > 1 ? [...words.at(-1)!] : [];
+  return cleanInitials(last.length ? first[0]! + last[0]! : first.slice(0, 2).join(''));
+}
+
+export function cleanProfileName(v: unknown): string {
+  if (typeof v !== 'string') return '';
+  return v.replace(/[\u0000-\u001f\u007f]/g, '').replace(/\s+/g, ' ').trim().slice(0, LIMITS.profileName).trim();
+}
+
+export function sanitizeProfile(raw: unknown, now = new Date()): Profile | undefined {
+  if (!isObj(raw)) return undefined;
+  const picture = typeof raw.picture === 'string' && raw.picture.length <= LIMITS.picture && PICTURE.test(raw.picture) ? raw.picture : null;
+  const ini = isObj(raw.initials) ? raw.initials : null;
+  const letters = cleanInitials(ini?.letters);
+  return {
+    name: cleanProfileName(raw.name),
+    picture,
+    initials: letters ? { letters, tint: oneOf(ini?.tint, TINTS, 'blue') } : null,
+    changedAt: ISO(raw.changedAt, now.toISOString()),
+  };
+}
+
+export const emptyDeleted = (): Deleted => ({ setups: {}, cameras: {}, lenses: {} });
+
+/** Deletion records with valid keys and dates, without those older than DELETED_DAYS. */
+export function sanitizeDeleted(raw: unknown, now = new Date()): Deleted {
+  const r = isObj(raw) ? raw : {};
+  const oldest = now.getTime() - DELETED_DAYS * 86_400_000;
+  const part = (v: unknown, key: RegExp): Record<string, string> => {
+    const out: Record<string, string> = {};
+    if (!isObj(v)) return out;
+    for (const [k, when] of Object.entries(v).slice(0, 1000)) {
+      if (!key.test(k) || typeof when !== 'string') continue;
+      const t = Date.parse(when);
+      if (!Number.isNaN(t) && t >= oldest) out[k] = new Date(t).toISOString();
+    }
+    return out;
+  };
+  return { setups: part(r.setups, /^[a-z0-9]{1,16}$/), cameras: part(r.cameras, /^custom\/[a-z0-9]{1,12}$/), lenses: part(r.lenses, /^\d{1,4}(\.\d)?$/) };
+}
+
 export function emptySave(now = new Date()): SaveFile {
   return {
     app: APP_ID,
@@ -131,6 +186,7 @@ export function emptySave(now = new Date()): SaveFile {
     gear: { cameras: [], lenses: [] },
     calibration: {},
     aids: { ...DEFAULT_AIDS },
+    deleted: emptyDeleted(),
   };
 }
 
@@ -170,14 +226,17 @@ export function sanitizeSave(raw: unknown, now = new Date()): SaveFile | null {
   if (phone) calibration.phone = phone;
   if (webcam) calibration.webcam = webcam;
 
+  const profile = sanitizeProfile(raw.profile, now);
   return {
     app: APP_ID,
     v: SAVE_VERSION,
     savedAt: ISO(raw.savedAt, stamp),
+    ...(profile ? { profile } : {}),
     current: sanitizeSetup(raw.current, cameras),
     setups,
     gear: { cameras, lenses },
     calibration,
     aids: sanitizeAids(raw.aids),
+    deleted: sanitizeDeleted(raw.deleted, now),
   };
 }

@@ -18,7 +18,9 @@ import { BASE_PATH } from '../src/config/site.ts';
 export const BUDGET = {
   /** Start-up JS of the viewfinder page, KB gzipped. */
   viewfinderJs: 90,
-  /** Start-up JS of any other page, KB gzipped. */
+  /** Start-up JS of the profile page (v1.1: it validates save files, which needs the camera data; measured 52 KB). */
+  userJs: 70,
+  /** Start-up JS of any other page, KB gzipped (v1.1 adds the profile circle: measured 34 KB). */
   pageJs: 40,
   /** Everything the service worker precaches, KB uncompressed. */
   precache: 900,
@@ -87,7 +89,7 @@ export function measure() {
     const rel = relative(DIST, file).split(sep).join('/');
     const js = jsClosure(pageEntries(readFileSync(file, 'utf8')));
     const kb = [...js.values()].reduce((a, b) => a + b, 0) / 1024;
-    const limit = rel.startsWith('viewfinder/') ? BUDGET.viewfinderJs : BUDGET.pageJs;
+    const limit = rel.startsWith('viewfinder/') ? BUDGET.viewfinderJs : rel.startsWith('user/') ? BUDGET.userJs : BUDGET.pageJs;
     return { page: rel, kb, limit, files: js.size };
   });
   const sw = readFileSync(join(DIST, 'sw.js'), 'utf8');

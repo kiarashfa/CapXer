@@ -10,6 +10,7 @@ import { BT709 } from '../analysis/levels.ts';
 import { CREDITS } from '../content/credits.ts';
 import { longDate } from '../content/lessons.ts';
 import { REPO_URL, VERSION } from '../config/site.ts';
+import { url } from '../lib/url.ts';
 
 // Every source the camera and device database, the viewfinder's guides and the exposure aids cite, generated from the data so it never drifts.
 const citedIds = new Set([
@@ -32,6 +33,7 @@ const built = longDate(new Date());
   <div slot="dock" class="dock-row">
     <span class="dock-label">{t.dock.onThisPage}</span>
     <a class="dock-tool" href="#licence">Licence</a>
+    <a class="dock-tool" href="#privacy">Privacy</a>
     <a class="dock-tool" href="#credits">Credits</a>
     <a class="dock-tool" href="#install">Install</a>
     <a class="dock-tool" href="#exposure-aids">Exposure aids</a>
@@ -50,6 +52,28 @@ const built = longDate(new Date());
       <p class="text-muted">
         The full list of third-party software and data is in the{' '}
         <a href={`${REPO_URL}/blob/main/THIRD_PARTY.md`}>THIRD_PARTY.md file</a>.
+      </p>
+    </DocSection>
+
+    <DocSection id="privacy" title="Privacy">
+      <p>
+        CapXer has no server, no database and no accounts. Your camera feed, photos, setups, name and picture stay on
+        your device unless you share a setup link, download your save file or turn on cloud save. If you allow
+        analytics, Google Analytics counts visits to the site and sets cookies, but it never sees your camera, your
+        setups, your name or your picture. If you decline, it is not loaded at all. You can change your answer at any
+        time:{' '}
+        <button type="button" class="cursor-pointer text-accent underline underline-offset-3" data-open-consent>
+          {t.consent.settings}
+        </button>
+      </p>
+      <p>
+        Cloud save is off unless you turn it on in <a href={url('user')}>your profile</a>. Your browser then keeps a
+        copy of your save file in your own Google Drive or Dropbox, in a private folder only CapXer can use, and nothing
+        passes through any server of ours. CapXer uses that access only to read and write this one file. You can
+        disconnect at any time, which also ends the access, and signing out removes everything from the browser. Data
+        from Google is handled under the{' '}
+        <a href="https://developers.google.com/terms/api-services-user-data-policy">Google API Services User Data Policy</a>,
+        including its Limited Use requirements.
       </p>
     </DocSection>
 

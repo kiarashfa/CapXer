@@ -8,7 +8,9 @@
 // Here the tag goes first in <head> and every inline script gets a sha256 hash,
 // so script-src never needs 'unsafe-inline'.
 // Styles keep 'unsafe-inline': Svelte and our markup use style="" attributes,
-// which hashes cannot allow. Google hosts are needed only after "Allow analytics".
+// which hashes cannot allow. Google Analytics hosts are needed only after "Allow
+// analytics"; Google sign-in, Drive and Dropbox only after the user connects a
+// cloud save (src/user/cloud.ts).
 // tests/e2e/console.spec.ts fails on any CSP violation in the browser.
 import { createHash } from 'node:crypto';
 import { readFileSync, readdirSync, statSync, writeFileSync } from 'node:fs';
@@ -16,6 +18,7 @@ import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const GA = ['https://*.google-analytics.com', 'https://*.analytics.google.com', 'https://*.googletagmanager.com'];
+const CLOUD = ['https://accounts.google.com', 'https://www.googleapis.com', 'https://api.dropboxapi.com', 'https://content.dropboxapi.com'];
 
 export const DIRECTIVES: Record<string, string[]> = {
   'default-src': ["'self'"],
@@ -28,9 +31,10 @@ export const DIRECTIVES: Record<string, string[]> = {
   'worker-src': ["'self'"],
   'media-src': ["'self'", 'blob:', 'mediastream:'],
   'img-src': ["'self'", 'data:', 'blob:', ...GA],
-  'connect-src': ["'self'", ...GA],
-  'style-src': ["'self'", "'unsafe-inline'"],
-  'script-src': ["'self'", 'https://www.googletagmanager.com'],
+  'connect-src': ["'self'", ...GA, ...CLOUD],
+  'frame-src': ['https://accounts.google.com'],
+  'style-src': ["'self'", "'unsafe-inline'", 'https://accounts.google.com/gsi/style'],
+  'script-src': ["'self'", 'https://www.googletagmanager.com', 'https://accounts.google.com/gsi/client'],
 };
 
 export function policyFor(html: string): string {

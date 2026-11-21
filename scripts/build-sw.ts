@@ -4,7 +4,7 @@
 // stays out of the precache (large assets, online only).
 //
 // Fonts: the Latin files are precached; other scripts' subsets load on first
-// use and are cached then. Google Analytics is never cached.
+// use and are cached then. Google Analytics and the cloud-save APIs are never cached.
 // Updates: skipWaiting is off. A new version waits until the user presses
 // Reload on the "Update ready" note (src/lib/pwa.ts), which sends SKIP_WAITING.
 import { generateSW } from 'workbox-build';
@@ -27,6 +27,8 @@ const { count, size, warnings } = await generateSW({
   // Hashed file names under _astro/ never change content; no extra revision needed.
   dontCacheBustURLsMatching: /^.*\/_astro\//,
   directoryIndex: 'index.html',
+  // Dropbox sends the user back to /user/?code=...&state=...: serve the cached page, not the 404.
+  ignoreURLParametersMatching: [/^utm_/, /^fbclid$/, /^code$/, /^state$/, /^error/],
   navigateFallback: `${base}404.html`,
   navigateFallbackAllowlist: [new RegExp(`^${base.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`)],
   navigateFallbackDenylist: [new RegExp(`^${base}lab/`)],

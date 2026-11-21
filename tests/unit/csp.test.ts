@@ -16,7 +16,10 @@ describe('build-csp', () => {
 
   it('keeps script-src strict and blocks plugins', () => {
     const p = policyFor(page(''));
-    expect(p).toMatch(/script-src 'self' https:\/\/www\.googletagmanager\.com(;|$)/);
+    expect(p).toMatch(/script-src 'self' https:\/\/www\.googletagmanager\.com https:\/\/accounts\.google\.com\/gsi\/client(;|$)/);
+    // Cloud save: only the providers' own API hosts, and Google's sign-in window.
+    expect(p).toMatch(/connect-src [^;]*https:\/\/content\.dropboxapi\.com/);
+    expect(p).toMatch(/frame-src https:\/\/accounts\.google\.com(;|$)/);
     expect(p).toContain("object-src 'none'");
     expect(p).not.toMatch(/script-src[^;]*'unsafe-(inline|eval)'/);
   });

@@ -8,8 +8,9 @@ Pick a sensor or film format, an aspect ratio and a focal length, and see exactl
 * **Live camera**: check framing in a real location through your phone or webcam, with a level, histogram, zebras, false colour and focus peaking.
 * **Lessons**: short lessons on aspect ratios, focal length and composition. Every fact links to the exact place in its source.
 * **Works offline**: install it as an app on your phone or computer.
+* **Your profile**: a name and picture, and your save file as your key. Optional cloud save to your own Google Drive or Dropbox.
 
-Your camera feed never leaves your device. No accounts, no ads, and analytics only runs if you allow it. Details are on the [privacy page](https://kiarashfa.github.io/CapXer/privacy/).
+Your camera feed never leaves your device. No accounts, no ads, and analytics only runs if you allow it. Details are in the [privacy section](https://kiarashfa.github.io/CapXer/about/#privacy).
 
 Made for current versions of Chrome, Edge, Firefox and Safari. Not yet tested on a real iPhone.
 

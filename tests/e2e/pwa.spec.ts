@@ -42,7 +42,7 @@ test('after one visit, every page works offline', async ({ page, context, browse
   await expect.poll(() => page.evaluate(() => !!navigator.serviceWorker.controller)).toBe(true);
 
   await context.setOffline(true);
-  for (const path of ['./', 'about/', 'privacy/', 'lessons/', 'lessons/aspect-ratios/', 'viewfinder/']) {
+  for (const path of ['./', 'about/', 'user/', 'lessons/', 'lessons/aspect-ratios/', 'viewfinder/']) {
     await page.goto(path);
     await expect(page.locator('main')).toBeVisible();
   }

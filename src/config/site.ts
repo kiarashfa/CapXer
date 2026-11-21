@@ -5,7 +5,7 @@
 export const SITE_NAME = 'CapXer';
 
 /** Release version, shown on the About page. Must equal package.json (tests/unit/credits.test.ts). */
-export const VERSION = '1.0.0';
+export const VERSION = '1.1.0';
 
 /** Origin the site is served from. */
 export const SITE_ORIGIN = 'https://kiarashfa.github.io';

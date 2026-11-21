@@ -1,0 +1,76 @@
+/* Profile circle, profile menu and the shared dialog (every page), from the v1.1 mock. */
+
+/* The circle: picture, initials on a colour, or the person icon. --av sets the size. */
+.avatar {
+  --av: 34px;
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: var(--av);
+  height: var(--av);
+  overflow: hidden;
+  border: 1px solid var(--control);
+  border-radius: 9999px;
+  background: var(--surface);
+  color: var(--muted);
+  font-weight: 700;
+  font-size: calc(var(--av) * 0.4);
+  letter-spacing: 0.02em;
+  line-height: 1;
+  user-select: none;
+}
+.avatar-icon { width: 62%; height: 62%; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; }
+.avatar[data-kind] .avatar-icon { display: none; }
+.avatar-img { width: 100%; height: 100%; object-fit: cover; }
+.avatar[data-kind="picture"] { border-color: transparent; }
+.avatar[data-kind="initials"] { border-color: transparent; color: #fff; background: #3451d1; }
+/* Each colour keeps white letters at 4.5:1 or more. */
+.avatar[data-tint="blue"] { background: #3451d1; }
+.avatar[data-tint="teal"] { background: #0f766e; }
+.avatar[data-tint="green"] { background: #2f7d32; }
+.avatar[data-tint="amber"] { background: #a14b06; }
+.avatar[data-tint="rose"] { background: #be185d; }
+.avatar[data-tint="violet"] { background: #6d28d9; }
+.avatar[data-tint="slate"] { background: #475569; }
+
+.avatar-btn { position: relative; display: inline-grid; place-items: center; width: 44px; height: 44px; padding: 0; border: 0; border-radius: 9999px; background: transparent; cursor: pointer; }
+.avatar-btn:hover .avatar, .avatar-btn[aria-expanded="true"] .avatar { box-shadow: 0 0 0 3px var(--tint), 0 0 0 4px var(--control); }
+.avatar-dot { position: absolute; right: 3px; bottom: 3px; width: 11px; height: 11px; border-radius: 9999px; box-shadow: 0 0 0 2px var(--surface); }
+.avatar-dot[hidden] { display: none; }
+.avatar-dot[data-dot="saved"], .status-dot[data-dot="saved"] { background: var(--ok); }
+.avatar-dot[data-dot="pending"], .status-dot[data-dot="pending"] { background: var(--wait); }
+.avatar-dot[data-dot="auth"], .status-dot[data-dot="auth"] { background: var(--act); }
+.status-dot { display: inline-block; flex: none; width: 9px; height: 9px; border-radius: 9999px; background: var(--control); }
+
+/* The menu under the circle. */
+.profile-menu { position: absolute; z-index: 40; top: calc(var(--bar-h) + 8px); left: 8px; right: 8px; padding: 8px; }
+.profile-menu[hidden] { display: none; }
+.pm-head { display: flex; align-items: center; gap: 12px; margin-bottom: 6px; padding: 10px 10px 12px; border-bottom: 1px solid var(--line); }
+.pm-head .avatar { --av: 48px; }
+.pm-head b { display: block; overflow-wrap: anywhere; }
+.pm-head small { display: flex; align-items: center; gap: 6px; color: var(--muted); font-size: 0.8125rem; line-height: 1.4; }
+.pm-item { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 44px; padding: 0 12px; border: 0; border-radius: 12px; background: none; color: var(--ink); font: inherit; font-weight: 600; text-align: left; text-decoration: none; cursor: pointer; }
+.pm-item:hover { background: var(--tint); }
+.pm-item svg { flex: none; width: 20px; height: 20px; color: var(--muted); fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.pm-item.attention { background: color-mix(in srgb, var(--wait) 16%, transparent); }
+.pm-sep { height: 1px; margin: 6px 4px; background: var(--line); }
+@media (min-width: 64rem) {
+  .profile-menu { left: auto; right: 24px; width: 19rem; }
+}
+
+/* A plain dialog for site-wide questions (sign out, picture, import). */
+.dlg { margin: auto; width: min(32rem, calc(100% - 24px)); max-height: calc(100dvh - 32px); padding: 20px; border: 0; border-radius: 20px; background: var(--surface); color: var(--ink); box-shadow: 0 0 0 1px var(--line), 0 24px 60px rgb(0 0 0 / 0.3); }
+.dlg::backdrop { background: rgb(0 0 0 / 0.45); }
+.dlg h2 { margin-bottom: 8px; font-size: 1.25rem; font-weight: 800; }
+.dlg p { line-height: 1.6; color: var(--muted); }
+.dlg p + p { margin-top: 8px; }
+.dlg p.strong { color: var(--ink); font-weight: 600; }
+.dlg .dlg-acts { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; margin-top: 20px; }
+.dlg .dlg-error { margin-top: 12px; padding: 10px 12px; border-radius: 12px; background: color-mix(in srgb, var(--act) 14%, transparent); color: var(--ink); }
+
+@media (forced-colors: active) {
+  :root .avatar, :root .avatar-dot, :root .status-dot { forced-color-adjust: none; }
+  :root .avatar-dot, :root .status-dot { border: 1px solid CanvasText; }
+  :root .profile-menu, :root .dlg { border: 1px solid CanvasText; }
+}

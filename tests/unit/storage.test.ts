@@ -3,7 +3,9 @@ import { sensors } from '../../src/data/index.ts';
 import { ASPECTS, defaultSetup } from '../../src/setup/presets.ts';
 import { decodeLink, encodeLink } from '../../src/storage/link.ts';
 import { migrate } from '../../src/storage/migrate.ts';
-import { emptySave, sanitizeCalibration, sanitizeSave, sanitizeSetup } from '../../src/storage/sanitize.ts';
+import { cleanInitials, emptyDeleted, emptySave, initialsOf, sanitizeCalibration, sanitizeDeleted, sanitizeProfile, sanitizeSave, sanitizeSetup } from '../../src/storage/sanitize.ts';
+import { mergeSync } from '../../src/storage/sync.ts';
+import { withDeletions } from '../../src/storage/store.ts';
 import { exportName, exportText, mergeSave, parseFile, summarize, uniqueName } from '../../src/storage/file.ts';
 import { localAdapter } from '../../src/storage/local.ts';
 import { LIMITS, newId, type SaveFile } from '../../src/storage/schema.ts';
@@ -28,12 +30,17 @@ const SAMPLE_V1 = {
   aids: { histogram: true, histMode: 'rgb', picture: 'zebras', zebra: 90, peaking: true, peakColor: 'amber', peakSens: 'high' },
 };
 
+/** Brings a document to the current version, as every reader does before sanitizing. */
+const current = (raw: unknown) => {
+  const m = migrate(raw);
+  return m.ok ? m.doc : null;
+};
+
 describe('save file', () => {
-  it('opens the version 1 sample unchanged', () => {
-    const m = migrate(structuredClone(SAMPLE_V1));
-    expect(m.ok).toBe(true);
-    const file = sanitizeSave(m.ok ? m.doc : null, NOW);
-    expect(file).toEqual(SAMPLE_V1);
+  it('opens the version 1 sample: same content, version 2, nothing deleted, no profile', () => {
+    const file = sanitizeSave(current(structuredClone(SAMPLE_V1)), NOW);
+    expect(file).toEqual({ ...SAMPLE_V1, v: 2, deleted: { setups: {}, cameras: {}, lenses: {} } });
+    expect(file).not.toHaveProperty('profile');
   });
 
   it('refuses things that are not a CapXer save, and files from a newer version', () => {
@@ -58,7 +65,7 @@ describe('save file', () => {
       calibration: { phone: { kind: 'device', deviceId: 'samsung/galaxy-s25', cameraId: 'nope' }, webcam: { kind: 'equivalent', mm: 4000 } },
       aids: { zebra: 42, picture: 'everything' },
     };
-    const f = sanitizeSave(bad, NOW)!;
+    const f = sanitizeSave(current(bad), NOW)!;
     expect(f.current).toEqual({ ...defaultSetup('cinema'), focal: f.current.focal, mask: 0, distance: 3 });
     expect(f.current.focal).toBeLessThanOrEqual(800);
     expect(f.setups).toHaveLength(1);
@@ -72,14 +79,14 @@ describe('save file', () => {
 
   it('caps list sizes and name length', () => {
     const many = { ...structuredClone(SAMPLE_V1), setups: Array.from({ length: 500 }, (_, i) => ({ id: `s${i}`, name: 'x'.repeat(500), setup: {} })) };
-    const f = sanitizeSave(many, NOW)!;
+    const f = sanitizeSave(current(many), NOW)!;
     expect(f.setups).toHaveLength(LIMITS.setups);
     expect(f.setups[0]!.name).toHaveLength(LIMITS.name);
   });
 
   it('keeps a saved setup on a custom camera only while that camera exists', () => {
     const noCam = { ...structuredClone(SAMPLE_V1), gear: { cameras: [], lenses: [] } };
-    expect(sanitizeSave(noCam, NOW)!.setups[1]!.setup.sensorId).toBe('nikon/z6iii');
+    expect(sanitizeSave(current(noCam), NOW)!.setups[1]!.setup.sensorId).toBe('nikon/z6iii');
   });
 
   it('checks calibrations against the device database', () => {
@@ -148,7 +155,7 @@ describe('share links', () => {
 });
 
 describe('export and import', () => {
-  const mine = (): SaveFile => sanitizeSave(structuredClone(SAMPLE_V1), NOW)!;
+  const mine = (): SaveFile => sanitizeSave(current(structuredClone(SAMPLE_V1)), NOW)!;
 
   it('names the file by date and round-trips it', () => {
     expect(exportName(new Date(2026, 10, 5))).toBe('capxer-2026-11-05.json');
@@ -207,7 +214,7 @@ describe('local storage adapter', () => {
     const a = localAdapter(store);
     expect(a.available).toBe(true);
     expect(a.read()).toBeNull();
-    const f = sanitizeSave(structuredClone(SAMPLE_V1), NOW)!;
+    const f = sanitizeSave(current(structuredClone(SAMPLE_V1)), NOW)!;
     expect(a.write(f)).toBe(true);
     expect(a.read()).toEqual(f);
     a.clear();
@@ -233,3 +240,111 @@ describe('local storage adapter', () => {
   });
 });
 
+
+describe('profile (save file v2)', () => {
+  const PIXEL = 'data:image/webp;base64,UklGRhoAAABXRUJQVlA4TA0AAAAvAAAAEAcQERGIiP4HAA==';
+
+  it('keeps a valid profile and repairs a hostile one', () => {
+    expect(sanitizeProfile({ name: '  Sam   Kade ', picture: PIXEL, initials: { letters: 'sk', tint: 'teal' }, changedAt: '2026-11-21T08:00:00Z' }, NOW)).toEqual({
+      name: 'Sam Kade',
+      picture: PIXEL,
+      initials: { letters: 'SK', tint: 'teal' },
+      changedAt: '2026-11-21T08:00:00.000Z',
+    });
+    const bad = sanitizeProfile({ name: 'x'.repeat(200), picture: 'https://evil.example/p.png', initials: { letters: '<b>', tint: 'gold' } }, NOW)!;
+    expect(bad.name).toHaveLength(40);
+    expect(bad.picture).toBeNull();
+    expect(bad.initials).toEqual({ letters: 'B', tint: 'blue' });
+    expect(bad.changedAt).toBe(NOW.toISOString());
+    expect(sanitizeProfile({ name: 'A', picture: `data:image/svg+xml;base64,PHN2Zz4=` }, NOW)!.picture).toBeNull();
+    expect(sanitizeProfile({ name: 'A', picture: `data:image/jpeg;base64,${'A'.repeat(90_000)}` }, NOW)!.picture).toBeNull();
+    expect(sanitizeProfile('nope', NOW)).toBeUndefined();
+  });
+
+  it('makes initials from a name', () => {
+    expect(initialsOf('Sam Kade')).toBe('SK');
+    expect(initialsOf('  ada   lovelace byron ')).toBe('AB');
+    expect(initialsOf('Kiarash')).toBe('KI');
+    expect(initialsOf('Émile Zola')).toBe('ÉZ');
+    expect(initialsOf('')).toBe('');
+    expect(cleanInitials('a1b')).toBe('A1');
+  });
+
+  it('keeps recent deletion records and drops old or malformed ones', () => {
+    const d = sanitizeDeleted({ setups: { abc123: '2026-11-01T00:00:00Z', old: '2025-01-01T00:00:00Z', 'BAD ID': '2026-11-01T00:00:00Z' }, cameras: { 'custom/k3f9a': 'soon' }, lenses: { '21': '2026-11-19T00:00:00Z', x: '2026-11-19T00:00:00Z' } }, NOW);
+    expect(d).toEqual({ setups: { abc123: '2026-11-01T00:00:00.000Z' }, cameras: {}, lenses: { '21': '2026-11-19T00:00:00.000Z' } });
+  });
+});
+
+describe('deletion records and cloud sync', () => {
+  const T1 = new Date('2026-11-21T09:00:00Z');
+  const T2 = new Date('2026-11-21T10:00:00Z');
+  const T3 = new Date('2026-11-21T11:00:00Z');
+  const base = (): SaveFile => sanitizeSave(current(structuredClone(SAMPLE_V1)), NOW)!;
+  const setup = (id: string, name: string, at: Date, focal = 35) => ({ id, name, savedAt: at.toISOString(), setup: { ...defaultSetup('cinema'), focal } });
+
+  it('records what the writer deleted, and forgets the record on Undo', () => {
+    const before = base();
+    const after = structuredClone(before);
+    after.setups = after.setups.filter((s) => s.id !== 'abc123');
+    after.gear.lenses = [65];
+    const written = withDeletions(before, after, T1);
+    expect(written.deleted.setups).toEqual({ abc123: T1.toISOString() });
+    expect(written.deleted.lenses).toEqual({ '21': T1.toISOString() });
+    // Undo: the setup is back, with a fresh time so it beats its own record elsewhere.
+    const undone = withDeletions(written, { ...written, setups: before.setups }, T2);
+    expect(undone.deleted.setups).toEqual({});
+    expect(undone.setups.find((s) => s.id === 'abc123')!.savedAt).toBe(T2.toISOString());
+  });
+
+  it('only records deletions of things the writer knew about', () => {
+    const next = base();
+    expect(withDeletions(null, next, T1).deleted).toEqual(emptyDeleted());
+  });
+
+  it('joins two devices: union of setups, the newer edit wins, the current setup stays mine', () => {
+    const mine = { ...base(), savedAt: T2.toISOString(), setups: [setup('aaa111', 'Mine', T1), setup('shared', 'Old name', T1)] };
+    const theirs = { ...emptySave(T1), current: { ...defaultSetup('stills') }, setups: [setup('bbb222', 'Theirs', T1), setup('shared', 'New name', T2, 50)] };
+    const { file, changes } = mergeSync(mine, theirs, T3);
+    expect(file.setups.map((s) => s.name)).toEqual(['Mine', 'New name', 'Theirs']);
+    expect(file.setups[1]!.setup.focal).toBe(50);
+    expect(file.current).toEqual(mine.current);
+    expect(file.savedAt).toBe(T3.toISOString());
+    expect(changes).toEqual({ added: 1, updated: 1, removed: 0 });
+  });
+
+  it('never brings back what another device deleted', () => {
+    const mine = { ...base(), setups: [setup('gone11', 'Deleted there', T1), setup('kept11', 'Kept', T1)] };
+    const theirs = { ...emptySave(T2), setups: [setup('kept11', 'Kept', T1)], gear: { cameras: [], lenses: [] }, deleted: { setups: { gone11: T2.toISOString() }, cameras: { 'custom/k3f9a': T2.toISOString() }, lenses: { '21': T2.toISOString() } } };
+    const { file, changes } = mergeSync(mine, theirs, T3);
+    expect(file.setups.map((s) => s.id)).toEqual(['kept11']);
+    expect(file.gear).toEqual({ cameras: [], lenses: [65] });
+    expect(file.deleted.setups.gone11).toBe(T2.toISOString());
+    expect(changes.removed).toBe(1);
+  });
+
+  it('keeps a setup edited after it was deleted elsewhere', () => {
+    const mine = { ...base(), setups: [setup('edit11', 'Edited later', T3)] };
+    const theirs = { ...emptySave(T2), deleted: { setups: { edit11: T2.toISOString() }, cameras: {}, lenses: {} } };
+    expect(mergeSync(mine, theirs, T3).file.setups.map((s) => s.id)).toEqual(['edit11']);
+  });
+
+  it('takes the newer profile, and everything on a browser that had nothing', () => {
+    const p = (name: string, at: Date) => ({ name, picture: null, initials: null, changedAt: at.toISOString() });
+    const mine = { ...base(), profile: p('Old', T1) };
+    const theirs = { ...emptySave(T2), profile: p('New', T2) };
+    expect(mergeSync(mine, theirs, T3).file.profile!.name).toBe('New');
+    expect(mergeSync({ ...mine, profile: p('Newest', T3) }, theirs, T3).file.profile!.name).toBe('Newest');
+    const fresh = mergeSync(null, { ...base(), profile: p('Me', T1) }, T3).file;
+    expect(fresh.profile!.name).toBe('Me');
+    expect(fresh.current).toEqual(base().current);
+  });
+
+  it('takes aid choices and calibration from the newer copy, keeping slots only one side has', () => {
+    const mine = { ...base(), savedAt: T1.toISOString(), calibration: { phone: { kind: 'equivalent' as const, mm: 24 } } };
+    const theirs = { ...emptySave(T2), calibration: { webcam: { kind: 'diagonal' as const, degrees: 78 } }, aids: { ...base().aids, zebra: 70 } };
+    const { file } = mergeSync(mine, theirs, T3);
+    expect(file.calibration).toEqual({ phone: { kind: 'equivalent', mm: 24 }, webcam: { kind: 'diagonal', degrees: 78 } });
+    expect(file.aids.zebra).toBe(70);
+  });
+});

@@ -9,9 +9,11 @@ import { url } from '../lib/url.ts';
 import { t } from '../i18n/en.ts';
 import { decodeLink, encodeLink } from './link.ts';
 import { exportName, exportText, mergeSave, parseFile, summarize, uniqueName, type ImportSummary } from './file.ts';
-import { localAdapter, SAVE_KEY, type LocalAdapter } from './local.ts';
-import { cleanName, DEFAULT_AIDS, emptySave } from './sanitize.ts';
-import { LIMITS, newId, type Calibrations, type SaveFile, type SavedSetup } from './schema.ts';
+import { SAVE_KEY } from './local.ts';
+import { cleanName, DEFAULT_AIDS, emptyDeleted, emptySave } from './sanitize.ts';
+import { FLUSH_EVENT, local, readSave, REPLACED_EVENT, writeSave, clearSave } from './store.ts';
+import { LIMITS, newId, type Calibrations, type Deleted, type Profile, type SaveFile, type SavedSetup } from './schema.ts';
+import { cloudState, forgetCloud } from '../user/local.ts';
 
 // Connects the viewfinder's stores to the save file: restores on load, writes
 // changes back (debounced), opens share links, and runs the Saved panel's
@@ -41,9 +43,12 @@ class SavedStore {
 
 export const saved = new SavedStore();
 
-let adapter: LocalAdapter | undefined;
 /** The calibration slot of the other device kind, kept as loaded so it is never lost. */
 let calibrations: Calibrations = {};
+/** Parts of the save the viewfinder does not edit, kept as loaded so a write never drops them. */
+let extras: { profile?: Profile; deleted: Deleted } = { deleted: emptyDeleted() };
+/** The file this page's state came from (deletions are measured against it). */
+let base: SaveFile | null = null;
 let noticeTimer: ReturnType<typeof setTimeout> | undefined;
 
 const kind = () => (live.phone ? 'phone' : 'webcam');
@@ -82,14 +87,20 @@ function snapshot(): SaveFile {
   else delete cal[kind()];
   return {
     ...emptySave(),
+    ...(extras.profile ? { profile: clone(extras.profile) } : {}),
     // While a shared link is showing, the stored current setup stays the user's own.
     current: clone(saved.shared ? saved.shared.previous : vf.setup),
     setups: clone(saved.setups),
     gear: { cameras: clone(vf.customs), lenses: clone(vf.customLenses) },
     calibration: cal,
     aids: { histogram: aids.histogram, histMode: aids.histMode, picture: aids.picture, zebra: aids.zebra, peaking: aids.peaking, peakColor: aids.peakColor, peakSens: aids.peakSens },
+    deleted: clone(extras.deleted),
   };
 }
+
+/** The snapshot without its time stamp: equal keys mean nothing worth writing changed. */
+const keyOf = (f: SaveFile) => JSON.stringify({ ...f, savedAt: '' });
+let lastKey = '';
 
 function apply(file: SaveFile, opts: { current: boolean }) {
   vf.customs = file.gear.cameras;
@@ -98,24 +109,55 @@ function apply(file: SaveFile, opts: { current: boolean }) {
   calibrations = file.calibration;
   live.calibration = file.calibration[kind()] ?? null;
   Object.assign(aids, file.aids);
+  extras = { profile: file.profile, deleted: file.deleted };
   if (opts.current) vf.setup = file.current;
+  base = file;
+}
+
+/** Back to a browser with nothing saved (Clear all, or signed out in this or another tab). */
+function applyEmpty() {
+  calibrations = {};
+  extras = { deleted: emptyDeleted() };
+  saved.shared = null;
+  vf.customs = [];
+  vf.customLenses = [];
+  saved.setups = [];
+  live.calibration = null;
+  Object.assign(aids, DEFAULT_AIDS);
+  vf.setup = defaultSetup(vf.setup.mode);
+  base = null;
 }
 
 let writeTimer: ReturnType<typeof setTimeout> | undefined;
-/** Set by clearAll: an emptied browser stays empty instead of saving the defaults back. */
-let skipWrite = false;
 function writeNow() {
   clearTimeout(writeTimer);
   writeTimer = undefined;
-  if (!adapter) return;
-  if (!adapter.write(snapshot()) && saved.available) saved.available = adapter.available;
+  const snap = snapshot();
+  lastKey = keyOf(snap);
+  const written = writeSave(snap, base);
+  if (!written) {
+    if (saved.available) saved.available = local().available;
+    return;
+  }
+  base = written;
+  extras.deleted = written.deleted;
+}
+
+/** Reloads the save after someone else changed it (the profile page, the cloud, another tab). */
+function reload(opts: { current: boolean }) {
+  clearTimeout(writeTimer);
+  writeTimer = undefined;
+  const file = readSave();
+  if (file) apply(file, opts);
+  else applyEmpty();
+  // What was just loaded is already stored: do not write it back.
+  lastKey = keyOf(snapshot());
 }
 
 /** Restores the save file and starts saving changes. Returns a cleanup function. */
 export function startPersistence(): () => void {
-  adapter = localAdapter();
-  saved.available = adapter.available;
-  const file = adapter.read();
+  saved.available = local().available;
+  const file = readSave();
   if (file) apply(file, { current: true });
   openLink(location.hash);
 
@@ -123,30 +165,35 @@ export function startPersistence(): () => void {
     let first = true;
     $effect(() => {
       // Reading the whole snapshot subscribes to every value that is saved.
-      JSON.stringify(snapshot());
-      if (first || skipWrite) {
-        first = skipWrite = false;
+      const key = keyOf(snapshot());
+      if (first) {
+        first = false;
+        lastKey = key;
         return;
       }
+      if (key === lastKey) return;
       clearTimeout(writeTimer);
       writeTimer = setTimeout(writeNow, 300);
     });
   });
 
-  // Another tab saved: take its library (setups, cameras, lenses), leave this tab's view alone.
+  // Another tab saved: take its library and profile, leave this tab's view alone.
+  // Signed out there: empty here too.
   const onstorage = (e: StorageEvent) => {
-    if (e.key !== SAVE_KEY) return;
-    const other = adapter?.read();
-    if (!other) return;
-    vf.customs = other.gear.cameras;
-    vf.customLenses = other.gear.lenses;
-    saved.setups = other.setups;
+    if (e.key === SAVE_KEY || e.key === null) reload({ current: false });
   };
   const onhash = () => openLink(location.hash);
   const onhide = () => writeTimer && writeNow();
+  const onflush = () => writeTimer && writeNow();
+  const onreplaced = () => reload({ current: false });
   window.addEventListener('storage', onstorage);
   window.addEventListener('hashchange', onhash);
   window.addEventListener('pagehide', onhide);
+  window.addEventListener(FLUSH_EVENT, onflush);
+  window.addEventListener(REPLACED_EVENT, onreplaced);
+
+  // Cloud save: loaded only when this browser is connected to one.
+  if (cloudState()) import('../user/cloud.ts').then((m) => m.startAutoSave()).catch(() => {});
 
   // The page was hidden until the restore (no flash of the default setup).
   tick().then(() => delete document.documentElement.dataset.restoring);
@@ -157,6 +204,8 @@ export function startPersistence(): () => void {
     window.removeEventListener('storage', onstorage);
     window.removeEventListener('hashchange', onhash);
     window.removeEventListener('pagehide', onhide);
+    window.removeEventListener(FLUSH_EVENT, onflush);
+    window.removeEventListener(REPLACED_EVENT, onreplaced);
   };
 }
 
@@ -315,23 +364,19 @@ export async function readImport(f: File): Promise<PendingImport | null> {
 export function applyImport(p: PendingImport, how: 'merge' | 'replace') {
   const merged = mergeSave(snapshot(), p.file, how);
   saved.shared = null;
+  // Measure deletions against what was here before ("Replace everything" deletes, also in the cloud).
+  const before = base;
   apply(merged, { current: how === 'replace' });
+  base = before;
   writeNow();
   notify({ kind: 'info', title: N.imported, body: p.name });
 }
 
+/** Removes everything from this browser and forgets the cloud connection (the cloud copy stays). */
 export function clearAll() {
-  adapter?.clear();
-  calibrations = {};
-  saved.shared = null;
-  vf.customs = [];
-  vf.customLenses = [];
-  saved.setups = [];
-  live.calibration = null;
-  Object.assign(aids, DEFAULT_AIDS);
-  vf.setup = defaultSetup(vf.setup.mode);
-  clearTimeout(writeTimer);
-  writeTimer = undefined;
-  skipWrite = true;
+  const cloud = cloudState();
+  forgetCloud();
+  if (cloud) import('../user/cloud.ts').then((m) => m.revoke(cloud)).catch(() => {});
+  clearSave();
   notify({ kind: 'info', title: N.cleared });
 }

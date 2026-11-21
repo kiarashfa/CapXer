@@ -51,7 +51,7 @@
     <h2 id="consent-title" class="text-base font-bold">{t.consent.title}</h2>
     <p class="mt-1 text-sm leading-relaxed text-muted">
       {t.consent.body}
-      <a href={url('privacy')}>{t.consent.more}</a>
+      <a href={`${url('about')}#privacy`}>{t.consent.more}</a>
     </p>
     <!-- Equal weight on purpose: declining must be as easy as accepting. -->
     <div class="mt-4 grid grid-cols-2 gap-2">

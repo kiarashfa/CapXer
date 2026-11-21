@@ -7,7 +7,8 @@ import { APP_ID, SAVE_VERSION } from './schema.ts';
 
 type Doc = Record<string, unknown>;
 const steps: Record<number, (doc: Doc) => Doc> = {
-  // 1: (doc) => ({ ...doc, v: 2, ... }),
+  // CapXer 1.1: no profile yet, nothing deleted.
+  1: (doc) => ({ ...doc, v: 2, deleted: { setups: {}, cameras: {}, lenses: {} } }),
 };
 
 export type MigrateResult = { ok: true; doc: Doc } | { ok: false; reason: 'notCapxer' | 'newer' };

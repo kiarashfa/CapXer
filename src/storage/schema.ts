@@ -7,12 +7,39 @@ import type { CustomSensor, FrameColor, Setup } from '../setup/types.ts';
 // The same document is stored in localStorage, exported as a .json file and,
 // from v1.1, synced to the user's own cloud. Bump SAVE_VERSION and add a step
 // to migrate.ts whenever its shape changes; old files must keep opening.
+// v2 (CapXer 1.1): profile and deletion records (so a cloud sync never brings
+// back something deleted on another device).
 
-export const SAVE_VERSION = 1;
+export const SAVE_VERSION = 2;
 export const APP_ID = 'capxer';
+/** localStorage key of the save file. */
+export const SAVE_KEY = 'capxer.save';
 
 /** Hard caps for untrusted input (imported files, links, storage edited by hand). */
-export const LIMITS = { setups: 200, cameras: 50, lenses: 40, name: 60 } as const;
+export const LIMITS = { setups: 200, cameras: 50, lenses: 40, name: 60, profileName: 40, picture: 80_000 } as const;
+
+/** Colours behind initials; each keeps white letters at WCAG AA (src/styles/user.css). */
+export const TINTS = ['blue', 'teal', 'green', 'amber', 'rose', 'violet', 'slate'] as const;
+export type Tint = (typeof TINTS)[number];
+
+/** Who the save file belongs to. Shown in the site bar and on /user/. */
+export interface Profile {
+  name: string;
+  /** A small square picture as a data: URL (192 px WebP or JPEG), or null. */
+  picture: string | null;
+  /** One or two letters on a colour, used when there is no picture. */
+  initials: { letters: string; tint: Tint } | null;
+  /** When the profile last changed; the newer profile wins in a sync. */
+  changedAt: string;
+}
+
+/** Deletion records, id (or lens mm) -> when it was deleted. Pruned after DELETED_DAYS. */
+export interface Deleted {
+  setups: Record<string, string>;
+  cameras: Record<string, string>;
+  lenses: Record<string, string>;
+}
+export const DELETED_DAYS = 90;
 
 export interface SavedSetup {
   id: string;
@@ -40,18 +67,20 @@ export interface Calibrations {
 export interface SaveFile {
   app: typeof APP_ID;
   v: typeof SAVE_VERSION;
-  /** When this copy was written; lets sync (v1.1) tell which copy is newer. */
+  /** When this copy was written; lets sync tell which copy is newer. */
   savedAt: string;
+  profile?: Profile;
   current: Setup;
   setups: SavedSetup[];
   gear: { cameras: CustomSensor[]; lenses: number[] };
   calibration: Calibrations;
   aids: AidsPrefs;
+  deleted: Deleted;
 }
 
 /**
- * Where a save file lives. P6 ships the localStorage adapter (local.ts);
- * v1.1 adds Google Drive and Dropbox behind the same interface.
+ * Where a save file lives: this browser (local.ts). The cloud copies
+ * (src/user/cloud.ts) are synced through src/storage/store.ts.
  */
 export interface SaveAdapter {
   load(): Promise<SaveFile | null>;
