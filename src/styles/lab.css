@@ -141,3 +141,15 @@
 .lab-shared { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 12px 16px; }
 .lab-shared p { margin: 0; }
 .lab-shared-actions { display: flex; gap: 8px; flex: none; }
+
+/* Windows high contrast (forced colours): the picture, the plan and the meter
+   scale are pictures, so they keep their own colours (as the viewfinder does). */
+@media (forced-colors: active) {
+  :root .lab-stage,
+  :root .lab-plan,
+  :root .lab-meter-scale,
+  :root .lab-bands .sw,
+  :root .lab-legend .sw {
+    forced-color-adjust: none;
+  }
+}

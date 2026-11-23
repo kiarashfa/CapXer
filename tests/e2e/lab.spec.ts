@@ -186,6 +186,39 @@ test.describe('desktop', () => {
   });
 });
 
+test.describe('without WebGL 2 or a modern browser', () => {
+  test.skip(({ isMobile }) => isMobile, 'the lab is desktop only');
+
+  test('a browser without WebGL 2 gets a plain note instead of a broken picture', async ({ page }) => {
+    await page.addInitScript(() => {
+      const original = HTMLCanvasElement.prototype.getContext;
+      // @ts-expect-error test-only override
+      HTMLCanvasElement.prototype.getContext = function (type: string, ...rest: unknown[]) {
+        return type === 'webgl2' ? null : original.call(this, type, ...rest);
+      };
+    });
+    await page.goto('lab/');
+    await expect(page.getByTestId('lab-stage')).toContainText('This browser cannot draw 3D');
+    await expect(page.getByTestId('lab-stage').locator('canvas')).toHaveCount(0);
+    // Everything else still works: settings and the plan.
+    await page.getByTestId('lab-iso-more').click();
+    await expect(page.getByTestId('lab-iso-value')).toHaveText('500');
+    await expect(page.locator('svg.lab-plan')).toBeVisible();
+  });
+
+  test('an old browser gets the lab note, not the viewfinder one', async ({ page }) => {
+    await page.addInitScript(() => {
+      // @ts-expect-error test-only removal
+      delete window.structuredClone;
+    });
+    await page.goto('lab/');
+    const note = page.getByTestId('old-browser');
+    await expect(note).toBeVisible();
+    await expect(note).toContainText('lab is switched off');
+    await expect(note).not.toContainText('viewfinder');
+  });
+});
+
 test.describe('phone', () => {
   test.skip(({ isMobile }) => !isMobile, 'phones and tablets only');
 

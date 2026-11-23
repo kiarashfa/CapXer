@@ -7,6 +7,7 @@ import { devices, sensors } from '../data/index.ts';
 import { getReference, type Reference } from '../references/index.ts';
 import { SAFE_AREAS } from '../setup/presets.ts';
 import { BT709 } from '../analysis/levels.ts';
+import { C2_SOURCE, CMF_SOURCE, DOF_SOURCE, EV_SOURCE, METER_K_SOURCE, PRIMARIES_SOURCE, SHUTTER_ANGLE_SOURCE } from '../optics/index.ts';
 import { CREDITS } from '../content/credits.ts';
 import { longDate } from '../content/lessons.ts';
 import { REPO_URL, VERSION } from '../config/site.ts';
@@ -19,10 +20,15 @@ const citedIds = new Set([
   SAFE_AREAS.citation.ref,
   BT709.ref,
 ]);
-const dataSources = [...citedIds]
-  .map((id) => getReference(id!))
-  .filter((r): r is Reference => !!r)
-  .sort((a, b) => (a.publisher ?? '').localeCompare(b.publisher ?? '') || a.title.localeCompare(b.title));
+const bySource = (ids: Iterable<string | undefined>) =>
+  [...new Set(ids)]
+    .map((id) => getReference(id!))
+    .filter((r): r is Reference => !!r)
+    .sort((a, b) => (a.publisher ?? a.title).localeCompare(b.publisher ?? b.title) || a.title.localeCompare(b.title));
+const dataSources = bySource(citedIds);
+// The lab's maths (src/optics: exposure, depth of field, colour of light).
+const labSources = bySource([EV_SOURCE, METER_K_SOURCE, SHUTTER_ANGLE_SOURCE, DOF_SOURCE, CMF_SOURCE, C2_SOURCE, PRIMARIES_SOURCE].map((c) => c.ref));
+const sourceNote = (r: Reference) => (r.number ? `${r.publisher}, ${r.number}` : (r.publisher ?? r['container-title'] ?? ''));
 
 // Shared with THIRD_PARTY.md through tests/unit/credits.test.ts.
 const software = CREDITS.filter((c) => c.about);
@@ -36,13 +42,14 @@ const built = longDate(new Date());
     <a class="dock-tool" href="#privacy">Privacy</a>
     <a class="dock-tool" href="#credits">Credits</a>
     <a class="dock-tool" href="#install">Install</a>
-    <a class="dock-tool" href="#exposure-aids">Exposure aids</a>
-    <a class="dock-tool" href="#data-sources">Data sources</a>
+    <a class="dock-tool" href="#exposure-aids">Aids</a>
+    <a class="dock-tool" href="#lab">Lab</a>
+    <a class="dock-tool" href="#data-sources">Sources</a>
     <a class="dock-tool" href="#accessibility">Accessibility</a>
   </div>
   <DocPage
     title="About CapXer"
-    lead="A director's viewfinder is a small handheld tool for previewing a shot without the camera. CapXer brings that idea to the browser, adds your phone or webcam as a live view, and explains the ideas behind it in short, cited lessons."
+    lead="A director's viewfinder is a small handheld tool for previewing a shot without the camera. CapXer brings that idea to the browser, adds your phone or webcam as a live view and a 3D studio to practise exposure, and explains the ideas behind it in short, cited lessons."
   >
     <DocSection id="licence" title="Licence">
       <p>
@@ -57,8 +64,8 @@ const built = longDate(new Date());
 
     <DocSection id="privacy" title="Privacy">
       <p>
-        CapXer has no server, no database and no accounts. Your camera feed, photos, setups, name and picture stay on
-        your device unless you share a setup link, download your save file or turn on cloud save. If you allow
+        CapXer has no server, no database and no accounts. Your camera feed, photos, setups, lab settings, name and picture stay on
+        your device unless you share a link, download your save file or turn on cloud save. If you allow
         analytics, Google Analytics counts visits to the site and sets cookies, but it never sees your camera, your
         setups, your name or your picture. If you decline, it is not loaded at all. You can change your answer at any
         time:{' '}
@@ -95,8 +102,7 @@ const built = longDate(new Date());
 
     <DocSection id="install" title="Install the app">
       <p>
-        CapXer works as an app on your phone or computer. Installed, it opens straight into the viewfinder and works
-        without a connection, live camera included.
+        CapXer works as an app on your phone or computer. Installed, it opens straight into the viewfinder and works without a connection, live camera included. The lab needs a connection and a computer.
       </p>
       <ul class="list-disc space-y-1 pl-5">
         <li>Android, and Chrome or Edge on a computer: choose {t.pwa.install} in CapXer's menu or top bar, or your browser's own install option.</li>
@@ -119,6 +125,32 @@ const built = longDate(new Date());
       </p>
     </DocSection>
 
+    <DocSection id="lab" title="How the lab works">
+      <p>
+        The lab draws a small studio in 3D and builds each picture from many renders, the way a lens and a shutter gather
+        light: the camera moves across the lens opening for depth of field, the scene moves during the exposure for motion
+        blur, and each light spreads over its size for soft shadows. It needs a computer with WebGL 2.
+      </p>
+      <p>
+        Lights are set in physical units, so the meter reads the scene like a reflected-light meter with the common
+        calibration constant of 12.5, and a correct exposure puts the metered brightness at 18% grey. Depth of field uses
+        a circle of confusion of the frame diagonal divided by 1500. Each light's colour is that of a glowing body at its
+        colour temperature. The grain is CapXer's own simplified model of sensor noise, not a specific camera, and the lens
+        lets all its light through, so a T-stop equals the f-number.
+      </p>
+      <p class="text-muted">The lab's numbers come from these sources:</p>
+      <ul class="border-t border-line" data-testid="lab-sources">
+        {
+          labSources.map((r) => (
+            <li class="flex flex-wrap items-baseline justify-between gap-2 border-b border-line py-2.5">
+              {r.URL ? <a href={r.URL}>{r.title}</a> : <span>{r.title}</span>}
+              <span class="font-mono text-label text-muted">{sourceNote(r)}</span>
+            </li>
+          ))
+        }
+      </ul>
+    </DocSection>
+
     <DocSection id="data-sources" title="Camera data sources" wide>
       <p>
         Every sensor size, phone and webcam angle of view, guide and exposure-aid level in CapXer comes from one of these sources: the maker's own specifications or a
@@ -129,7 +161,7 @@ const built = longDate(new Date());
           dataSources.map((r) => (
             <li class="flex flex-wrap items-baseline justify-between gap-2 border-b border-line py-2.5">
               {r.URL ? <a href={r.URL}>{r.title}</a> : <span>{r.title}</span>}
-              <span class="font-mono text-label text-muted">{r.number ? `${r.publisher}, ${r.number}` : r.publisher}</span>
+              <span class="font-mono text-label text-muted">{sourceNote(r)}</span>
             </li>
           ))
         }
@@ -143,8 +175,9 @@ const built = longDate(new Date());
         before each release.
       </p>
       <p>
-        Some tools are visual by nature: the framing in the viewfinder and the exposure aids on the live camera describe
-        a picture, so they help most if you can see the screen. Their settings and readouts are available as text.
+        Some tools are visual by nature: the framing in the viewfinder, the exposure aids on the live camera and the picture in
+        the lab describe a picture, so they help most if you can see the screen. Their settings and readouts are available as
+        text, and in the lab the lights and the camera move on the studio plan with the arrow keys.
       </p>
       <p class="text-muted">
         Found something that is hard to use? Please{' '}

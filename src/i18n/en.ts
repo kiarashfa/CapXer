@@ -46,6 +46,7 @@ export const en = {
     title: 'Your browser is too old for CapXer',
     body: 'Some parts of this site need a recent browser. Please update, or use a current version of Chrome, Safari, Firefox or Edge.',
     tool: 'The viewfinder is switched off because it would not work correctly here.',
+    lab: 'The lab is switched off because it would not work correctly here.',
   },
   about: {
     version: (v: string, date: string) => `Version ${v}, built ${date}.`,
