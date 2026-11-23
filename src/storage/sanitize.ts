@@ -5,7 +5,7 @@ import { aspectPreset, defaultSetup, FRAME_COLORS } from '../setup/presets.ts';
 import type { Calibration } from '../camera/lens.ts';
 import { ZEBRA_LEVELS } from '../analysis/levels.ts';
 import type { CustomSensor, FrameColor, Mode, Setup } from '../setup/types.ts';
-import { APP_ID, DELETED_DAYS, LIMITS, SAVE_VERSION, TINTS, type AidsPrefs, type Calibrations, type Deleted, type LabLightEdit, type LabState, type Profile, type SaveFile, type SavedSetup } from './schema.ts';
+import { APP_ID, DELETED_DAYS, LIMITS, SAVE_VERSION, TINTS, type AidsPrefs, type Calibrations, type Deleted, type LabLightEdit, type LabState, type Profile, type SaveFile, type SavedLab, type SavedSetup } from './schema.ts';
 
 // Everything read from storage, a file or a link is untrusted: it may be old,
 // hand-edited, cut off or hostile. These functions never throw; they keep what
@@ -157,7 +157,7 @@ export function sanitizeProfile(raw: unknown, now = new Date()): Profile | undef
   };
 }
 
-export const emptyDeleted = (): Deleted => ({ setups: {}, cameras: {}, lenses: {} });
+export const emptyDeleted = (): Deleted => ({ setups: {}, labSetups: {}, cameras: {}, lenses: {} });
 
 const LAB_ID = /^[a-z0-9]+(-[a-z0-9]+)*$/;
 const labId = (v: unknown, fallback: string) => (typeof v === 'string' && v.length <= 40 && LAB_ID.test(v) ? v : fallback);
@@ -247,7 +247,7 @@ export function sanitizeDeleted(raw: unknown, now = new Date()): Deleted {
     }
     return out;
   };
-  return { setups: part(r.setups, /^[a-z0-9]{1,16}$/), cameras: part(r.cameras, /^custom\/[a-z0-9]{1,12}$/), lenses: part(r.lenses, /^\d{1,4}(\.\d)?$/) };
+  return { setups: part(r.setups, /^[a-z0-9]{1,16}$/), labSetups: part(r.labSetups, /^[a-z0-9]{1,16}$/), cameras: part(r.cameras, /^custom\/[a-z0-9]{1,12}$/), lenses: part(r.lenses, /^\d{1,4}(\.\d)?$/) };
 }
 
 export function emptySave(now = new Date()): SaveFile {
@@ -302,6 +302,15 @@ export function sanitizeSave(raw: unknown, now = new Date()): SaveFile | null {
 
   const profile = sanitizeProfile(raw.profile, now);
   const lab = sanitizeLab(raw.lab, now);
+  // Lab setups use the camera database only (no custom sensors in the lab).
+  const labSetups: SavedLab[] = [];
+  for (const s of Array.isArray(raw.labSetups) ? raw.labSetups : []) {
+    if (!isObj(s) || typeof s.id !== 'string' || !/^[a-z0-9]{1,16}$/.test(s.id) || labSetups.some((x) => x.id === s.id)) continue;
+    const labState = sanitizeLab(s.lab, now);
+    if (!labState) continue;
+    labSetups.push({ id: s.id, name: cleanName(s.name, 'Untitled'), setup: sanitizeSetup(s.setup), lab: labState, savedAt: ISO(s.savedAt, stamp) });
+    if (labSetups.length >= LIMITS.labSetups) break;
+  }
   return {
     app: APP_ID,
     v: SAVE_VERSION,
@@ -314,5 +323,6 @@ export function sanitizeSave(raw: unknown, now = new Date()): SaveFile | null {
     aids: sanitizeAids(raw.aids),
     deleted: sanitizeDeleted(raw.deleted, now),
     ...(lab ? { lab } : {}),
+    ...(labSetups.length ? { labSetups } : {}),
   };
 }

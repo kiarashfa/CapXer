@@ -39,17 +39,24 @@ export function withDeletions(base: SaveFile | null, next: SaveFile, now = new D
     delete d.setups[s.id];
     return { ...s, savedAt: when };
   });
+  const labSetups = (next.labSetups ?? []).map((s) => {
+    if (!(s.id in d.labSetups)) return s;
+    delete d.labSetups[s.id];
+    return { ...s, savedAt: when };
+  });
   for (const c of next.gear.cameras) delete d.cameras[c.id];
   for (const l of next.gear.lenses) delete d.lenses[lensKey(l)];
   if (base) {
     const ids = new Set(next.setups.map((s) => s.id));
     for (const s of base.setups) if (!ids.has(s.id)) d.setups[s.id] = when;
+    const labIds = new Set(labSetups.map((s) => s.id));
+    for (const s of base.labSetups ?? []) if (!labIds.has(s.id)) d.labSetups[s.id] = when;
     const cams = new Set(next.gear.cameras.map((c) => c.id));
     for (const c of base.gear.cameras) if (!cams.has(c.id)) d.cameras[c.id] = when;
     const lenses = new Set(next.gear.lenses.map(lensKey));
     for (const l of base.gear.lenses) if (!lenses.has(lensKey(l))) d.lenses[lensKey(l)] = when;
   }
-  return { ...next, setups, deleted: d };
+  return { ...next, setups, ...(next.labSetups ? { labSetups } : {}), deleted: d };
 }
 
 /**

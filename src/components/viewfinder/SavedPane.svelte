@@ -202,6 +202,7 @@
       <p class="sv-file">{pending.name}</p>
       <ul class="sv-facts">
         <li>{I.setups} <span>{sm.setups}{#if sm.renamed}{' '}({sm.renamed} {I.renamed}){/if}</span></li>
+        {#if sm.labSetups}<li>{I.labSetups} <span>{sm.labSetups}</span></li>{/if}
         <li>{I.cameras} <span>{sm.cameras}</span></li>
         <li>{I.lenses} <span>{sm.lenses}</span></li>
         {#if sm.phone}<li>{I.phone} <span>{I.yes}</span></li>{/if}

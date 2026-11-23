@@ -15,7 +15,7 @@ import { defaultSetup } from '../setup/presets.ts';
 import type { Setup } from '../setup/types.ts';
 import { readSave, updateSave } from '../storage/store.ts';
 import type { Histogram } from '../analysis/levels.ts';
-import type { LabState } from '../storage/schema.ts';
+import type { LabState, SavedLab } from '../storage/schema.ts';
 import { distance, labCamera } from './camera.ts';
 import { noiseCoefficients } from './render/noise.ts';
 import { TIERS, type Tier } from './render/tiers.ts';
@@ -41,7 +41,7 @@ export function viewfinderSetup(): Setup {
   return setup;
 }
 
-export type LabPanel = 'set' | 'lights' | 'camera' | 'aids';
+export type LabPanel = 'set' | 'lights' | 'camera' | 'aids' | 'saved';
 export type LabPictureAid = 'off' | 'zebras' | 'falseColour';
 
 /** What the user changed about one light of the scenario. */
@@ -87,6 +87,11 @@ class LabStore {
 
   /** A shared lab link is showing; the user's own lab and camera are kept to go back to. */
   shared = $state.raw<{ setup: Setup; state: LabState; unknownCamera: boolean } | null>(null);
+
+  /** Named lab setups from the save file. */
+  savedLabs = $state.raw<SavedLab[]>([]);
+  /** A short note at the bottom of the screen ("Saved", "Deleted" with Undo, "Link copied"). */
+  notice = $state.raw<{ title: string; body?: string; undo?: () => void } | null>(null);
 
   /** Which dock tool is open (it takes the plan's place). */
   panel = $state<LabPanel | null>(null);

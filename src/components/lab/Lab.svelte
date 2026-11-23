@@ -4,7 +4,8 @@
   import { PANEL_CLOSED_EVENT } from '../../lib/site-bar.ts';
   import { CLIP_SHARE, histogramPath } from '../../analysis/levels.ts';
   import LabPanes from './LabPanes.svelte';
-  import { autosaveLab, backToMine, keepShared, labShareUrl, startLabPersistence } from '../../lab/persist.svelte.ts';
+  import { autosaveLab, backToMine, keepShared, startLabPersistence } from '../../lab/persist.svelte.ts';
+  import LabNotice from './LabNotice.svelte';
   import { NoToneMapping } from 'three';
   import { displayName, getSensor } from '../../data/index.ts';
   import { t } from '../../i18n/en.ts';
@@ -31,17 +32,6 @@
   const stopPersistence = startLabPersistence();
   onDestroy(stopPersistence);
   autosaveLab();
-  let shareNote = $state('');
-
-  async function share() {
-    try {
-      await navigator.clipboard.writeText(labShareUrl());
-      shareNote = L.share.copied;
-    } catch {
-      shareNote = L.share.failed;
-    }
-    setTimeout(() => (shareNote = ''), 3000);
-  }
 
   onMount(() => {
     const gl = document.createElement('canvas').getContext('webgl2');
@@ -109,6 +99,7 @@
 </script>
 
 <svelte:window {onkeydown} />
+<LabNotice />
 
 {#if !desktop}
   <section class="card lab-phone" data-testid="lab-phone">
@@ -133,20 +124,6 @@
           </div>
         </div>
       {/if}
-      <div class="lab-bar">
-      <p class="lab-set">
-        <span><small>{L.set}</small> {lab.set.name}</span>
-        <span><small>{L.subject}</small> {lab.subject.name}</span>
-        <span><small>{L.light}</small> {lab.lighting.name}</span>
-      </p>
-      <span class="lab-share">
-        <span class="lab-share-note" role="status">{shareNote}</span>
-        <button type="button" class="icon-btn" aria-label={L.share.label} title={L.share.label} onclick={share} data-testid="lab-share">
-          <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="2.5" /><circle cx="6" cy="12" r="2.5" /><circle cx="18" cy="19" r="2.5" /><path d="m8.2 10.8 7.6-4.4M8.2 13.2l7.6 4.4" /></svg>
-        </button>
-      </span>
-      </div>
-
       <div class="lab-view" style:--aspect={lab.camera.aspect}>
         <div class="lab-stage" role="img" aria-label={pictureLabel} data-testid="lab-stage" data-samples={lab.samples} data-done={done}>
           {#if webgl}
@@ -177,6 +154,13 @@
       </div>
 
       <section class="card lab-strip" aria-label={L.exposure}>
+        <!-- The set, subject and light: a button that opens the Set tool. -->
+        <button type="button" class="lab-set" title={L.changeSet} aria-expanded={lab.panel === 'set'} aria-controls="lab-pane-set" onclick={() => (lab.panel = lab.panel === 'set' ? null : 'set')} data-testid="lab-set-pill">
+          <span><small>{L.set}</small> {lab.set.name}</span>
+          <span><small>{L.subject}</small> {lab.subject.name}</span>
+          <span><small>{L.light}</small> {lab.lighting.name}</span>
+          <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6" /></svg>
+        </button>
         <div class="lab-strip-top">
           <Meter offset={lab.offset} ev={lab.sceneEv} />
           <div class="lab-strip-actions">

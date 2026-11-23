@@ -9,7 +9,8 @@ import type { CustomSensor, FrameColor, Setup } from '../setup/types.ts';
 // to migrate.ts whenever its shape changes; old files must keep opening.
 // v2 (CapXer 1.1): profile and deletion records (so a cloud sync never brings
 // back something deleted on another device).
-// v3 (CapXer 2.0): the lab's state (optional until the lab is first used).
+// v3 (CapXer 2.0): the lab's state and named lab setups (both optional until
+// the lab is first used).
 
 export const SAVE_VERSION = 3;
 export const APP_ID = 'capxer';
@@ -17,7 +18,7 @@ export const APP_ID = 'capxer';
 export const SAVE_KEY = 'capxer.save';
 
 /** Hard caps for untrusted input (imported files, links, storage edited by hand). */
-export const LIMITS = { setups: 200, cameras: 50, lenses: 40, name: 60, profileName: 40, picture: 80_000 } as const;
+export const LIMITS = { setups: 200, labSetups: 100, cameras: 50, lenses: 40, name: 60, profileName: 40, picture: 80_000 } as const;
 
 /** Colours behind initials; each keeps white letters at WCAG AA (src/styles/user.css). */
 export const TINTS = ['blue', 'teal', 'green', 'amber', 'rose', 'violet', 'slate'] as const;
@@ -37,6 +38,7 @@ export interface Profile {
 /** Deletion records, id (or lens mm) -> when it was deleted. Pruned after DELETED_DAYS. */
 export interface Deleted {
   setups: Record<string, string>;
+  labSetups: Record<string, string>;
   cameras: Record<string, string>;
   lenses: Record<string, string>;
 }
@@ -111,6 +113,15 @@ export interface LabState {
   changedAt: string;
 }
 
+/** A named lab setup: the camera setup and the lab state together. */
+export interface SavedLab {
+  id: string;
+  name: string;
+  setup: Setup;
+  lab: LabState;
+  savedAt: string;
+}
+
 export interface SaveFile {
   app: typeof APP_ID;
   v: typeof SAVE_VERSION;
@@ -124,6 +135,7 @@ export interface SaveFile {
   aids: AidsPrefs;
   deleted: Deleted;
   lab?: LabState;
+  labSetups?: SavedLab[];
 }
 
 /**

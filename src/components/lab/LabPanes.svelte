@@ -10,6 +10,9 @@
   import { ASPECTS, LENS_STOPS, aspectPreset } from '../../setup/presets.ts';
   import type { Mode, Setup } from '../../setup/types.ts';
   import Stepper from './Stepper.svelte';
+  import { tick } from 'svelte';
+  import { labKey, labSummary, suggestLabName } from '../../lab/describe.ts';
+  import { deleteLab, openLab, renameLab, replaceLab, saveLab, shareLab } from '../../lab/persist.svelte.ts';
 
   // The lab's tool panes (dock: Set, Lights, Camera, Aids). One is shown at a
   // time in the right column, in place of the studio plan.
@@ -26,6 +29,55 @@
   const COLOURS = [2700, 3200, 4300, 5600, 6500];
   const softnessOf = (size: number) => SOFTNESS.reduce((best, s) => (Math.abs(s.size - size) < Math.abs(best.size - size) ? s : best)).size;
   const third = (v: number) => Math.round(v * 3) / 3;
+  /** One light's controls open at a time (the first light to begin with): keeps the tool short. */
+  let openLight = $state<string | null>(lab.allLights[0]?.id ?? null);
+
+  // ---- Saved -----------------------------------------------------------------
+  const SP = L.savedPane;
+  let saveName = $state('');
+  let menuFor = $state<string | null>(null);
+  let renaming = $state<string | null>(null);
+  let renameText = $state('');
+  const suggestion = $derived(suggestLabName(lab.setup, lab.toState()));
+  const currentKey = $derived(labKey(lab.setup, lab.toState()));
+  function onsave(e: SubmitEvent) {
+    e.preventDefault();
+    if (saveLab(saveName.trim() || suggestion)) saveName = '';
+  }
+  async function startRename(id: string, current: string) {
+    menuFor = null;
+    renaming = id;
+    renameText = current;
+    await tick();
+    document.getElementById(`lab-rename-${id}`)?.focus();
+  }
+  async function finishRename(e?: SubmitEvent) {
+    e?.preventDefault();
+    const id = renaming;
+    if (!id) return;
+    renameLab(id, renameText);
+    renaming = null;
+    await tick();
+    document.querySelector<HTMLElement>(`[data-lab="${id}"]`)?.focus();
+  }
+  function menuAction(fn: () => void) {
+    const id = menuFor;
+    menuFor = null;
+    fn();
+    if (id) tick().then(() => document.querySelector<HTMLElement>(`[data-lab-more="${id}"]`)?.focus());
+  }
+  function savedKeys(e: KeyboardEvent) {
+    if (e.key !== 'Escape') return;
+    if (renaming) {
+      e.stopPropagation();
+      renaming = null;
+    } else if (menuFor) {
+      e.stopPropagation();
+      const id = menuFor;
+      menuFor = null;
+      document.querySelector<HTMLElement>(`[data-lab-more="${id}"]`)?.focus();
+    }
+  }
 
   // ---- Camera (the viewfinder's setup) ---------------------------------------
   const setup = $derived(lab.setup);
@@ -55,6 +107,9 @@
   }
 </script>
 
+{#snippet minus()}<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 12h12" /></svg>{/snippet}
+{#snippet plus()}<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 12h12M12 6v12" /></svg>{/snippet}
+
 <section class="card lab-pane" id={`lab-pane-${panel}`} role="region" aria-labelledby="lab-pane-title" data-testid={`lab-pane-${panel}`}>
   <header class="lab-pane-head">
     <h2 id="lab-pane-title">{L.panels[panel]}</h2>
@@ -83,51 +138,56 @@
         </div>
       </div>
     {:else if panel === 'lights'}
-      <p class="lab-pane-note">{L.lightsPane.moveHint}</p>
       {#each lab.allLights as l (l.id)}
-        <div class="lab-light" data-testid={`lab-light-${l.id}`}>
-          <div class="vf-row">
-            <label class="vf-txt" for={`lab-light-on-${l.id}`}><b>{l.name}</b><span class="vf-num">{l.kelvin} K</span></label>
-            <input id={`lab-light-on-${l.id}`} type="checkbox" class="switch" checked={l.on} onchange={(e) => lab.editLight(l.id, { on: e.currentTarget.checked })} />
+        <div class="lab-light" class:off={!l.on} data-testid={`lab-light-${l.id}`}>
+          <div class="lab-light-head">
+            <input type="checkbox" class="switch" aria-label={`${l.name} ${L.lightsPane.on.toLowerCase()}`} checked={l.on} onchange={(e) => lab.editLight(l.id, { on: e.currentTarget.checked })} />
+            <button type="button" class="lab-light-toggle" aria-expanded={l.on && openLight === l.id} aria-controls={`lab-light-body-${l.id}`} disabled={!l.on} onclick={() => (openLight = openLight === l.id ? null : l.id)} data-testid={`lab-light-open-${l.id}`}>
+              <b>{l.name}</b>
+              <span class="lab-light-sum vf-num">{l.on ? `${formatStops(l.stops)} · ${SOFTNESS.find((x) => x.size === softnessOf(l.size))!.label} · ${l.kelvin} K` : L.lightsPane.off}</span>
+              <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6" /></svg>
+            </button>
           </div>
-          {#if l.on}
-            <div class="lab-light-grid">
-              <Stepper
-                id={`lab-light-${l.id}-stops`}
-                label={L.lightsPane.brightness}
-                value={`${formatStops(l.stops)} ${L.lightsPane.stops}`}
-                less={{ label: `${l.name}: ${L.lightsPane.dimmer}`, disabled: l.stops <= -3, onclick: () => lab.editLight(l.id, { stops: third(l.stops - 1 / 3) }) }}
-                more={{ label: `${l.name}: ${L.lightsPane.brighter}`, disabled: l.stops >= 3, onclick: () => lab.editLight(l.id, { stops: third(l.stops + 1 / 3) }) }}
-              />
-              <div class="lab-step">
-                <span class="lab-step-label">{L.lightsPane.softness}</span>
-                <div class="chips" role="group" aria-label={`${l.name}: ${L.lightsPane.softness}`}>
-                  {#each SOFTNESS as s (s.size)}<button type="button" class="chip" aria-pressed={softnessOf(l.size) === s.size} onclick={() => lab.editLight(l.id, { size: s.size })}>{s.label}</button>{/each}
-                </div>
+          {#if l.on && openLight === l.id}
+          <div id={`lab-light-body-${l.id}`}>
+            <div class="lab-light-row">
+              <span class="lab-mini">{L.lightsPane.brightness}</span>
+              <div class="lab-mini-step">
+                <button type="button" class="dock-icon" aria-label={`${l.name}: ${L.lightsPane.dimmer}`} disabled={l.stops <= -3} onclick={() => lab.editLight(l.id, { stops: third(l.stops - 1 / 3) })}>{@render minus()}</button>
+                <output class="vf-num">{formatStops(l.stops)}</output>
+                <button type="button" class="dock-icon" aria-label={`${l.name}: ${L.lightsPane.brighter}`} disabled={l.stops >= 3} onclick={() => lab.editLight(l.id, { stops: third(l.stops + 1 / 3) })}>{@render plus()}</button>
               </div>
             </div>
-            <div class="lab-step">
-              <span class="lab-step-label">{L.lightsPane.colour}</span>
-              <div class="chips" role="group" aria-label={`${l.name}: ${L.lightsPane.colour}`}>
-                {#each COLOURS as k (k)}<button type="button" class="chip mono" aria-pressed={l.kelvin === k} onclick={() => lab.editLight(l.id, { kelvin: k })}>{k} K</button>{/each}
+            <div class="lab-light-row">
+              <span class="lab-mini">{L.lightsPane.softness}</span>
+              <div class="seg lab-seg" role="group" aria-label={`${l.name}: ${L.lightsPane.softness}`}>
+                {#each SOFTNESS as sft (sft.size)}<button type="button" aria-pressed={softnessOf(l.size) === sft.size} onclick={() => lab.editLight(l.id, { size: sft.size })}>{sft.label}</button>{/each}
               </div>
             </div>
+            <div class="lab-light-row">
+              <span class="lab-mini">{L.lightsPane.colour} <small>K</small></span>
+              <div class="seg lab-seg mono" role="group" aria-label={`${l.name}: ${L.lightsPane.colour}, kelvin`}>
+                {#each COLOURS as k (k)}<button type="button" aria-pressed={l.kelvin === k} onclick={() => lab.editLight(l.id, { kelvin: k })}>{k}</button>{/each}
+              </div>
+            </div>
+          </div>
           {/if}
         </div>
       {/each}
-      <div class="vf-row">
-        <div class="vf-txt"><b>{L.lightsPane.ambient[0]}</b><span>{L.lightsPane.ambient[1]}</span></div>
-        <div class="lab-inline-step">
-          <Stepper
-            id="lab-ambient"
-            label={L.lightsPane.brightness}
-            value={`${formatStops(lab.ambientStops)} ${L.lightsPane.stops}`}
-            less={{ label: `${L.lightsPane.ambient[0]}: ${L.lightsPane.dimmer}`, disabled: lab.ambientStops <= -3, onclick: () => (lab.ambientStops = third(lab.ambientStops - 1 / 3)) }}
-            more={{ label: `${L.lightsPane.ambient[0]}: ${L.lightsPane.brighter}`, disabled: lab.ambientStops >= 3, onclick: () => (lab.ambientStops = third(lab.ambientStops + 1 / 3)) }}
-          />
+      <div class="lab-light">
+        <div class="lab-light-row">
+          <span class="lab-mini">{L.lightsPane.ambient[0]}</span>
+          <div class="lab-mini-step">
+            <button type="button" class="dock-icon" aria-label={`${L.lightsPane.ambient[0]}: ${L.lightsPane.dimmer}`} disabled={lab.ambientStops <= -3} onclick={() => (lab.ambientStops = third(lab.ambientStops - 1 / 3))}>{@render minus()}</button>
+            <output class="vf-num">{formatStops(lab.ambientStops)}</output>
+            <button type="button" class="dock-icon" aria-label={`${L.lightsPane.ambient[0]}: ${L.lightsPane.brighter}`} disabled={lab.ambientStops >= 3} onclick={() => (lab.ambientStops = third(lab.ambientStops + 1 / 3))}>{@render plus()}</button>
+          </div>
         </div>
       </div>
-      <button type="button" class="btn btn-secondary lab-pane-wide" onclick={() => lab.resetLights()}>{L.lightsPane.reset}</button>
+      <div class="lab-pane-foot">
+        <p class="lab-pane-note">{L.lightsPane.moveHint}</p>
+        <button type="button" class="btn btn-secondary" onclick={() => lab.resetLights()}>{L.lightsPane.reset}</button>
+      </div>
     {:else if panel === 'camera'}
       <p class="lab-pane-note">{L.cameraPane.shared}</p>
       <div class="vf-row">
@@ -180,6 +240,54 @@
       <div class="vf-row">
         <div class="vf-txt"><b>{L.cameraPane.position[0]}</b><span>{L.cameraPane.position[1]}</span></div>
         <button type="button" class="btn btn-secondary" disabled={lab.cameraPlace === null} onclick={() => lab.resetCamera()}>{L.cameraPane.resetPosition}</button>
+      </div>
+    {:else if panel === 'saved'}
+      <!-- svelte-ignore a11y_no_static_element_interactions -->
+      <div onkeydown={savedKeys}>
+        <div class="vf-row stack">
+          <div class="vf-txt"><b>{SP.current}</b><span class="sv-sum" data-testid="lab-saved-summary">{labSummary(lab.setup, lab.toState())}</span></div>
+          <form class="sv-save" onsubmit={onsave}>
+            <input class="field-input" aria-label={SP.nameLabel} placeholder={suggestion} maxlength="60" bind:value={saveName} data-testid="lab-saved-name" />
+            <button type="submit" class="btn btn-primary" data-testid="lab-saved-save">{SP.save}</button>
+          </form>
+        </div>
+        <div class="vf-row stack">
+          <div class="sv-head"><h3>{SP.list}</h3>{#if lab.savedLabs.length}<span class="sv-sum">{lab.savedLabs.length}</span>{/if}</div>
+          {#if !lab.savedLabs.length}
+            <p class="vf-note">{SP.empty}</p>
+          {:else}
+            <ul class="sv-list" data-testid="lab-saved-list">
+              {#each lab.savedLabs as sv (sv.id)}
+                {@const showing = !lab.shared && labKey(sv.setup, sv.lab) === currentKey}
+                <li class:current={showing}>
+                  {#if renaming === sv.id}
+                    <form class="sv-rename" onsubmit={finishRename}>
+                      <input id={`lab-rename-${sv.id}`} class="field-input" aria-label={`${SP.renameLabel} ${sv.name}`} maxlength="60" bind:value={renameText} />
+                      <button type="submit" class="btn btn-secondary">{SP.done}</button>
+                    </form>
+                  {:else}
+                    <button type="button" class="sv-item" data-lab={sv.id} aria-current={showing ? 'true' : undefined} onclick={() => openLab(sv.id)}>
+                      <span class="nm"><span class="sv-name">{sv.name}</span>{#if showing}<span class="sv-tag">{SP.showing}</span>{/if}</span>
+                      <span class="sv-sum">{labSummary(sv.setup, sv.lab)}</span>
+                    </button>
+                    <button type="button" class="icon-btn sv-more" data-lab-more={sv.id} aria-label={`${SP.more} ${sv.name}`} aria-expanded={menuFor === sv.id} aria-controls={`lab-menu-${sv.id}`} onclick={() => (menuFor = menuFor === sv.id ? null : sv.id)}>
+                      <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="5" cy="12" r="1.3" fill="currentColor" stroke="none" /><circle cx="12" cy="12" r="1.3" fill="currentColor" stroke="none" /><circle cx="19" cy="12" r="1.3" fill="currentColor" stroke="none" /></svg>
+                    </button>
+                    {#if menuFor === sv.id}
+                      <div class="sv-menu" id={`lab-menu-${sv.id}`} role="group" aria-label={`${SP.more} ${sv.name}`}>
+                        <button type="button" class="chip" onclick={() => menuAction(() => shareLab(sv))}>{SP.share}</button>
+                        <button type="button" class="chip" onclick={() => startRename(sv.id, sv.name)}>{SP.rename}</button>
+                        <button type="button" class="chip" onclick={() => menuAction(() => replaceLab(sv.id))}>{SP.replace}</button>
+                        <button type="button" class="chip" onclick={() => menuAction(() => deleteLab(sv.id))}>{SP.remove}</button>
+                      </div>
+                    {/if}
+                  {/if}
+                </li>
+              {/each}
+            </ul>
+          {/if}
+        </div>
+        <p class="lab-pane-note">{SP.note}</p>
       </div>
     {:else}
       <p class="lab-pane-note">{L.aidsPane.note}</p>

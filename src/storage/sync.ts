@@ -1,4 +1,4 @@
-import { LIMITS, type Deleted, type SaveFile, type SavedSetup } from './schema.ts';
+import { LIMITS, type Deleted, type SaveFile, type SavedLab, type SavedSetup } from './schema.ts';
 import { sanitizeDeleted } from './sanitize.ts';
 
 // Joining two copies of the same person's save: this browser's and the one in
@@ -8,6 +8,7 @@ import { sanitizeDeleted } from './sanitize.ts';
 // - profile: the newer one; calibration per device kind, from the newer file
 //   when both have one; exposure-aid choices from the newer file
 // - the lab's state: the one changed last (its own changedAt)
+// - named lab setups: like saved setups (union, newer wins, deleted stay deleted)
 // - the current viewfinder setup stays this device's own
 // Pure, so it is unit tested (tests/unit/storage.test.ts).
 
@@ -19,7 +20,7 @@ function joinDeleted(a: Deleted, b: Deleted, now: Date): Deleted {
     for (const [k, v] of Object.entries(y)) if (!out[k] || t(v) > t(out[k])) out[k] = v;
     return out;
   };
-  return sanitizeDeleted({ setups: pick(a.setups, b.setups), cameras: pick(a.cameras, b.cameras), lenses: pick(a.lenses, b.lenses) }, now);
+  return sanitizeDeleted({ setups: pick(a.setups, b.setups), labSetups: pick(a.labSetups, b.labSetups), cameras: pick(a.cameras, b.cameras), lenses: pick(a.lenses, b.lenses) }, now);
 }
 
 /** What the cloud brought in, for a short note ("2 setups from your other devices"). */
@@ -27,6 +28,30 @@ export interface SyncChanges {
   added: number;
   updated: number;
   removed: number;
+}
+
+/** Union by id, the newer savedAt wins, deleted ones stay deleted (counted into `changes`). */
+function joinNamed<T extends { id: string; savedAt: string }>(mine: T[], theirs: T[], gone: Record<string, string>, limit: number, changes: SyncChanges): T[] {
+  const isGone = (s: T) => t(gone[s.id]) >= t(s.savedAt);
+  const out: T[] = [];
+  const theirsById = new Map(theirs.map((s) => [s.id, s]));
+  for (const s of mine) {
+    const other = theirsById.get(s.id);
+    const winner = other && t(other.savedAt) > t(s.savedAt) ? other : s;
+    if (isGone(winner)) {
+      changes.removed++;
+      continue;
+    }
+    if (winner !== s && JSON.stringify(winner) !== JSON.stringify(s)) changes.updated++;
+    out.push(winner);
+  }
+  const mineIds = new Set(mine.map((s) => s.id));
+  for (const s of theirs) {
+    if (mineIds.has(s.id) || isGone(s) || out.length >= limit) continue;
+    out.push(s);
+    changes.added++;
+  }
+  return out;
 }
 
 export function mergeSync(mine: SaveFile | null, theirs: SaveFile, now = new Date()): { file: SaveFile; changes: SyncChanges } {
@@ -65,6 +90,7 @@ export function mergeSync(mine: SaveFile | null, theirs: SaveFile, now = new Dat
   const profile = !theirs.profile ? mine.profile : !mine.profile || t(theirs.profile.changedAt) > t(mine.profile.changedAt) ? theirs.profile : mine.profile;
   const older = newerFile === mine ? theirs : mine;
   const lab = !theirs.lab ? mine.lab : !mine.lab || t(theirs.lab.changedAt) > t(mine.lab.changedAt) ? theirs.lab : mine.lab;
+  const labSetups = joinNamed<SavedLab>(mine.labSetups ?? [], theirs.labSetups ?? [], deleted.labSetups, LIMITS.labSetups, changes);
 
   return {
     file: structuredClone({
@@ -77,6 +103,7 @@ export function mergeSync(mine: SaveFile | null, theirs: SaveFile, now = new Dat
       aids: newerFile.aids,
       deleted,
       ...(lab ? { lab } : {}),
+      ...(labSetups.length ? { labSetups } : {}),
     }),
     changes,
   };

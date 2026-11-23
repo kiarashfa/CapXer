@@ -165,7 +165,7 @@ test.describe('desktop', () => {
       await page.emulateMedia({ colorScheme: scheme });
       await page.goto('lab/');
       await openDock(page);
-      for (const tool of ['set', 'lights', 'camera', 'aids']) {
+      for (const tool of ['set', 'lights', 'camera', 'aids', 'saved']) {
         await page.getByTestId(`lab-tool-${tool}`).click();
         await expect(page.getByTestId(`lab-pane-${tool}`)).toBeVisible();
         if (tool === 'aids') {
@@ -267,6 +267,64 @@ test.describe('saving and sharing', () => {
     expect((await save(page)).lab.exposure.iso).toBe(500);
   });
 
+  test('the set pill in the bottom panel opens the Set tool', async ({ page }) => {
+    await page.goto('lab/');
+    const pill = page.getByTestId('lab-set-pill');
+    await expect(pill).toContainText('Studio');
+    await expect(pill).toContainText('Three-point');
+    await pill.click();
+    await expect(page.getByTestId('lab-pane-set')).toBeVisible();
+    await expect(pill).toHaveAttribute('aria-expanded', 'true');
+  });
+
+  test('the Lights tool opens one light at a time', async ({ page }) => {
+    await page.goto('lab/');
+    await openDock(page);
+    await page.getByTestId('lab-tool-lights').click();
+    await expect(page.getByTestId('lab-light-open-key')).toHaveAttribute('aria-expanded', 'true');
+    await expect(page.getByTestId('lab-light-key').getByRole('group', { name: 'Key: Softness' })).toBeVisible();
+    await page.getByTestId('lab-light-open-fill').click();
+    await expect(page.getByTestId('lab-light-open-key')).toHaveAttribute('aria-expanded', 'false');
+    await page.getByTestId('lab-light-fill').getByRole('group', { name: 'Fill: Colour, kelvin' }).getByRole('button', { name: '3200' }).click();
+    await expect(page.getByTestId('lab-light-open-fill')).toContainText('3200 K');
+  });
+
+  test('named lab setups: save, open, rename, delete with undo, and they come back next visit', async ({ page }) => {
+    await page.goto('lab/');
+    await openDock(page);
+    await page.getByTestId('lab-tool-saved').click();
+    await page.getByTestId('lab-saved-name').fill('Night street');
+    await page.getByTestId('lab-saved-save').click();
+    await expect(page.getByTestId('lab-notice')).toContainText('Saved');
+    const list = page.getByTestId('lab-saved-list');
+    await expect(list.locator('button.sv-item', { hasText: 'Night street' })).toHaveAttribute('aria-current', 'true');
+
+    // Change the lab: the saved one is no longer "showing"; opening it brings it back.
+    for (let i = 0; i < 3; i++) await page.getByTestId('lab-iso-more').click();
+    await expect(page.getByTestId('lab-iso-value')).toHaveText('800');
+    await expect(list.locator('button.sv-item', { hasText: 'Night street' })).not.toHaveAttribute('aria-current', 'true');
+    await list.locator('button.sv-item', { hasText: 'Night street' }).click();
+    await expect(page.getByTestId('lab-iso-value')).toHaveText('400');
+
+    // Rename, then delete and undo.
+    await page.getByRole('button', { name: 'More actions for Night street' }).click();
+    await page.getByRole('button', { name: 'Rename' }).click();
+    await page.getByRole('textbox', { name: 'New name for Night street' }).fill('Blue hour');
+    await page.getByRole('button', { name: 'Done' }).click();
+    await expect(list).toContainText('Blue hour');
+    await page.getByRole('button', { name: 'More actions for Blue hour' }).click();
+    await page.getByRole('button', { name: 'Delete' }).click();
+    await expect(list).toHaveCount(0);
+    await page.getByTestId('lab-notice').getByRole('button', { name: 'Undo' }).click();
+    await expect(page.getByTestId('lab-saved-list')).toContainText('Blue hour');
+
+    await expect.poll(async () => (await save(page))?.labSetups?.map((x: { name: string }) => x.name), { timeout: 5000 }).toEqual(['Blue hour']);
+    await page.reload();
+    await openDock(page);
+    await page.getByTestId('lab-tool-saved').click();
+    await expect(page.getByTestId('lab-saved-list')).toContainText('Blue hour');
+  });
+
   test('a share link opens the setup without saving it; Back to mine and Keep it', async ({ page }) => {
     await page.addInitScript(() => {
       (window as unknown as { copied: string[] }).copied = [];
@@ -276,8 +334,9 @@ test.describe('saving and sharing', () => {
     for (let i = 0; i < 3; i++) await page.getByTestId('lab-iso-more').click();
     await expect(page.getByTestId('lab-iso-value')).toHaveText('800');
     await expect.poll(async () => (await save(page))?.lab?.exposure?.iso, { timeout: 5000 }).toBe(800);
+    await openDock(page);
     await page.getByTestId('lab-share').click();
-    await expect(page.locator('.lab-share-note')).toHaveText('Link copied');
+    await expect(page.getByTestId('lab-notice')).toContainText('Link copied');
     const link = await page.evaluate(() => (window as unknown as { copied: string[] }).copied[0]!);
     expect(link).toMatch(/\/lab\/#v=1&.*&lab=1&.*iso=800/);
 

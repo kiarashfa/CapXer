@@ -1,6 +1,6 @@
 import { migrate } from './migrate.ts';
 import { sanitizeSave } from './sanitize.ts';
-import { LIMITS, type SaveFile, type SavedSetup } from './schema.ts';
+import { LIMITS, type SaveFile, type SavedLab, type SavedSetup } from './schema.ts';
 
 // Export and import of the save file (the user's "login": their own file).
 
@@ -44,6 +44,7 @@ export function uniqueName(name: string, taken: ReadonlySet<string>): string {
 
 export interface ImportSummary {
   setups: number;
+  labSetups: number;
   /** Setups whose name is already used by one of yours; they get "(2)". */
   renamed: number;
   cameras: number;
@@ -56,6 +57,7 @@ export function summarize(mine: SaveFile, theirs: SaveFile): ImportSummary {
   const plan = planSetups(mine, theirs);
   return {
     setups: theirs.setups.length,
+    labSetups: (theirs.labSetups ?? []).length,
     renamed: plan.filter((p) => p.renamed).length,
     cameras: theirs.gear.cameras.length,
     lenses: theirs.gear.lenses.length,
@@ -77,6 +79,24 @@ function planSetups(mine: SaveFile, theirs: SaveFile) {
     const name = uniqueName(s.name, taken);
     taken.add(name);
     out.push({ setup: { ...s, name }, renamed: name !== s.name });
+  }
+  return out;
+}
+
+/** Lab setups from a file: new ones added (clashing names numbered), a newer copy of one of yours replaces it. */
+function planLabSetups(mine: SavedLab[], theirs: SavedLab[]): SavedLab[] {
+  const taken = new Set(mine.map((s) => s.name));
+  const out = [...mine];
+  for (const s of theirs) {
+    const i = out.findIndex((m) => m.id === s.id);
+    if (i >= 0) {
+      if (Date.parse(s.savedAt) > Date.parse(out[i]!.savedAt)) out[i] = s;
+      continue;
+    }
+    if (out.length >= LIMITS.labSetups) break;
+    const name = uniqueName(s.name, taken);
+    taken.add(name);
+    out.push({ ...s, name });
   }
   return out;
 }
@@ -109,5 +129,6 @@ export function mergeSave(mine: SaveFile, theirs: SaveFile, how: 'merge' | 'repl
     calibration: { ...mine.calibration, ...theirs.calibration },
     aids: theirs.aids,
     ...((theirs.lab ?? mine.lab) ? { lab: theirs.lab ?? mine.lab } : {}),
+    ...(mine.labSetups?.length || theirs.labSetups?.length ? { labSetups: planLabSetups(mine.labSetups ?? [], theirs.labSetups ?? []) } : {}),
   });
 }

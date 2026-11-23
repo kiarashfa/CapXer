@@ -11,6 +11,7 @@ import { MAX_PER_FRAME, TIERS, initialTier, nextPerFrame, tierAfter } from '../.
 import { SETS, getSet } from '../../src/lab/sets/index.ts';
 import { clampPlace } from '../../src/lab/place.ts';
 import { decodeLabLink, encodeLabLink } from '../../src/lab/link.ts';
+import { labKey, labSummary, suggestLabName } from '../../src/lab/describe.ts';
 import { decodeLink } from '../../src/storage/link.ts';
 import { defaultLab } from '../../src/storage/sanitize.ts';
 import { ANGLES, APERTURES, FRAME_RATES, ISOS, SHUTTERS, WHITE_BALANCES, nearestIndex, step } from '../../src/lab/stops.ts';
@@ -324,5 +325,29 @@ describe('lab share links', () => {
 
   it('focus on the subject and at infinity survive', () => {
     for (const focus of ['subject', 'infinity'] as const) expect(decodeLabLink(encodeLabLink(setup, { ...state, focus }), NOW)!.state.focus).toBe(focus);
+  });
+});
+
+describe('naming lab setups', () => {
+  const NOW = new Date('2026-11-23T12:00:00Z');
+  const st = defaultLab(NOW);
+
+  it('suggests a name and a summary in cinema terms', () => {
+    const setup = defaultSetup('cinema');
+    expect(suggestLabName(setup, st)).toBe('Three-point, T2.8, 180°');
+    expect(labSummary(setup, st)).toBe('ALEXA 35 · 35 mm · Three-point · T2.8 · 180° · EI 400 · 5600 K');
+  });
+
+  it('and in stills terms', () => {
+    const setup = defaultSetup('stills');
+    expect(suggestLabName(setup, st)).toBe('Three-point, f/2.8, 1/50 s');
+    expect(labSummary(setup, st)).toContain('ISO 400');
+  });
+
+  it('two setups look the same whatever the time they were saved and the viewer aids', () => {
+    const setup = defaultSetup('cinema');
+    const later = { ...st, changedAt: '2027-01-01T00:00:00.000Z', aids: { ...st.aids, histogram: true } };
+    expect(labKey(setup, later)).toBe(labKey(setup, st));
+    expect(labKey(setup, { ...st, ambient: 1 })).not.toBe(labKey(setup, st));
   });
 });

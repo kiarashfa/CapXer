@@ -47,14 +47,14 @@ const current = (raw: unknown) => {
 describe('save file', () => {
   it('opens the version 1 sample: same content, current version, nothing deleted, no profile, no lab', () => {
     const file = sanitizeSave(current(structuredClone(SAMPLE_V1)), NOW);
-    expect(file).toEqual({ ...SAMPLE_V1, v: SAVE_VERSION, deleted: { setups: {}, cameras: {}, lenses: {} } });
+    expect(file).toEqual({ ...SAMPLE_V1, v: SAVE_VERSION, deleted: { setups: {}, labSetups: {}, cameras: {}, lenses: {} } });
     expect(file).not.toHaveProperty('profile');
     expect(file).not.toHaveProperty('lab');
   });
 
   it('opens the version 2 sample: same content, current version, no lab until the lab is used', () => {
     const file = sanitizeSave(current(structuredClone(SAMPLE_V2)), NOW);
-    expect(file).toEqual({ ...SAMPLE_V2, v: SAVE_VERSION });
+    expect(file).toEqual({ ...SAMPLE_V2, v: SAVE_VERSION, deleted: { ...SAMPLE_V2.deleted, labSetups: {} } });
     expect(file).not.toHaveProperty('lab');
   });
 
@@ -187,7 +187,7 @@ describe('export and import', () => {
   it('merges: adds setups, renames clashes, keeps the current setup, takes calibration and aids', () => {
     const base = mine();
     const theirs = { ...emptySave(NOW), setups: [{ id: 'zzz999', name: 'A-cam wide', savedAt: NOW.toISOString(), setup: defaultSetup('stills') }], calibration: { webcam: { kind: 'equivalent' as const, mm: 28 } }, aids: { ...base.aids, peaking: false } };
-    expect(summarize(base, theirs)).toEqual({ setups: 1, renamed: 1, cameras: 0, lenses: 0, phone: false, webcam: true });
+    expect(summarize(base, theirs)).toEqual({ setups: 1, labSetups: 0, renamed: 1, cameras: 0, lenses: 0, phone: false, webcam: true });
     const out = mergeSave(base, theirs, 'merge', NOW);
     expect(out.setups.map((s) => s.name)).toEqual(['A-cam wide', 'My rig', 'A-cam wide (2)']);
     expect(out.current).toEqual(base.current);
@@ -287,7 +287,7 @@ describe('profile (save file v2)', () => {
 
   it('keeps recent deletion records and drops old or malformed ones', () => {
     const d = sanitizeDeleted({ setups: { abc123: '2026-11-01T00:00:00Z', old: '2025-01-01T00:00:00Z', 'BAD ID': '2026-11-01T00:00:00Z' }, cameras: { 'custom/k3f9a': 'soon' }, lenses: { '21': '2026-11-19T00:00:00Z', x: '2026-11-19T00:00:00Z' } }, NOW);
-    expect(d).toEqual({ setups: { abc123: '2026-11-01T00:00:00.000Z' }, cameras: {}, lenses: { '21': '2026-11-19T00:00:00.000Z' } });
+    expect(d).toEqual({ setups: { abc123: '2026-11-01T00:00:00.000Z' }, labSetups: {}, cameras: {}, lenses: { '21': '2026-11-19T00:00:00.000Z' } });
   });
 });
 
@@ -330,7 +330,7 @@ describe('deletion records and cloud sync', () => {
 
   it('never brings back what another device deleted', () => {
     const mine = { ...base(), setups: [setup('gone11', 'Deleted there', T1), setup('kept11', 'Kept', T1)] };
-    const theirs = { ...emptySave(T2), setups: [setup('kept11', 'Kept', T1)], gear: { cameras: [], lenses: [] }, deleted: { setups: { gone11: T2.toISOString() }, cameras: { 'custom/k3f9a': T2.toISOString() }, lenses: { '21': T2.toISOString() } } };
+    const theirs = { ...emptySave(T2), setups: [setup('kept11', 'Kept', T1)], gear: { cameras: [], lenses: [] }, deleted: { setups: { gone11: T2.toISOString() }, labSetups: {}, cameras: { 'custom/k3f9a': T2.toISOString() }, lenses: { '21': T2.toISOString() } } };
     const { file, changes } = mergeSync(mine, theirs, T3);
     expect(file.setups.map((s) => s.id)).toEqual(['kept11']);
     expect(file.gear).toEqual({ cameras: [], lenses: [65] });
@@ -340,7 +340,7 @@ describe('deletion records and cloud sync', () => {
 
   it('keeps a setup edited after it was deleted elsewhere', () => {
     const mine = { ...base(), setups: [setup('edit11', 'Edited later', T3)] };
-    const theirs = { ...emptySave(T2), deleted: { setups: { edit11: T2.toISOString() }, cameras: {}, lenses: {} } };
+    const theirs = { ...emptySave(T2), deleted: { setups: { edit11: T2.toISOString() }, labSetups: {}, cameras: {}, lenses: {} } };
     expect(mergeSync(mine, theirs, T3).file.setups.map((s) => s.id)).toEqual(['edit11']);
   });
 
@@ -417,5 +417,54 @@ describe('lab state in the save file', () => {
     expect(mergeSave(mine, emptySave(NOW), 'merge', NOW).lab).toEqual(lab);
     const theirs = { ...emptySave(NOW), lab: { ...lab, lighting: 'three-point' } };
     expect(mergeSave(mine, theirs, 'merge', NOW).lab!.lighting).toBe('three-point');
+  });
+});
+
+describe('named lab setups', () => {
+  const T1 = new Date('2026-11-21T10:00:00Z');
+  const T2 = new Date('2026-11-22T10:00:00Z');
+  const labSetup = (id: string, name: string, when: Date, iso = 400) => ({
+    id,
+    name,
+    setup: defaultSetup('cinema'),
+    lab: { ...defaultLab(when), exposure: { ...defaultLab(when).exposure, iso } },
+    savedAt: when.toISOString(),
+  });
+
+  it('round-trip through the save file; broken entries are dropped', () => {
+    const good = labSetup('night1', 'Night street', T1, 1600);
+    const file = sanitizeSave({ ...emptySave(NOW), labSetups: [good, { id: 'BAD ID', name: 'x', lab: {} }, { id: 'nolab1', name: 'No lab' }, good] }, NOW)!;
+    expect(file.labSetups).toEqual([good]);
+    expect(sanitizeSave(emptySave(NOW), NOW)).not.toHaveProperty('labSetups');
+  });
+
+  it('record a deletion when one is removed, and forget it when it comes back', () => {
+    const base = { ...emptySave(NOW), labSetups: [labSetup('night1', 'Night street', T1)] };
+    const next = withDeletions(base, { ...base, labSetups: [] }, NOW);
+    expect(next.deleted.labSetups).toEqual({ night1: NOW.toISOString() });
+    const back = withDeletions(next, { ...next, labSetups: base.labSetups }, T2);
+    expect(back.deleted.labSetups).toEqual({});
+    expect(back.labSetups![0]!.savedAt).toBe(T2.toISOString());
+  });
+
+  it('cloud sync joins them: newer edit wins, deleted ones stay deleted', () => {
+    const mine = { ...emptySave(T2), labSetups: [labSetup('a11111', 'A', T1, 400), labSetup('b22222', 'B', T1)] };
+    const theirs = {
+      ...emptySave(T2),
+      labSetups: [labSetup('a11111', 'A', T2, 800), labSetup('c33333', 'C', T1)],
+      deleted: { ...emptySave(T2).deleted, labSetups: { b22222: T2.toISOString() } },
+    };
+    const { file, changes } = mergeSync(mine, theirs, T2);
+    expect(file.labSetups!.map((s) => s.id)).toEqual(['a11111', 'c33333']);
+    expect(file.labSetups![0]!.lab.exposure.iso).toBe(800);
+    expect(changes).toMatchObject({ added: 1, updated: 1, removed: 1 });
+  });
+
+  it('opening a save file adds its lab setups and numbers clashing names', () => {
+    const mine = { ...emptySave(NOW), labSetups: [labSetup('a11111', 'Night street', T1)] };
+    const theirs = { ...emptySave(NOW), labSetups: [labSetup('z99999', 'Night street', T1)] };
+    expect(summarize(mine, theirs).labSetups).toBe(1);
+    const out = mergeSave(mine, theirs, 'merge', NOW);
+    expect(out.labSetups!.map((s) => s.name)).toEqual(['Night street', 'Night street (2)']);
   });
 });
