@@ -475,4 +475,76 @@
     "URL": "https://worldradiohistory.com/Bookshelf/Education/The-Technique-of-the-Television-Cameraman-Jones-1965.pdf",
     "accessed": { "date-parts": [[2026, 11, 20]] }
   }
+,
+  {
+    "id": "zeiss-nasse-depth-of-field-2010",
+    "type": "report",
+    "title": "Depth of Field and Bokeh",
+    "author": [{ "family": "Nasse", "given": "H. H." }],
+    "publisher": "Carl Zeiss AG, Camera Lens Division",
+    "issued": { "date-parts": [[2010, 3]] },
+    "URL": "https://lenspire.zeiss.com/photo/app/uploads/2022/02/technical-article-depth-of-field-and-bokeh.pdf",
+    "accessed": { "date-parts": [[2026, 11, 23]] }
+  },
+  {
+    "id": "wikipedia-exposure-value",
+    "type": "webpage",
+    "title": "Exposure value",
+    "author": [{ "literal": "Wikipedia contributors" }],
+    "container-title": "Wikipedia",
+    "publisher": "Wikimedia Foundation",
+    "URL": "https://en.wikipedia.org/w/index.php?title=Exposure_value&oldid=1352562239",
+    "accessed": { "date-parts": [[2026, 11, 23]] }
+  },
+  {
+    "id": "sekonic-meter-calibration",
+    "type": "webpage",
+    "title": "How are your exposure meters calibrated?",
+    "container-title": "Sekonic Answers",
+    "publisher": "Sekonic",
+    "issued": { "date-parts": [[2025, 5, 21]] },
+    "URL": "https://answers.sekonic.com/5851973/How-are-your-exposure-meters-calibrated",
+    "accessed": { "date-parts": [[2026, 11, 23]] }
+  },
+  {
+    "id": "kodak-tri-x-f4017-2021",
+    "type": "report",
+    "title": "KODAK PROFESSIONAL TRI-X 320 and 400 Films",
+    "number": "F-4017",
+    "publisher": "Kodak Alaris",
+    "issued": { "date-parts": [[2021, 10]] },
+    "URL": "https://kodakprofessional.com/sites/default/files/wysiwyg/film/f4017_trix_320400.pdf",
+    "accessed": { "date-parts": [[2026, 11, 23]] }
+  },
+  {
+    "id": "red-shutter-angle",
+    "type": "webpage",
+    "title": "Shutter Angles & Creative Control",
+    "container-title": "RED 101",
+    "publisher": "RED Digital Cinema",
+    "URL": "https://www.reddigitalcinema.com/red-101/shutter-angle-tutorial",
+    "accessed": { "date-parts": [[2026, 11, 23]] }
+  },
+  {
+    "id": "wyman-sloan-shirley-2013-cmf",
+    "type": "article-journal",
+    "title": "Simple Analytic Approximations to the CIE XYZ Color Matching Functions",
+    "author": [{ "family": "Wyman", "given": "Chris" }, { "family": "Sloan", "given": "Peter-Pike" }, { "family": "Shirley", "given": "Peter" }],
+    "container-title": "Journal of Computer Graphics Techniques",
+    "volume": "2",
+    "issue": "2",
+    "page": "1-11",
+    "issued": { "date-parts": [[2013]] },
+    "URL": "https://jcgt.org/published/0002/02/01/",
+    "accessed": { "date-parts": [[2026, 11, 23]] }
+  },
+  {
+    "id": "nist-codata-2022-second-radiation-constant",
+    "type": "webpage",
+    "title": "CODATA Value: second radiation constant",
+    "container-title": "The NIST Reference on Constants, Units, and Uncertainty",
+    "publisher": "National Institute of Standards and Technology",
+    "URL": "https://physics.nist.gov/cgi-bin/cuu/Value?c22ndrc",
+    "accessed": { "date-parts": [[2026, 11, 23]] }
+  }
 ]

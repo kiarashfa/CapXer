@@ -6,7 +6,7 @@ import { SITE_ORIGIN } from '../config/site.ts';
 import { url } from '../lib/url.ts';
 import { getLessons, lessonUrl } from '../content/lessons.ts';
 
-const PAGES = ['', 'viewfinder', 'lessons', 'about', 'user'];
+const PAGES = ['', 'viewfinder', 'lab', 'lessons', 'about', 'user'];
 
 export const GET: APIRoute = async () => {
   const lessons = await getLessons();

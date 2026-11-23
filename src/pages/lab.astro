@@ -1,0 +1,19 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Lab from '../components/lab/Lab.svelte';
+import LabDock from '../components/lab/LabDock.svelte';
+import { t } from '../i18n/en.ts';
+import '../styles/viewfinder.css';
+import '../styles/lab.css';
+---
+
+<BaseLayout title={t.lab.title} description={t.lab.description} dockLabel={t.lab.tools}>
+  <Fragment slot="old-browser">{t.oldBrowser.tool}</Fragment>
+  <div slot="dock" data-needs-modern><LabDock client:load /></div>
+  <h1 class="sr-only">{t.lab.title}</h1>
+  <div data-needs-modern>
+    <Lab client:only="svelte">
+      <div slot="fallback" class="card lab-loading"><p>{t.lab.loading}</p></div>
+    </Lab>
+  </div>
+</BaseLayout>

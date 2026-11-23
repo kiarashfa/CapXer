@@ -17,6 +17,8 @@ export interface Credit {
 export const CREDITS: Credit[] = [
   { name: 'Astro', use: 'Site framework (build time)', licence: 'MIT', href: 'https://astro.build', packages: ['astro', '@astrojs/svelte', '@astrojs/mdx', '@astrojs/check', '@astrojs/markdown-satteri'], about: true },
   { name: 'Svelte', use: 'Interactive components', licence: 'MIT', href: 'https://svelte.dev', packages: ['svelte'], about: true },
+  { name: 'three.js', use: '3D drawing in the lab', licence: 'MIT', href: 'https://threejs.org', packages: ['three', '@types/three'], about: true },
+  { name: 'Threlte', use: 'Svelte components for three.js', licence: 'MIT', href: 'https://threlte.xyz', packages: ['@threlte/core'], about: true },
   { name: 'Workbox', use: 'Offline support', licence: 'MIT', href: 'https://github.com/GoogleChrome/workbox', packages: ['workbox-build'], about: true },
   { name: 'Tailwind CSS', use: 'Styling (build time)', licence: 'MIT', href: 'https://tailwindcss.com', packages: ['tailwindcss', '@tailwindcss/vite'], about: true },
   { name: 'Figtree', use: 'Typeface', licence: 'SIL Open Font', href: 'https://github.com/erikdkennedy/figtree', packages: ['@fontsource-variable/figtree'], about: true },

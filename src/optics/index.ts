@@ -4,3 +4,6 @@ export * from './types.ts';
 export * from './format.ts';
 export * from './fov.ts';
 export * from './framing.ts';
+export * from './exposure.ts';
+export * from './dof.ts';
+export * from './colour.ts';

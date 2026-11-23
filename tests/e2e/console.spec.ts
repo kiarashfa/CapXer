@@ -16,6 +16,10 @@ async function watch(page: Page) {
   page.on('console', (m) => {
     // The test config blocks service workers (pwa.spec.ts covers them); that note is ours, not the site's.
     if (/Service Worker registration blocked by Playwright/.test(m.text())) return;
+    // Chrome's software WebGL (SwiftShader, used in CI) reports any pixel readback as a
+    // driver performance note, even the lab meter's one small asynchronous read after a
+    // finished picture. A driver diagnostic, not a site problem; only this exact note is skipped.
+    if (m.type() === 'warning' && /GL Driver Message \(OpenGL, Performance, [^)]*\): GPU stall due to ReadPixels/.test(m.text())) return;
     if (m.type() === 'error' || m.type() === 'warning') problems.push(`${m.type()}: ${m.text()}`);
   });
   page.on('pageerror', (e) => problems.push(`exception: ${e.message}`));

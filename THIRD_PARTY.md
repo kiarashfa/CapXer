@@ -8,6 +8,8 @@ CapXer builds on the work below. Each item keeps its own licence. The CapXer lic
 |---|---|---|---|
 | Svelte | Interactive components | MIT | https://github.com/sveltejs/svelte |
 | Workbox | Offline support (service worker, built in by workbox-build) | MIT | https://github.com/GoogleChrome/workbox |
+| three.js | 3D drawing in the lab | MIT | https://github.com/mrdoob/three.js |
+| Threlte | Svelte components for three.js | MIT | https://github.com/threlte/threlte |
 
 ## Build and development tools
 
