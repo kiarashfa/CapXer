@@ -12,7 +12,7 @@ import { exportName, exportText, mergeSave, parseFile, summarize, uniqueName, ty
 import { SAVE_KEY } from './local.ts';
 import { cleanName, DEFAULT_AIDS, emptyDeleted, emptySave } from './sanitize.ts';
 import { FLUSH_EVENT, local, readSave, REPLACED_EVENT, writeSave, clearSave } from './store.ts';
-import { LIMITS, newId, type Calibrations, type Deleted, type Profile, type SaveFile, type SavedSetup } from './schema.ts';
+import { LIMITS, newId, type Calibrations, type Deleted, type LabState, type Profile, type SaveFile, type SavedSetup } from './schema.ts';
 import { cloudState, forgetCloud } from '../user/local.ts';
 
 // Connects the viewfinder's stores to the save file: restores on load, writes
@@ -46,7 +46,7 @@ export const saved = new SavedStore();
 /** The calibration slot of the other device kind, kept as loaded so it is never lost. */
 let calibrations: Calibrations = {};
 /** Parts of the save the viewfinder does not edit, kept as loaded so a write never drops them. */
-let extras: { profile?: Profile; deleted: Deleted } = { deleted: emptyDeleted() };
+let extras: { profile?: Profile; deleted: Deleted; lab?: LabState } = { deleted: emptyDeleted() };
 /** The file this page's state came from (deletions are measured against it). */
 let base: SaveFile | null = null;
 let noticeTimer: ReturnType<typeof setTimeout> | undefined;
@@ -95,6 +95,7 @@ function snapshot(): SaveFile {
     calibration: cal,
     aids: { histogram: aids.histogram, histMode: aids.histMode, picture: aids.picture, zebra: aids.zebra, peaking: aids.peaking, peakColor: aids.peakColor, peakSens: aids.peakSens },
     deleted: clone(extras.deleted),
+    ...(extras.lab ? { lab: clone(extras.lab) } : {}),
   };
 }
 
@@ -109,7 +110,7 @@ function apply(file: SaveFile, opts: { current: boolean }) {
   calibrations = file.calibration;
   live.calibration = file.calibration[kind()] ?? null;
   Object.assign(aids, file.aids);
-  extras = { profile: file.profile, deleted: file.deleted };
+  extras = { profile: file.profile, deleted: file.deleted, lab: file.lab };
   if (opts.current) vf.setup = file.current;
   base = file;
 }

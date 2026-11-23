@@ -10,6 +10,9 @@ import { averageLuminance, METER_H, METER_W } from '../../src/lab/render/accumul
 import { MAX_PER_FRAME, TIERS, initialTier, nextPerFrame, tierAfter } from '../../src/lab/render/tiers.ts';
 import { SETS, getSet } from '../../src/lab/sets/index.ts';
 import { clampPlace } from '../../src/lab/place.ts';
+import { decodeLabLink, encodeLabLink } from '../../src/lab/link.ts';
+import { decodeLink } from '../../src/storage/link.ts';
+import { defaultLab } from '../../src/storage/sanitize.ts';
 import { ANGLES, APERTURES, FRAME_RATES, ISOS, SHUTTERS, WHITE_BALANCES, nearestIndex, step } from '../../src/lab/stops.ts';
 import { noiseCoefficients, noiseSigma } from '../../src/lab/render/noise.ts';
 import { SUBJECTS, getSubject } from '../../src/lab/subjects/index.ts';
@@ -278,5 +281,48 @@ describe('moving things on the plan', () => {
     expect(Math.hypot(p.x, p.z)).toBeCloseTo(1, 12);
     expect(p.x / p.z).toBeCloseTo(0.75, 12);
     expect(clampPlace(room, 0, 0, 0.8)).toEqual({ x: 0, z: 0.8 });
+  });
+});
+
+describe('lab share links', () => {
+  const NOW = new Date('2026-11-23T12:00:00Z');
+  const setup = { ...defaultSetup('stills'), focal: 85 };
+  const state = {
+    ...defaultLab(NOW),
+    lighting: 'tungsten-hard',
+    exposure: { fNumber: 2 ** (13 / 6), shutter: 2 ** (5 - 38 / 3), angle: 172.8, fps: 25, iso: 1600, kelvin: 3200 },
+    focus: 3.5 as const,
+    lights: { key: { on: true, stops: -2 / 3, size: 0.5, kelvin: 4300, x: -1.5, z: 2.1 } },
+    ambient: 1 / 3,
+    camera: { x: 0.4, z: 3.9 },
+  };
+
+  it('round-trips the camera setup and the lab state (values rounded for the address bar)', () => {
+    const out = decodeLabLink(`#${encodeLabLink(setup, state)}`, NOW)!;
+    expect(out.setup).toEqual(setup);
+    expect(out.unknownCamera).toBe(false);
+    expect(out.state.lighting).toBe('tungsten-hard');
+    expect(out.state.exposure.fNumber).toBeCloseTo(state.exposure.fNumber, 2);
+    expect(out.state.exposure.shutter / state.exposure.shutter).toBeCloseTo(1, 4);
+    expect(out.state.exposure).toMatchObject({ angle: 172.8, fps: 25, iso: 1600, kelvin: 3200 });
+    expect(out.state.focus).toBe(3.5);
+    expect(out.state.lights.key).toEqual({ on: true, stops: -2 / 3, size: 0.5, kelvin: 4300, x: -1.5, z: 2.1 });
+    expect(out.state.ambient).toBeCloseTo(1 / 3, 3);
+    expect(out.state.camera).toEqual({ x: 0.4, z: 3.9 });
+  });
+
+  it('a viewfinder link is not a lab link, and a lab link still opens the viewfinder setup', () => {
+    const lab = encodeLabLink(setup, state);
+    expect(decodeLabLink(lab.split('&lab=')[0]!, NOW)).toBeNull();
+    expect(decodeLink(lab)!.setup).toEqual(setup);
+  });
+
+  it('leaves viewer preferences (aids) out of links', () => {
+    const out = decodeLabLink(encodeLabLink(setup, { ...state, aids: { histogram: true, histMode: 'rgb', picture: 'zebras', zebra: 80 } }), NOW)!;
+    expect(out.state.aids).toEqual(defaultLab(NOW).aids);
+  });
+
+  it('focus on the subject and at infinity survive', () => {
+    for (const focus of ['subject', 'infinity'] as const) expect(decodeLabLink(encodeLabLink(setup, { ...state, focus }), NOW)!.state.focus).toBe(focus);
   });
 });

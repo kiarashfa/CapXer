@@ -5,7 +5,7 @@ import { aspectPreset, defaultSetup, FRAME_COLORS } from '../setup/presets.ts';
 import type { Calibration } from '../camera/lens.ts';
 import { ZEBRA_LEVELS } from '../analysis/levels.ts';
 import type { CustomSensor, FrameColor, Mode, Setup } from '../setup/types.ts';
-import { APP_ID, DELETED_DAYS, LIMITS, SAVE_VERSION, TINTS, type AidsPrefs, type Calibrations, type Deleted, type Profile, type SaveFile, type SavedSetup } from './schema.ts';
+import { APP_ID, DELETED_DAYS, LIMITS, SAVE_VERSION, TINTS, type AidsPrefs, type Calibrations, type Deleted, type LabLightEdit, type LabState, type Profile, type SaveFile, type SavedSetup } from './schema.ts';
 
 // Everything read from storage, a file or a link is untrusted: it may be old,
 // hand-edited, cut off or hostile. These functions never throw; they keep what
@@ -159,6 +159,80 @@ export function sanitizeProfile(raw: unknown, now = new Date()): Profile | undef
 
 export const emptyDeleted = (): Deleted => ({ setups: {}, cameras: {}, lenses: {} });
 
+const LAB_ID = /^[a-z0-9]+(-[a-z0-9]+)*$/;
+const labId = (v: unknown, fallback: string) => (typeof v === 'string' && v.length <= 40 && LAB_ID.test(v) ? v : fallback);
+const thirds = (v: number) => Math.round(v * 3) / 3;
+
+/** The lab's defaults (f/2.8, 1/50 s or 180 degrees at 24 fps, ISO 400, 5600 K, focus on the subject). */
+export function defaultLab(now = new Date()): LabState {
+  return {
+    set: 'studio',
+    subject: 'figure',
+    lighting: 'three-point',
+    exposure: { fNumber: 2.8, shutter: 1 / 50, angle: 180, fps: 24, iso: 400, kelvin: 5600 },
+    focus: 'subject',
+    lights: {},
+    ambient: 0,
+    camera: null,
+    aids: { histogram: false, histMode: 'luma', picture: 'off', zebra: 95 },
+    changedAt: now.toISOString(),
+  };
+}
+
+/** A safe lab state: ids checked by shape (the lab itself swaps unknown ones for defaults), numbers clamped. */
+export function sanitizeLab(raw: unknown, now = new Date()): LabState | undefined {
+  if (!isObj(raw)) return undefined;
+  const d = defaultLab(now);
+  const e = isObj(raw.exposure) ? raw.exposure : {};
+  const n = (v: unknown, def: number, min: number, max: number) => clamp(num(v) ?? def, min, max);
+  const lights: Record<string, LabLightEdit> = {};
+  if (isObj(raw.lights)) {
+    for (const [id, v] of Object.entries(raw.lights).slice(0, 12)) {
+      if (!LAB_ID.test(id) || id.length > 40 || !isObj(v)) continue;
+      const edit: LabLightEdit = {};
+      if (typeof v.on === 'boolean') edit.on = v.on;
+      if (num(v.stops) !== undefined) edit.stops = thirds(clamp(num(v.stops)!, -3, 3));
+      if (num(v.size) !== undefined) edit.size = round2(clamp(num(v.size)!, 0, 2));
+      if (num(v.kelvin) !== undefined) edit.kelvin = Math.round(clamp(num(v.kelvin)!, 1500, 12000));
+      if (num(v.x) !== undefined) edit.x = round2(clamp(num(v.x)!, -50, 50));
+      if (num(v.z) !== undefined) edit.z = round2(clamp(num(v.z)!, -50, 50));
+      lights[id] = edit;
+    }
+  }
+  const focusNum = num(raw.focus);
+  const focus = raw.focus === 'infinity' ? 'infinity' : focusNum !== undefined && focusNum > 0 ? round2(clamp(focusNum, 0.3, 1000)) : 'subject';
+  const camRaw = isObj(raw.camera) ? raw.camera : null;
+  const cx = camRaw ? num(camRaw.x) : undefined;
+  const cz = camRaw ? num(camRaw.z) : undefined;
+  const camera = cx !== undefined && cz !== undefined ? { x: round2(clamp(cx, -50, 50)), z: round2(clamp(cz, -50, 50)) } : null;
+  const a = isObj(raw.aids) ? raw.aids : {};
+  const zebra = num(a.zebra);
+  return {
+    set: labId(raw.set, d.set),
+    subject: labId(raw.subject, d.subject),
+    lighting: labId(raw.lighting, d.lighting),
+    exposure: {
+      fNumber: n(e.fNumber, d.exposure.fNumber, 0.7, 64),
+      shutter: n(e.shutter, d.exposure.shutter, 1 / 16000, 60),
+      angle: n(e.angle, d.exposure.angle, 1, 360),
+      fps: n(e.fps, d.exposure.fps, 1, 240),
+      iso: Math.round(n(e.iso, d.exposure.iso, 25, 102400)),
+      kelvin: Math.round(n(e.kelvin, d.exposure.kelvin, 1500, 12000)),
+    },
+    focus,
+    lights,
+    ambient: thirds(n(raw.ambient, 0, -3, 3)),
+    camera,
+    aids: {
+      histogram: typeof a.histogram === 'boolean' ? a.histogram : d.aids.histogram,
+      histMode: oneOf(a.histMode, ['luma', 'rgb'] as const, d.aids.histMode),
+      picture: oneOf(a.picture, ['off', 'zebras', 'falseColour'] as const, d.aids.picture),
+      zebra: zebra !== undefined && (ZEBRA_LEVELS as readonly number[]).includes(zebra) ? zebra : d.aids.zebra,
+    },
+    changedAt: ISO(raw.changedAt, now.toISOString()),
+  };
+}
+
 /** Deletion records with valid keys and dates, without those older than DELETED_DAYS. */
 export function sanitizeDeleted(raw: unknown, now = new Date()): Deleted {
   const r = isObj(raw) ? raw : {};
@@ -227,6 +301,7 @@ export function sanitizeSave(raw: unknown, now = new Date()): SaveFile | null {
   if (webcam) calibration.webcam = webcam;
 
   const profile = sanitizeProfile(raw.profile, now);
+  const lab = sanitizeLab(raw.lab, now);
   return {
     app: APP_ID,
     v: SAVE_VERSION,
@@ -238,5 +313,6 @@ export function sanitizeSave(raw: unknown, now = new Date()): SaveFile | null {
     calibration,
     aids: sanitizeAids(raw.aids),
     deleted: sanitizeDeleted(raw.deleted, now),
+    ...(lab ? { lab } : {}),
   };
 }

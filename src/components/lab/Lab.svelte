@@ -1,9 +1,10 @@
 <script lang="ts">
   import { Canvas } from '@threlte/core';
-  import { onMount, tick } from 'svelte';
+  import { onDestroy, onMount, tick } from 'svelte';
   import { PANEL_CLOSED_EVENT } from '../../lib/site-bar.ts';
   import { CLIP_SHARE, histogramPath } from '../../analysis/levels.ts';
   import LabPanes from './LabPanes.svelte';
+  import { autosaveLab, backToMine, keepShared, labShareUrl, startLabPersistence } from '../../lab/persist.svelte.ts';
   import { NoToneMapping } from 'three';
   import { displayName, getSensor } from '../../data/index.ts';
   import { t } from '../../i18n/en.ts';
@@ -26,8 +27,23 @@
   let webgl = $state<boolean | null>(null);
   let copied = $state(false);
 
+  // Restore first (during setup), so the autosave below starts from the saved state and a visit that changes nothing writes nothing.
+  const stopPersistence = startLabPersistence();
+  onDestroy(stopPersistence);
+  autosaveLab();
+  let shareNote = $state('');
+
+  async function share() {
+    try {
+      await navigator.clipboard.writeText(labShareUrl());
+      shareNote = L.share.copied;
+    } catch {
+      shareNote = L.share.failed;
+    }
+    setTimeout(() => (shareNote = ''), 3000);
+  }
+
   onMount(() => {
-    lab.load();
     const gl = document.createElement('canvas').getContext('webgl2');
     webgl = !!gl;
     if (gl) {
@@ -39,7 +55,9 @@
     const mq = matchMedia(DESKTOP);
     const change = () => (desktop = mq.matches);
     mq.addEventListener('change', change);
-    return () => mq.removeEventListener('change', change);
+    return () => {
+      mq.removeEventListener('change', change);
+    };
   });
 
   const sensor = $derived(getSensor(lab.setup.sensorId));
@@ -106,11 +124,28 @@
 {:else}
   <div class="lab-grid" data-testid="lab">
     <div class="lab-col">
+      {#if lab.shared}
+        <div class="note lab-shared" role="status" data-testid="lab-shared">
+          <p><b>{L.sharedNote.title}</b> {L.sharedNote.body}{lab.shared.unknownCamera ? ` ${L.sharedNote.unknownCamera}` : ''}</p>
+          <div class="lab-shared-actions">
+            <button type="button" class="btn btn-primary" onclick={keepShared} data-testid="lab-shared-keep">{L.sharedNote.keep}</button>
+            <button type="button" class="btn btn-secondary" onclick={backToMine} data-testid="lab-shared-back">{L.sharedNote.back}</button>
+          </div>
+        </div>
+      {/if}
+      <div class="lab-bar">
       <p class="lab-set">
         <span><small>{L.set}</small> {lab.set.name}</span>
         <span><small>{L.subject}</small> {lab.subject.name}</span>
         <span><small>{L.light}</small> {lab.lighting.name}</span>
       </p>
+      <span class="lab-share">
+        <span class="lab-share-note" role="status">{shareNote}</span>
+        <button type="button" class="icon-btn" aria-label={L.share.label} title={L.share.label} onclick={share} data-testid="lab-share">
+          <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="2.5" /><circle cx="6" cy="12" r="2.5" /><circle cx="18" cy="19" r="2.5" /><path d="m8.2 10.8 7.6-4.4M8.2 13.2l7.6 4.4" /></svg>
+        </button>
+      </span>
+      </div>
 
       <div class="lab-view" style:--aspect={lab.camera.aspect}>
         <div class="lab-stage" role="img" aria-label={pictureLabel} data-testid="lab-stage" data-samples={lab.samples} data-done={done}>

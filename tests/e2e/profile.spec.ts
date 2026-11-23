@@ -124,7 +124,7 @@ test('the viewfinder keeps the profile and records deletions when it saves', asy
   await page.waitForFunction(() => localStorage.getItem('capxer.save')?.includes('"focal":50'));
   const file = await stored(page);
   expect(file.profile).toEqual(PROFILE);
-  expect(file.v).toBe(2);
+  expect(file.v).toBe(3);
   expect(file.setups).toHaveLength(1);
 });
 

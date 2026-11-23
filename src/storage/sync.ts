@@ -7,6 +7,7 @@ import { sanitizeDeleted } from './sanitize.ts';
 // - custom cameras and lenses: union, minus deleted ones
 // - profile: the newer one; calibration per device kind, from the newer file
 //   when both have one; exposure-aid choices from the newer file
+// - the lab's state: the one changed last (its own changedAt)
 // - the current viewfinder setup stays this device's own
 // Pure, so it is unit tested (tests/unit/storage.test.ts).
 
@@ -63,6 +64,7 @@ export function mergeSync(mine: SaveFile | null, theirs: SaveFile, now = new Dat
 
   const profile = !theirs.profile ? mine.profile : !mine.profile || t(theirs.profile.changedAt) > t(mine.profile.changedAt) ? theirs.profile : mine.profile;
   const older = newerFile === mine ? theirs : mine;
+  const lab = !theirs.lab ? mine.lab : !mine.lab || t(theirs.lab.changedAt) > t(mine.lab.changedAt) ? theirs.lab : mine.lab;
 
   return {
     file: structuredClone({
@@ -74,6 +76,7 @@ export function mergeSync(mine: SaveFile | null, theirs: SaveFile, now = new Dat
       calibration: { ...older.calibration, ...newerFile.calibration },
       aids: newerFile.aids,
       deleted,
+      ...(lab ? { lab } : {}),
     }),
     changes,
   };

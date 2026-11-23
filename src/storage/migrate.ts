@@ -9,6 +9,8 @@ type Doc = Record<string, unknown>;
 const steps: Record<number, (doc: Doc) => Doc> = {
   // CapXer 1.1: no profile yet, nothing deleted.
   1: (doc) => ({ ...doc, v: 2, deleted: { setups: {}, cameras: {}, lenses: {} } }),
+  // CapXer 2.0: the lab's state is optional, so nothing to add.
+  2: (doc) => ({ ...doc, v: 3 }),
 };
 
 export type MigrateResult = { ok: true; doc: Doc } | { ok: false; reason: 'notCapxer' | 'newer' };

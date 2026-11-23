@@ -198,3 +198,72 @@ test.describe('phone', () => {
     await expect(page.locator('canvas')).toHaveCount(0);
   });
 });
+
+test.describe('saving and sharing', () => {
+  test.skip(({ isMobile }) => isMobile, 'the lab is desktop only');
+
+  const save = (page: import('@playwright/test').Page) => page.evaluate(() => JSON.parse(localStorage.getItem('capxer.save') ?? 'null'));
+
+  test('a visit that changes nothing writes nothing', async ({ page }) => {
+    await page.goto('lab/');
+    await expect(page.getByTestId('lab-iso-value')).toHaveText('400');
+    await page.waitForTimeout(1200);
+    expect((await save(page))?.lab).toBeUndefined();
+  });
+
+  test('changes are saved and come back on the next visit', async ({ page }) => {
+    await page.goto('lab/');
+    await page.getByTestId('lab-iso-more').click();
+    await page.getByTestId('plan-light-key').focus();
+    await page.keyboard.press('ArrowLeft');
+    await expect.poll(async () => (await save(page))?.lab?.lights?.key?.x, { timeout: 5000 }).toBeCloseTo(2.1, 5);
+    expect((await save(page)).lab.exposure.iso).toBe(500);
+    await page.reload();
+    await expect(page.getByTestId('lab-iso-value')).toHaveText('500');
+    await expect(page.getByTestId('plan-light-key')).toHaveAttribute('aria-label', /Key light: 2\.1 m right/);
+  });
+
+  test('the viewfinder keeps the lab state when it saves', async ({ page }) => {
+    await page.goto('lab/');
+    await page.getByTestId('lab-iso-more').click();
+    await expect.poll(async () => (await save(page))?.lab?.exposure?.iso, { timeout: 5000 }).toBe(500);
+    await page.goto('viewfinder/');
+    await openDock(page);
+    await page.getByRole('button', { name: 'Longer focal length' }).click();
+    await expect.poll(async () => (await save(page))?.current?.focal, { timeout: 5000 }).not.toBe(35);
+    expect((await save(page)).lab.exposure.iso).toBe(500);
+  });
+
+  test('a share link opens the setup without saving it; Back to mine and Keep it', async ({ page }) => {
+    await page.addInitScript(() => {
+      (window as unknown as { copied: string[] }).copied = [];
+      Object.defineProperty(navigator, 'clipboard', { value: { writeText: async (t: string) => void (window as unknown as { copied: string[] }).copied.push(t) } });
+    });
+    await page.goto('lab/');
+    for (let i = 0; i < 3; i++) await page.getByTestId('lab-iso-more').click();
+    await expect(page.getByTestId('lab-iso-value')).toHaveText('800');
+    await expect.poll(async () => (await save(page))?.lab?.exposure?.iso, { timeout: 5000 }).toBe(800);
+    await page.getByTestId('lab-share').click();
+    await expect(page.locator('.lab-share-note')).toHaveText('Link copied');
+    const link = await page.evaluate(() => (window as unknown as { copied: string[] }).copied[0]!);
+    expect(link).toMatch(/\/lab\/#v=1&.*&lab=1&.*iso=800/);
+
+    // Back at ISO 400 in "my" lab, then open the link.
+    for (let i = 0; i < 3; i++) await page.getByTestId('lab-iso-less').click();
+    await expect.poll(async () => (await save(page))?.lab?.exposure?.iso, { timeout: 5000 }).toBe(400);
+    await page.goto(link);
+    await expect(page.getByTestId('lab-shared')).toBeVisible();
+    await expect(page.getByTestId('lab-iso-value')).toHaveText('800');
+    expect(new URL(page.url()).hash).toBe('');
+    await page.waitForTimeout(1000);
+    expect((await save(page)).lab.exposure.iso).toBe(400);
+
+    await page.getByTestId('lab-shared-back').click();
+    await expect(page.getByTestId('lab-iso-value')).toHaveText('400');
+    await expect(page.getByTestId('lab-shared')).toHaveCount(0);
+
+    await page.goto(link);
+    await page.getByTestId('lab-shared-keep').click();
+    await expect.poll(async () => (await save(page))?.lab?.exposure?.iso, { timeout: 5000 }).toBe(800);
+  });
+});

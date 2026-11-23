@@ -133,3 +133,11 @@
 .lab-plan .mover:focus-visible .ring { opacity: 1; stroke-width: 3; }
 .lab-plan .lamp-g.off .lamp { fill: var(--surface); stroke-dasharray: 4 3; }
 .lab-plan .lamp-g.off .lbl { opacity: 0.6; }
+
+/* set pill + share, shared-link note */
+.lab-bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.lab-share { display: inline-flex; align-items: center; gap: 10px; }
+.lab-share-note { font-size: 0.8125rem; color: var(--muted); }
+.lab-shared { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 12px 16px; }
+.lab-shared p { margin: 0; }
+.lab-shared-actions { display: flex; gap: 8px; flex: none; }

@@ -3,12 +3,12 @@ import { sensors } from '../../src/data/index.ts';
 import { ASPECTS, defaultSetup } from '../../src/setup/presets.ts';
 import { decodeLink, encodeLink } from '../../src/storage/link.ts';
 import { migrate } from '../../src/storage/migrate.ts';
-import { cleanInitials, emptyDeleted, emptySave, initialsOf, sanitizeCalibration, sanitizeDeleted, sanitizeProfile, sanitizeSave, sanitizeSetup } from '../../src/storage/sanitize.ts';
+import { cleanInitials, defaultLab, emptyDeleted, emptySave, initialsOf, sanitizeCalibration, sanitizeDeleted, sanitizeLab, sanitizeProfile, sanitizeSave, sanitizeSetup } from '../../src/storage/sanitize.ts';
 import { mergeSync } from '../../src/storage/sync.ts';
 import { withDeletions } from '../../src/storage/store.ts';
 import { exportName, exportText, mergeSave, parseFile, summarize, uniqueName } from '../../src/storage/file.ts';
 import { localAdapter } from '../../src/storage/local.ts';
-import { LIMITS, newId, type SaveFile } from '../../src/storage/schema.ts';
+import { LIMITS, SAVE_VERSION, newId, type SaveFile } from '../../src/storage/schema.ts';
 
 const NOW = new Date('2026-11-20T10:00:00Z');
 
@@ -30,6 +30,14 @@ const SAMPLE_V1 = {
   aids: { histogram: true, histMode: 'rgb', picture: 'zebras', zebra: 90, peaking: true, peakColor: 'amber', peakSens: 'high' },
 };
 
+/** A version-2 file as CapXer 1.1 writes it (profile and deletion records). Never edit. */
+const SAMPLE_V2 = {
+  ...SAMPLE_V1,
+  v: 2,
+  profile: { name: 'Sam Kade', picture: null, initials: { letters: 'SK', tint: 'teal' }, changedAt: '2026-11-20T08:00:00.000Z' },
+  deleted: { setups: { zzz111: '2026-11-18T09:00:00.000Z' }, cameras: {}, lenses: {} },
+};
+
 /** Brings a document to the current version, as every reader does before sanitizing. */
 const current = (raw: unknown) => {
   const m = migrate(raw);
@@ -37,10 +45,17 @@ const current = (raw: unknown) => {
 };
 
 describe('save file', () => {
-  it('opens the version 1 sample: same content, version 2, nothing deleted, no profile', () => {
+  it('opens the version 1 sample: same content, current version, nothing deleted, no profile, no lab', () => {
     const file = sanitizeSave(current(structuredClone(SAMPLE_V1)), NOW);
-    expect(file).toEqual({ ...SAMPLE_V1, v: 2, deleted: { setups: {}, cameras: {}, lenses: {} } });
+    expect(file).toEqual({ ...SAMPLE_V1, v: SAVE_VERSION, deleted: { setups: {}, cameras: {}, lenses: {} } });
     expect(file).not.toHaveProperty('profile');
+    expect(file).not.toHaveProperty('lab');
+  });
+
+  it('opens the version 2 sample: same content, current version, no lab until the lab is used', () => {
+    const file = sanitizeSave(current(structuredClone(SAMPLE_V2)), NOW);
+    expect(file).toEqual({ ...SAMPLE_V2, v: SAVE_VERSION });
+    expect(file).not.toHaveProperty('lab');
   });
 
   it('refuses things that are not a CapXer save, and files from a newer version', () => {
@@ -166,7 +181,7 @@ describe('export and import', () => {
   it('explains files it cannot use', () => {
     expect(parseFile('not json')).toEqual({ ok: false, reason: 'notCapxer' });
     expect(parseFile('{"hello":1}')).toEqual({ ok: false, reason: 'notCapxer' });
-    expect(parseFile('{"app":"capxer","v":3}')).toEqual({ ok: false, reason: 'newer' });
+    expect(parseFile(`{"app":"capxer","v":${SAVE_VERSION + 1}}`)).toEqual({ ok: false, reason: 'newer' });
   });
 
   it('merges: adds setups, renames clashes, keeps the current setup, takes calibration and aids', () => {
@@ -346,5 +361,61 @@ describe('deletion records and cloud sync', () => {
     const { file } = mergeSync(mine, theirs, T3);
     expect(file.calibration).toEqual({ phone: { kind: 'equivalent', mm: 24 }, webcam: { kind: 'diagonal', degrees: 78 } });
     expect(file.aids.zebra).toBe(70);
+  });
+});
+
+describe('lab state in the save file', () => {
+  const lab = {
+    ...defaultLab(NOW),
+    lighting: 'tungsten-hard',
+    exposure: { fNumber: 4, shutter: 1 / 125, angle: 172.8, fps: 25, iso: 800, kelvin: 3200 },
+    focus: 3.5,
+    lights: { key: { on: true, stops: 2 / 3, size: 0.5, kelvin: 3200, x: -1.2, z: 2 }, fill: { on: false } },
+    ambient: -1 / 3,
+    camera: { x: 0.5, z: 4 },
+    aids: { histogram: true, histMode: 'rgb' as const, picture: 'falseColour' as const, zebra: 90 },
+  };
+
+  it('round-trips through the save file', () => {
+    const file = sanitizeSave({ ...emptySave(NOW), lab }, NOW)!;
+    expect(file.lab).toEqual(lab);
+  });
+
+  it('cleans a hostile lab state: odd ids dropped, numbers clamped, focus understood', () => {
+    const out = sanitizeLab({
+      set: '../etc', subject: 'Figure!', lighting: 7,
+      exposure: { fNumber: -2, shutter: 'fast', angle: 999, fps: 0, iso: 1e9, kelvin: 'warm' },
+      focus: 'infinity',
+      lights: { 'key light': { on: 'yes' }, key: { stops: 9, size: 5, kelvin: 99999, x: 1e6, z: '2' } },
+      ambient: 12,
+      camera: { x: 'left' },
+      aids: { picture: 'everything', zebra: 42 },
+    }, NOW)!;
+    const d = defaultLab(NOW);
+    expect([out.set, out.subject, out.lighting]).toEqual([d.set, d.subject, d.lighting]);
+    expect(out.exposure).toEqual({ fNumber: 0.7, shutter: d.exposure.shutter, angle: 360, fps: 1, iso: 102400, kelvin: d.exposure.kelvin });
+    expect(out.focus).toBe('infinity');
+    expect(out.lights).toEqual({ key: { stops: 3, size: 2, kelvin: 12000, x: 50, z: 2 } });
+    expect(out.ambient).toBe(3);
+    expect(out.camera).toBeNull();
+    expect(out.aids.picture).toBe('off');
+    expect(out.aids.zebra).toBe(95);
+    expect(sanitizeLab('nonsense', NOW)).toBeUndefined();
+  });
+
+  it('cloud sync keeps the lab state changed last', () => {
+    const older = { ...lab, changedAt: '2026-11-19T10:00:00.000Z', exposure: { ...lab.exposure, iso: 100 } };
+    const mine = { ...emptySave(NOW), lab: older };
+    const theirs = { ...emptySave(NOW), lab: { ...lab, changedAt: '2026-11-20T09:00:00.000Z' } };
+    expect(mergeSync(mine, theirs, NOW).file.lab!.exposure.iso).toBe(800);
+    expect(mergeSync(theirs, mine, NOW).file.lab!.exposure.iso).toBe(800);
+    expect(mergeSync({ ...emptySave(NOW), lab: older }, emptySave(NOW), NOW).file.lab).toEqual(older);
+  });
+
+  it('opening a save file brings its lab state, and keeps yours when it has none', () => {
+    const mine = { ...emptySave(NOW), lab };
+    expect(mergeSave(mine, emptySave(NOW), 'merge', NOW).lab).toEqual(lab);
+    const theirs = { ...emptySave(NOW), lab: { ...lab, lighting: 'three-point' } };
+    expect(mergeSave(mine, theirs, 'merge', NOW).lab!.lighting).toBe('three-point');
   });
 });

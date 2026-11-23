@@ -9,8 +9,9 @@ import type { CustomSensor, FrameColor, Setup } from '../setup/types.ts';
 // to migrate.ts whenever its shape changes; old files must keep opening.
 // v2 (CapXer 1.1): profile and deletion records (so a cloud sync never brings
 // back something deleted on another device).
+// v3 (CapXer 2.0): the lab's state (optional until the lab is first used).
 
-export const SAVE_VERSION = 2;
+export const SAVE_VERSION = 3;
 export const APP_ID = 'capxer';
 /** localStorage key of the save file. */
 export const SAVE_KEY = 'capxer.save';
@@ -64,6 +65,52 @@ export interface Calibrations {
   webcam?: Calibration;
 }
 
+/** One light of a lab scenario as the user changed it (only the changed parts). */
+export interface LabLightEdit {
+  on?: boolean;
+  /** Brightness change, stops (thirds, -3 to +3). */
+  stops?: number;
+  /** Size of the light's face, metres (softness). */
+  size?: number;
+  kelvin?: number;
+  /** Position on the floor, metres from the subject. */
+  x?: number;
+  z?: number;
+}
+
+/**
+ * The lab's state. Ids, not list positions, and real values (f-number,
+ * seconds), so new sets, subjects and steps never need a schema change;
+ * unknown ids fall back to defaults when the lab opens.
+ */
+export interface LabState {
+  set: string;
+  subject: string;
+  lighting: string;
+  exposure: {
+    fNumber: number;
+    /** Shutter speed, seconds (Stills). */
+    shutter: number;
+    /** Shutter angle, degrees, and frame rate (Cinema). */
+    angle: number;
+    fps: number;
+    iso: number;
+    /** White balance, kelvin. */
+    kelvin: number;
+  };
+  /** Focus: on the subject, at infinity, or a distance in metres. */
+  focus: 'subject' | 'infinity' | number;
+  /** Changes to the scenario's lights, by light id. */
+  lights: Record<string, LabLightEdit>;
+  /** Room bounce brightness change, stops. */
+  ambient: number;
+  /** Camera position on the floor when moved, metres from the subject. */
+  camera: { x: number; z: number } | null;
+  aids: { histogram: boolean; histMode: 'luma' | 'rgb'; picture: 'off' | 'zebras' | 'falseColour'; zebra: number };
+  /** When the lab state last changed; the newer one wins in a sync. */
+  changedAt: string;
+}
+
 export interface SaveFile {
   app: typeof APP_ID;
   v: typeof SAVE_VERSION;
@@ -76,6 +123,7 @@ export interface SaveFile {
   calibration: Calibrations;
   aids: AidsPrefs;
   deleted: Deleted;
+  lab?: LabState;
 }
 
 /**

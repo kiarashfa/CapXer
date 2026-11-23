@@ -128,7 +128,7 @@ test('export a file and import it into an empty browser', async ({ page, browser
   expect(download.suggestedFilename()).toMatch(/^capxer-\d{4}-\d{2}-\d{2}\.json$/);
   const path = await download.path();
   const text = readFileSync(path, 'utf8');
-  expect(JSON.parse(text)).toMatchObject({ app: 'capxer', v: 2, setups: [{ name: 'Backup me' }] });
+  expect(JSON.parse(text)).toMatchObject({ app: 'capxer', v: 3, setups: [{ name: 'Backup me' }] });
 
   const fresh = await browser.newContext({ viewport: page.viewportSize(), isMobile: false });
   const p2 = await fresh.newPage();

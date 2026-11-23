@@ -83,7 +83,8 @@ function planSetups(mine: SaveFile, theirs: SaveFile) {
 
 /**
  * "merge": your setups stay and theirs are added (same-name ones get "(2)");
- * the file's calibration and aid choices replace yours; your current setup stays.
+ * the file's calibration, aid choices and lab state replace yours (yours stay when
+ * the file has none); your current setup stays.
  * "replace": the file becomes everything.
  */
 export function mergeSave(mine: SaveFile, theirs: SaveFile, how: 'merge' | 'replace', now = new Date()): SaveFile {
@@ -107,5 +108,6 @@ export function mergeSave(mine: SaveFile, theirs: SaveFile, how: 'merge' | 'repl
     gear: { cameras, lenses },
     calibration: { ...mine.calibration, ...theirs.calibration },
     aids: theirs.aids,
+    ...((theirs.lab ?? mine.lab) ? { lab: theirs.lab ?? mine.lab } : {}),
   });
 }

@@ -15,12 +15,13 @@ import { defaultSetup } from '../setup/presets.ts';
 import type { Setup } from '../setup/types.ts';
 import { readSave, updateSave } from '../storage/store.ts';
 import type { Histogram } from '../analysis/levels.ts';
+import type { LabState } from '../storage/schema.ts';
 import { distance, labCamera } from './camera.ts';
 import { noiseCoefficients } from './render/noise.ts';
 import { TIERS, type Tier } from './render/tiers.ts';
-import { getSet } from './sets/index.ts';
+import { SETS, getSet } from './sets/index.ts';
 import { ANGLES, APERTURES, FOCUS_DISTANCES, FRAME_RATES, ISOS, SHUTTERS, WHITE_BALANCES, nearestIndex, step } from './stops.ts';
-import { getSubject } from './subjects/index.ts';
+import { SUBJECTS, getSubject } from './subjects/index.ts';
 import { clampPlace } from './place.ts';
 import type { Light, Point } from './types.ts';
 
@@ -83,6 +84,9 @@ class LabStore {
   ambientStops = $state(0);
   /** Camera position on the floor when moved on the plan (height stays the set's). */
   cameraPlace = $state<{ x: number; z: number } | null>(null);
+
+  /** A shared lab link is showing; the user's own lab and camera are kept to go back to. */
+  shared = $state.raw<{ setup: Setup; state: LabState; unknownCamera: boolean } | null>(null);
 
   /** Which dock tool is open (it takes the plan's place). */
   panel = $state<LabPanel | null>(null);
@@ -199,6 +203,61 @@ class LabStore {
   }
 
   // Exposure steps: +1 = one third stop more light, -1 = less.
+  /** The lab's state as the save file keeps it (real values and ids). */
+  toState(now = new Date()): LabState {
+    const f = this.focusManual;
+    return {
+      set: this.setId,
+      subject: this.subject.id,
+      lighting: this.lighting.id,
+      exposure: {
+        fNumber: this.fNumber,
+        shutter: SHUTTERS[this.shutterIndex]!.value,
+        angle: this.angle,
+        fps: this.fps,
+        iso: this.iso,
+        kelvin: this.kelvin,
+      },
+      focus: f === null ? 'subject' : f === Infinity ? 'infinity' : f,
+      lights: $state.snapshot(this.lightEdits),
+      ambient: this.ambientStops,
+      camera: this.cameraPlace ? { ...this.cameraPlace } : null,
+      aids: { histogram: this.histogram, histMode: this.histMode, picture: this.picture, zebra: this.zebra },
+      changedAt: now.toISOString(),
+    };
+  }
+
+  /** Show a saved or shared state. Unknown sets, subjects and scenarios fall back to defaults; values snap to the nearest step. */
+  applyState(st: LabState) {
+    const set = SETS.find((x) => x.id === st.set) ?? SETS[0]!;
+    this.setId = set.id;
+    this.subjectId = set.subjects.includes(st.subject) && SUBJECTS.some((x) => x.id === st.subject) ? st.subject : set.subjects[0]!;
+    const lighting = set.lighting.find((l) => l.id === st.lighting) ?? set.lighting[0]!;
+    this.lightingId = lighting.id;
+    const e = st.exposure;
+    this.apertureIndex = nearestIndex(APERTURES.map((x) => x.value), e.fNumber);
+    this.shutterIndex = nearestIndex(SHUTTERS.map((x) => x.value), e.shutter);
+    this.angleIndex = nearestIndex(ANGLES, e.angle);
+    this.fpsIndex = nearestIndex(FRAME_RATES, e.fps);
+    this.isoIndex = nearestIndex(ISOS, e.iso);
+    this.wbIndex = nearestIndex(WHITE_BALANCES, e.kelvin);
+    this.focusManual = st.focus === 'subject' ? null : st.focus === 'infinity' ? Infinity : st.focus;
+    const edits: Record<string, LightEdit> = {};
+    for (const [id, edit] of Object.entries(st.lights)) {
+      if (!lighting.lights.some((l) => l.id === id)) continue;
+      const e2 = { ...edit };
+      if (e2.x !== undefined && e2.z !== undefined) Object.assign(e2, clampPlace(set.room, e2.x, e2.z, 0.6));
+      edits[id] = e2;
+    }
+    this.lightEdits = edits;
+    this.ambientStops = st.ambient;
+    this.cameraPlace = st.camera ? clampPlace(set.room, st.camera.x, st.camera.z, 0.8) : null;
+    this.histogram = st.aids.histogram;
+    this.histMode = st.aids.histMode;
+    this.picture = st.aids.picture;
+    this.zebra = st.aids.zebra;
+  }
+
   stepAperture(light: 1 | -1) {
     this.apertureIndex = step(this.apertureIndex, light === 1 ? -1 : 1, APERTURES.length);
   }

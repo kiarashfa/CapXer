@@ -479,6 +479,14 @@ export const en = {
       moveHint: 'Drag to move, or use the arrow keys (Shift for bigger steps).',
     },
     tools: 'Lab tools',
+    share: { label: 'Copy a link to this lab setup', copied: 'Link copied', failed: 'Could not copy the link' },
+    sharedNote: {
+      title: 'A shared lab setup.',
+      body: 'Your own lab is kept until you choose.',
+      unknownCamera: 'Its camera is not in this version of CapXer, so the default camera is shown.',
+      keep: 'Keep it',
+      back: 'Back to mine',
+    },
     panels: { set: 'Set', lights: 'Lights', camera: 'Camera', aids: 'Aids' },
     close: 'Close',
     setPane: {
