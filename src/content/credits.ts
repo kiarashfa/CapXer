@@ -28,7 +28,7 @@ export const CREDITS: Credit[] = [
   { name: 'TypeScript', use: 'Type checking', licence: 'Apache-2.0', href: 'https://github.com/microsoft/TypeScript', packages: ['typescript', '@types/node'], about: false },
   { name: 'Vitest', use: 'Unit tests', licence: 'MIT', href: 'https://github.com/vitest-dev/vitest', packages: ['vitest'], about: false },
   { name: 'jsdom', use: 'Unit tests', licence: 'MIT', href: 'https://github.com/jsdom/jsdom', packages: ['jsdom'], about: false },
-  { name: 'Playwright', use: 'Browser tests', licence: 'Apache-2.0', href: 'https://github.com/microsoft/playwright', packages: ['@playwright/test'], about: false },
+  { name: 'Playwright', use: 'Browser tests and the social image', licence: 'Apache-2.0', href: 'https://github.com/microsoft/playwright', packages: ['@playwright/test', 'playwright-core'], about: false },
   { name: 'axe-core', use: 'Accessibility tests', licence: 'MPL-2.0', href: 'https://github.com/dequelabs/axe-core', packages: ['@axe-core/playwright'], about: false },
   { name: 'Zod', use: 'Data validation', licence: 'MIT', href: 'https://github.com/colinhacks/zod', packages: ['zod'], about: false },
   { name: 'sharp', use: 'Making the app icons', licence: 'Apache-2.0', href: 'https://github.com/lovell/sharp', packages: [], about: false },

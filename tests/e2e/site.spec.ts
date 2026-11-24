@@ -120,9 +120,9 @@ test.describe('findable', () => {
   test('pages carry a social preview image that exists', async ({ page, request }) => {
     await page.goto('./');
     const img = await page.locator('meta[property="og:image"]').getAttribute('content');
-    expect(img).toBe('https://kiarashfa.github.io/CapXer/social-card.png');
-    const res = await request.get('social-card.png');
+    expect(img).toBe('https://kiarashfa.github.io/CapXer/og-image.jpg');
+    const res = await request.get('og-image.jpg');
     expect(res.status()).toBe(200);
-    expect(res.headers()['content-type']).toContain('image/png');
+    expect(res.headers()['content-type']).toContain('image/jpeg');
   });
 });

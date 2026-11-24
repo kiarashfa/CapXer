@@ -7,8 +7,6 @@ export const en = {
     tagline: "A director's viewfinder in your browser",
     description:
       "CapXer is a free director's viewfinder in your browser. Pick a sensor, aspect ratio and focal length, and see the frame on your phone or webcam.",
-    /** Line on the link preview image (scripts/make-social.ts). */
-    cardLine: 'Pick a sensor, aspect ratio and focal length, and see the frame.',
     cardAlt: "CapXer: a director's viewfinder in your browser. A drawn scene seen through 2.39:1 frame lines.",
   },
   nav: {

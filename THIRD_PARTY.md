@@ -21,7 +21,7 @@ CapXer builds on the work below. Each item keeps its own licence. The CapXer lic
 | TypeScript | Type checking | Apache-2.0 | https://github.com/microsoft/TypeScript |
 | Vitest | Unit tests | MIT | https://github.com/vitest-dev/vitest |
 | jsdom | Browser environment for unit tests | MIT | https://github.com/jsdom/jsdom |
-| Playwright | Browser tests | Apache-2.0 | https://github.com/microsoft/playwright |
+| Playwright | Browser tests and the social image | Apache-2.0 | https://github.com/microsoft/playwright |
 | axe-core | Accessibility tests | MPL-2.0 | https://github.com/dequelabs/axe-core |
 | Zod | Data validation | MIT | https://github.com/colinhacks/zod |
 | sharp | Making the app icons (`scripts/make-icons.ts`) | Apache-2.0 | https://github.com/lovell/sharp |
