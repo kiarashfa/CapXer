@@ -24,6 +24,10 @@ interface Props {
 
 const { title, description = t.site.description, dockLabel = t.dock.label } = Astro.props;
 const fullTitle = title ? `${title} | ${SITE_NAME}` : `${SITE_NAME}: ${t.site.tagline}`;
+// The X of the wordmark takes the accent colour, like the mark beside it.
+const xAt = SITE_NAME.indexOf('X');
+const nameBefore = SITE_NAME.slice(0, xAt);
+const nameAfter = SITE_NAME.slice(xAt + 1);
 const canonical = new URL(Astro.url.pathname, Astro.site);
 const path = Astro.url.pathname;
 const hasDock = Astro.slots.has('dock');
@@ -112,7 +116,7 @@ const current = (href: string) => (path === href ? 'page' : path.startsWith(href
               <path d="M4 11V4h7M21 4h7v7M28 21v7h-7M11 28H4v-7" />
               <circle cx="16" cy="16" r="2.6" fill="currentColor" stroke="none" />
             </svg>
-            {SITE_NAME}
+            <span>{nameBefore}<span class="text-accent">X</span>{nameAfter}</span>
           </a>
           <nav class="bar-pages" aria-label={t.nav.label}>
             <span class="divider" aria-hidden="true"></span>
