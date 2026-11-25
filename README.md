@@ -1,28 +1,31 @@
-# CapXer
+<p>
+  <a href="https://kiarashfa.github.io/CapXer/">
+    <img src="public/og-image.jpg" alt="CapXer: See the frame before you shoot." width="100%">
+  </a>
+</p>
 
-A free director's viewfinder in your browser: https://kiarashfa.github.io/CapXer/
+<div align="center">
 
-Pick a sensor or film format, an aspect ratio and a focal length, and see exactly what the lens frames.
+[![Live site](https://img.shields.io/badge/Live_site-kiarashfa.github.io%2FCapXer-8fb4ff?style=for-the-badge)](https://kiarashfa.github.io/CapXer/) [![Donate with PayPal](https://img.shields.io/badge/Donate_on_PayPal-00457C?style=for-the-badge&logo=paypal&logoColor=white)](https://www.paypal.com/donate/?hosted_button_id=S3BD5XFBMMWSJ) [![Buy Me a Coffee](https://img.shields.io/badge/Buy_Me_a_Coffee-FFDD00?style=for-the-badge&logo=buymeacoffee&logoColor=black)](https://www.buymeacoffee.com/kiarashfa)
 
-* **Viewfinder**: cited sensor sizes from phones to medium format, your own sensors and lenses, frame lines, composition guides and angle-of-view readouts, in cinema or stills terms.
-* **Live camera**: check framing in a real location through your phone or webcam, with a level, histogram, zebras, false colour and focus peaking.
-* **Lab**: light a small 3D studio and take the shot. Aperture, shutter, ISO and white balance change the picture like a real camera, with a meter, depth of field you can see on a top view of the set, and cinema or stills terms. Needs a computer.
-* **Lessons**: short lessons on aspect ratios, focal length and composition. Every fact links to the exact place in its source.
-* **Works offline**: install it as an app on your phone or computer (the lab needs a connection).
-* **Your profile**: a name and picture, and your save file as your key. Optional cloud save to your own Google Drive or Dropbox.
+![Website status](https://img.shields.io/website?url=https%3A%2F%2Fkiarashfa.github.io%2FCapXer%2F&label=website&style=flat) ![Deployment](https://img.shields.io/github/deployments/kiarashfa/CapXer/github-pages?style=flat) ![Last commit](https://img.shields.io/github/last-commit/kiarashfa/CapXer?style=flat) ![Commit activity](https://img.shields.io/github/commit-activity/y/kiarashfa/CapXer?style=flat) ![Created](https://img.shields.io/github/created-at/kiarashfa/CapXer?style=flat) ![Stars](https://img.shields.io/github/stars/kiarashfa/CapXer?style=flat)
 
-Your camera feed never leaves your device. No accounts, no ads, and analytics only runs if you allow it. Details are in the [privacy section](https://kiarashfa.github.io/CapXer/about/#privacy).
+</div>
 
-Made for current versions of Chrome, Edge, Firefox and Safari. Not yet tested on a real iPhone.
+**CapXer** is a director's viewfinder in your browser. Pick a sensor or film format, an aspect ratio and a focal length, and see exactly what the lens frames.
 
-## Licence
+It also has a live camera view for checking framing on location, a small 3D lab where aperture, shutter, ISO and white balance change the picture like a real camera, and short lessons on aspect ratios, focal length and composition, with every fact linked to its source. It works offline once installed, and your camera feed never leaves your device.
 
-CapXer is **source-available, not open source**.
-© 2026 Kiarash Farajzadehahary
+Under the hood, it is built with Astro and Svelte, with Three.js (through Threlte) drawing the 3D lab. It is a progressive web app, so it installs on your phone or computer, and an automated test suite that includes accessibility checks covers it.
 
-⚖ Licensed under the [KFA Source-Available License 1.0](LICENSE).
+## License and credits
 
-Third-party software and data are credited in [THIRD\_PARTY.md](THIRD_PARTY.md).
+The code is released under the [KFA Source-Available License 1.0](LICENSE). It is **source-available, not open source**: you can read it, fork it and run it privately, but deploying it, modifying it and commercial use need written permission.
+
+Third-party software, data and media are credited in [THIRD_PARTY.md](THIRD_PARTY.md).
+
+---
+
+© 2026 Kiarash Farajzadehahary.
 
 Made with ❤️ for directors and art students.
-
