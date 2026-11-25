@@ -9,7 +9,8 @@ const root = process.cwd();
 const dist = process.argv.includes('--dist');
 
 const SOURCE_DIRS = ['src', 'public'];
-const SOURCE_FILES = ['README.md', 'THIRD_PARTY.md', 'LICENSE'];
+// LICENSE is not scanned: it is the verbatim KFA License text, which uses em dashes.
+const SOURCE_FILES = ['README.md', 'THIRD_PARTY.md'];
 const SOURCE_EXT = new Set([...CODE_EXTENSIONS, '.md', '.mdx', '.json', '.html', '.svg', '.txt', '.webmanifest', '.yml', '.yaml']);
 // Built JS is skipped: third-party library strings are not ours to police, and our strings are covered in source.
 const DIST_EXT = new Set(['.html', '.xml', '.json', '.webmanifest', '.txt', '.svg']);

@@ -41,15 +41,15 @@ work that results from doing so.
 
 "Deploy" or "Operate" mean to make the Software, a Copy of it, or a
 Derivative Work of it, available to any person other than You as a running
-website, application, program, or other network-accessible service,
+website, application, program, or other network-accessible service —
 whether or not You have Modified it, and regardless of the hosting method,
 platform, or infrastructure used (including, without limitation, a personal
 server, a third-party host, a content delivery network, or a static-site
 host such as GitHub Pages).
 
 "Third-Party Material" means any font, icon, image, media file, code
-library, dataset, or other content included in, or referenced by, this
-repository that is identified, whether in the file itself, in accompanying
+library, or other content included in, or referenced by, this repository
+that is identified, whether in the file itself, in accompanying
 documentation, or in the repository's notices, as originating from, or
 licensed by, a party other than Licensor.
 
@@ -79,7 +79,7 @@ Except as expressly permitted in Section 3, You may not, without Licensor's
 prior written permission:
 
 (a) Deploy or Operate the Software, any Copy of it, or any Derivative Work
-of it, whether Modified or unmodified; this restriction applies regardless
+of it, whether Modified or unmodified — this restriction applies regardless
 of whether the resulting deployment is offered free of charge;
 
 (b) create or Modify the Software to produce a Derivative Work, or
@@ -114,16 +114,10 @@ it.
 
 6. Third-Party Material
 
-This repository includes and references Third-Party Material, such as code
-libraries, fonts, and third-party reference data (for example camera sensor
-and lens specification data), that is separately licensed and identified in
-the THIRD_PARTY.md file at the root of this repository and on the About page
-of the CapXer website. This License applies only to Licensor's original
-Software, not to Third-Party Material, which remains governed solely by its
-own license. Any attribution that a third-party license requires is provided
-in THIRD_PARTY.md and on the About page. Licensor's own compilation,
-selection, and arrangement of such data into the CapXer database is part of
-the Software and is governed by this License.
+This repository may include or reference Third-Party Material that is
+separately licensed and identified within the repository. This License
+applies only to Licensor's original Software, not to Third-Party Material,
+which remains governed solely by its own license.
 
 7. No Additional Rights
 
@@ -171,6 +165,25 @@ written agreement signed by Licensor granting You additional rights.
 
 12. Contact
 
-Requests for permissions beyond this License, including commercial use,
-hosting, or distribution of Derivative Works, may be directed to Licensor
+Requests for permissions beyond this License — including commercial use,
+hosting, or distribution of Derivative Works — may be directed to Licensor
 at kiarashfa@gmail.com.
+
+Appendix: Project-Specific Terms
+
+This Appendix forms part of this License as applied to CapXer. It
+supplements and clarifies the numbered Sections above. It does not remove
+any restriction in them, except where it says so expressly. The text of the
+numbered Sections is Version 1.0 of this License, unchanged.
+
+A1. Third-Party Material
+
+Third-Party Material used by this project is identified in the file
+THIRD_PARTY.md at the root of this repository. Section 6 applies to
+everything listed in that file: it is governed solely by its original
+license, it is not covered by this License, and this License does not apply
+to it.
+
+Licensor's own compilation, selection, and arrangement of third-party
+reference data (such as camera sensor and lens specification data) into the
+CapXer database is part of the Software and is governed by this License.

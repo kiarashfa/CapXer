@@ -15,8 +15,14 @@ describe('credits', () => {
   });
 
   it('every credit is listed in THIRD_PARTY.md', () => {
-    const rows = thirdParty.split('\n').filter((l) => l.startsWith('| ')).map((l) => l.split('|')[1].trim());
-    expect(CREDITS.map((c) => c.name).filter((n) => !rows.includes(n))).toEqual([]);
+    // First cell of every table row, with a Markdown link reduced to its text.
+    const rows = thirdParty
+      .split('\n')
+      .filter((l) => l.startsWith('| '))
+      .map((l) => l.split('|')[1]!.trim().replace(/^\[([^\]]+)\]\([^)]*\)$/, '$1'));
+    // Shipped items (shown on the About page) have a row; build-only tools are named in the text.
+    const missing = CREDITS.filter((c) => (c.about ? !rows.includes(c.name) : !rows.includes(c.name) && !thirdParty.includes(c.name)));
+    expect(missing.map((c) => c.name)).toEqual([]);
   });
 
   it('runtime packages and fonts are shown on the About page', () => {
