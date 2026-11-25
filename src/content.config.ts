@@ -17,7 +17,9 @@ const lessons = defineCollection({
     summary: z.string().min(1).max(200),
     topic: z.enum(Object.keys(TOPICS) as [keyof typeof TOPICS, ...(keyof typeof TOPICS)[]]),
     /** Viewfinder panels that link to this lesson ("Learn" row). */
-    tools: z.array(z.enum(['camera', 'frame', 'lens', 'guides', 'live', 'exposure', 'info', 'saved'])).default([]),
+    tools: z
+      .array(z.enum(['camera', 'frame', 'lens', 'guides', 'live', 'exposure', 'info', 'saved']))
+      .default([]),
     published: z.coerce.date(),
     updated: z.coerce.date(),
     /** Sort order inside a topic, lowest first. */

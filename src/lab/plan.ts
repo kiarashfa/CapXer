@@ -25,7 +25,10 @@ export function viewWedge(camera: P2, target: P2): Wedge {
 
 /** Point at `along` metres down the axis and `side` metres across it. */
 export function at(camera: P2, w: Wedge, along: number, side: number): P2 {
-  return { x: camera.x + w.axis.x * along + w.across.x * side, z: camera.z + w.axis.z * along + w.across.z * side };
+  return {
+    x: camera.x + w.axis.x * along + w.across.x * side,
+    z: camera.z + w.axis.z * along + w.across.z * side,
+  };
 }
 
 /**
@@ -33,10 +36,22 @@ export function at(camera: P2, w: Wedge, along: number, side: number): P2 {
  * along the axis) and inside the lens's horizontal angle (tanW = tan of half
  * of it). `far` may be Infinity; it is cut at `maxAlong`.
  */
-export function sharpBand(camera: P2, w: Wedge, tanW: number, near: number, far: number, maxAlong: number): P2[] {
+export function sharpBand(
+  camera: P2,
+  w: Wedge,
+  tanW: number,
+  near: number,
+  far: number,
+  maxAlong: number,
+): P2[] {
   const f = Math.min(far, maxAlong);
   const n = Math.min(near, f);
-  return [at(camera, w, n, -n * tanW), at(camera, w, n, n * tanW), at(camera, w, f, f * tanW), at(camera, w, f, -f * tanW)];
+  return [
+    at(camera, w, n, -n * tanW),
+    at(camera, w, n, n * tanW),
+    at(camera, w, f, f * tanW),
+    at(camera, w, f, -f * tanW),
+  ];
 }
 
 /** How far along the axis the background wall (z = wallZ) is; Infinity if the camera looks away from it. */

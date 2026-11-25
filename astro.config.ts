@@ -27,7 +27,9 @@ export default defineConfig({
   build: { format: 'directory' },
   // Lessons (MDX) inherit this processor; the citation plugin only runs on src/content/lessons/.
   markdown: {
-    processor: satteri({ mdastPlugins: [citations({ references: references.map((r) => r.id) }), tableWrap] }),
+    processor: satteri({
+      mdastPlugins: [citations({ references: references.map((r) => r.id) }), tableWrap],
+    }),
   },
   // Content Security Policy: added after the build by scripts/build-csp.ts (Astro's own
   // CSP option skips is:inline scripts and places the tag after them).

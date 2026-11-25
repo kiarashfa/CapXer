@@ -1,5 +1,17 @@
 import { describe, expect, it } from 'vitest';
-import { BANDS, BT709, bandOf, bandRange, frameInVideo, histogram, histogramPath, luma, oetf, signalAt, zebraThreshold } from '../../src/analysis/levels.ts';
+import {
+  BANDS,
+  BT709,
+  bandOf,
+  bandRange,
+  frameInVideo,
+  histogram,
+  histogramPath,
+  luma,
+  oetf,
+  signalAt,
+  zebraThreshold,
+} from '../../src/analysis/levels.ts';
 import { getReference } from '../../src/references/index.ts';
 
 const band = (id: string) => BANDS.find((b) => b.id === id)!;
@@ -30,7 +42,8 @@ describe('BT.709 levels', () => {
 
 describe('false colour bands', () => {
   it('do not overlap and run from brightest to darkest', () => {
-    for (let i = 1; i < BANDS.length; i++) expect(BANDS[i]!.hi).toBeLessThanOrEqual(BANDS[i - 1]!.lo);
+    for (let i = 1; i < BANDS.length; i++)
+      expect(BANDS[i]!.hi).toBeLessThanOrEqual(BANDS[i - 1]!.lo);
     for (const b of BANDS) expect(b.hi).toBeGreaterThan(b.lo);
   });
 
@@ -62,7 +75,8 @@ describe('zebras', () => {
 });
 
 describe('histogram', () => {
-  const px = (...rgb: number[][]) => new Uint8ClampedArray(rgb.flatMap(([r, g, b]) => [r!, g!, b!, 255]));
+  const px = (...rgb: number[][]) =>
+    new Uint8ClampedArray(rgb.flatMap(([r, g, b]) => [r!, g!, b!, 255]));
 
   it('bins luma and each channel, and measures clipping at both ends', () => {
     const h = histogram(px([0, 0, 0], [255, 255, 255], [255, 255, 255], [128, 128, 128]), 4);
@@ -104,6 +118,8 @@ describe('frame inside the video', () => {
   it('clips to the picture when the video is smaller than the frame ("wider than your camera")', () => {
     const r = frameInVideo({ x: 0, y: 0, w: 1, h: 1 }, { x: 0.25, y: 0.25, w: 0.5, h: 0.5 })!;
     expect(r).toEqual({ x: 0, y: 0, w: 1, h: 1 });
-    expect(frameInVideo({ x: 0, y: 0, w: 0.2, h: 0.2 }, { x: 0.5, y: 0.5, w: 0.5, h: 0.5 })).toBeNull();
+    expect(
+      frameInVideo({ x: 0, y: 0, w: 0.2, h: 0.2 }, { x: 0.5, y: 0.5, w: 0.5, h: 0.5 }),
+    ).toBeNull();
   });
 });

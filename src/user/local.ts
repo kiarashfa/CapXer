@@ -51,7 +51,9 @@ export function writeJson(key: string, value: unknown): void {
 
 export function cloudState(): CloudState | null {
   const s = readJson<CloudState>(CLOUD_KEY);
-  return s && typeof s === 'object' && typeof s.provider === 'string' && s.provider in PROVIDERS ? s : null;
+  return s && typeof s === 'object' && typeof s.provider === 'string' && s.provider in PROVIDERS
+    ? s
+    : null;
 }
 
 /** Forgets the cloud connection in this browser (the cloud file stays). */
@@ -78,7 +80,11 @@ export function savedHead(): { profile: Profile | null; savedAt: string | null; 
   const p = s?.profile;
   const profile = p && typeof p === 'object' && typeof p.name === 'string' ? p : null;
   const n = (v: unknown) => (Array.isArray(v) ? v.length : 0);
-  const work = !!profile || n(s?.setups) + n(s?.gear?.cameras) + n(s?.gear?.lenses) > 0 || !!s?.calibration?.phone || !!s?.calibration?.webcam;
+  const work =
+    !!profile ||
+    n(s?.setups) + n(s?.gear?.cameras) + n(s?.gear?.lenses) > 0 ||
+    !!s?.calibration?.phone ||
+    !!s?.calibration?.webcam;
   return { profile, savedAt: typeof s?.savedAt === 'string' ? s.savedAt : null, work };
 }
 

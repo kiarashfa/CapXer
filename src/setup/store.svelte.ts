@@ -31,7 +31,15 @@ export function resolveCamera(id: string, customs: CustomSensor[]): Camera {
         id: c.id,
         name: c.name,
         custom: true,
-        formats: [{ id: 'custom', name: `${c.width} x ${c.height} mm`, width: c.width, height: c.height, squeeze: c.squeeze > 1 ? c.squeeze : undefined }],
+        formats: [
+          {
+            id: 'custom',
+            name: `${c.width} x ${c.height} mm`,
+            width: c.width,
+            height: c.height,
+            squeeze: c.squeeze > 1 ? c.squeeze : undefined,
+          },
+        ],
       };
     }
   }
@@ -47,13 +55,19 @@ class ViewfinderStore {
   panel = $state<PanelId | null>(null);
 
   camera = $derived(resolveCamera(this.setup.sensorId, this.customs));
-  format = $derived(this.camera.formats.find((f) => f.id === this.setup.formatId) ?? this.camera.formats[0]!);
+  format = $derived(
+    this.camera.formats.find((f) => f.id === this.setup.formatId) ?? this.camera.formats[0]!,
+  );
   derived = $derived(derive(this.setup, { width: this.format.width, height: this.format.height }));
   range = $derived(focalRange(this.derived.crop));
   /** Lens stops as shown (in the current entry unit), sorted. */
-  stopLabels = $derived([...new Set([...LENS_STOPS[this.setup.mode], ...this.customLenses])].sort((a, b) => a - b));
+  stopLabels = $derived(
+    [...new Set([...LENS_STOPS[this.setup.mode], ...this.customLenses])].sort((a, b) => a - b),
+  );
   /** The same stops as actual focal lengths. */
-  stopsActual = $derived(this.stopLabels.map((s) => fromEntry(s, this.setup.focalEntry, this.derived.crop)));
+  stopsActual = $derived(
+    this.stopLabels.map((s) => fromEntry(s, this.setup.focalEntry, this.derived.crop)),
+  );
 
   setMode(mode: Mode) {
     this.setup.mode = mode;

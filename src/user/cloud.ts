@@ -17,7 +17,16 @@ import { mergeSync, type SyncChanges } from '../storage/sync.ts';
 import type { SaveFile } from '../storage/schema.ts';
 import { url } from '../lib/url.ts';
 import { t } from '../i18n/en.ts';
-import { CLOUD_EVENT, cloudState, PROVIDERS, unsaved, writeJson, CLOUD_KEY, type CloudState, type Provider } from './local.ts';
+import {
+  CLOUD_EVENT,
+  cloudState,
+  PROVIDERS,
+  unsaved,
+  writeJson,
+  CLOUD_KEY,
+  type CloudState,
+  type Provider,
+} from './local.ts';
 
 const E = t.user.errors;
 const FILE = 'capxer-save.json';
@@ -57,7 +66,8 @@ const b64url = (bytes: Uint8Array) =>
     .replace(/\+/g, '-')
     .replace(/\//g, '_')
     .replace(/=+$/, '');
-const expiresAt = (seconds: unknown) => Date.now() + Math.max(60, (Number(seconds) || 3600) - 120) * 1000;
+const expiresAt = (seconds: unknown) =>
+  Date.now() + Math.max(60, (Number(seconds) || 3600) - 120) * 1000;
 
 interface Remote {
   id?: string;
@@ -136,17 +146,29 @@ async function googleToken(prompt: string): Promise<CloudState['token']> {
       prompt,
       callback: (r) => {
         if (r.error) return reject(new CloudError(E.googleUnfinished, { auth: true }));
-        if (!oauth2.hasGrantedAllScopes(r, GOOGLE_SCOPE)) return reject(new CloudError(E.googleScope, { auth: true }));
+        if (!oauth2.hasGrantedAllScopes(r, GOOGLE_SCOPE))
+          return reject(new CloudError(E.googleScope, { auth: true }));
         resolve({ access: r.access_token, expires: expiresAt(r.expires_in) });
       },
-      error_callback: (e) => reject(new CloudError(e?.type === 'popup_closed' ? E.googleClosed : E.googlePopup, { auth: true })),
+      error_callback: (e) =>
+        reject(
+          new CloudError(e?.type === 'popup_closed' ? E.googleClosed : E.googlePopup, {
+            auth: true,
+          }),
+        ),
     });
     client.requestAccessToken();
   });
 }
 
 async function gfetch(s: CloudState, address: string, init: RequestInit = {}): Promise<Response> {
-  const res = await fetch(address, { ...init, headers: { ...(init.headers as Record<string, string>), Authorization: `Bearer ${s.token?.access}` } });
+  const res = await fetch(address, {
+    ...init,
+    headers: {
+      ...(init.headers as Record<string, string>),
+      Authorization: `Bearer ${s.token?.access}`,
+    },
+  });
   if (res.status === 401) throw new CloudError(E.googleAgain, { auth: true });
   if (!res.ok) throw new CloudError(E.failed(PROVIDERS.google, res.status));
   return res;
@@ -159,12 +181,19 @@ const google: Api = {
     return { ...s, token: await googleToken('') };
   },
   async account(s) {
-    const r = (await (await gfetch(s, `${DRIVE}/about?fields=user(displayName,emailAddress)`)).json()) as { user?: { displayName?: string; emailAddress?: string } };
+    const r = (await (
+      await gfetch(s, `${DRIVE}/about?fields=user(displayName,emailAddress)`)
+    ).json()) as { user?: { displayName?: string; emailAddress?: string } };
     return { name: r.user?.displayName ?? '', email: r.user?.emailAddress ?? '' };
   },
   async stat(s) {
     const q = encodeURIComponent(`name='${FILE}' and trashed=false`);
-    const r = (await (await gfetch(s, `${DRIVE}/files?spaces=appDataFolder&q=${q}&fields=files(id,version)&pageSize=1`)).json()) as { files?: { id: string; version: string }[] };
+    const r = (await (
+      await gfetch(
+        s,
+        `${DRIVE}/files?spaces=appDataFolder&q=${q}&fields=files(id,version)&pageSize=1`,
+      )
+    ).json()) as { files?: { id: string; version: string }[] };
     const f = r.files?.[0];
     return f ? { id: f.id, rev: String(f.version) } : null;
   },
@@ -174,10 +203,18 @@ const google: Api = {
   async upload(s, body, remote) {
     let res: Response;
     if (remote) {
-      res = await gfetch(s, `${DRIVE_UPLOAD}/files/${remote.id}?uploadType=media&fields=id,version`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body });
+      res = await gfetch(
+        s,
+        `${DRIVE_UPLOAD}/files/${remote.id}?uploadType=media&fields=id,version`,
+        { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body },
+      );
     } else {
       const boundary = `capxer-${b64url(crypto.getRandomValues(new Uint8Array(12)))}`;
-      const meta = JSON.stringify({ name: FILE, parents: ['appDataFolder'], mimeType: 'application/json' });
+      const meta = JSON.stringify({
+        name: FILE,
+        parents: ['appDataFolder'],
+        mimeType: 'application/json',
+      });
       res = await gfetch(s, `${DRIVE_UPLOAD}/files?uploadType=multipart&fields=id,version`, {
         method: 'POST',
         headers: { 'Content-Type': `multipart/related; boundary=${boundary}` },
@@ -215,19 +252,32 @@ interface DropboxToken {
   expires_in?: number;
 }
 
-async function dropboxToken(params: Record<string, string>): Promise<DropboxToken & { access_token: string }> {
-  const res = await fetch(DBX_TOKEN, { method: 'POST', body: new URLSearchParams({ client_id: DROPBOX_KEY, ...params }) });
+async function dropboxToken(
+  params: Record<string, string>,
+): Promise<DropboxToken & { access_token: string }> {
+  const res = await fetch(DBX_TOKEN, {
+    method: 'POST',
+    body: new URLSearchParams({ client_id: DROPBOX_KEY, ...params }),
+  });
   const r = (await res.json().catch(() => ({}))) as DropboxToken;
   if (!res.ok || !r.access_token) throw new CloudError(E.dropboxAgain, { auth: true });
   return { ...r, access_token: r.access_token };
 }
 
-async function dfetch(s: CloudState, address: string, { arg, body, json }: { arg?: unknown; body?: string; json?: unknown } = {}): Promise<Response> {
+async function dfetch(
+  s: CloudState,
+  address: string,
+  { arg, body, json }: { arg?: unknown; body?: string; json?: unknown } = {},
+): Promise<Response> {
   const headers: Record<string, string> = { Authorization: `Bearer ${s.token?.access}` };
   if (arg) headers['Dropbox-API-Arg'] = JSON.stringify(arg);
   if (json !== undefined) headers['Content-Type'] = 'application/json';
   else if (body !== undefined) headers['Content-Type'] = 'application/octet-stream';
-  const res = await fetch(address, { method: 'POST', headers, body: json !== undefined ? JSON.stringify(json) : (body ?? null) });
+  const res = await fetch(address, {
+    method: 'POST',
+    headers,
+    body: json !== undefined ? JSON.stringify(json) : (body ?? null),
+  });
   if (res.status === 401) throw new CloudError(E.dropboxAgain, { auth: true });
   return res;
 }
@@ -261,13 +311,17 @@ const dropbox: Api = {
     // "update" only writes over the version this browser saw; anything newer
     // answers 409 and the sync starts over with that version merged in.
     const mode = remote ? { '.tag': 'update', update: remote.rev } : { '.tag': 'add' };
-    const res = await dfetch(s, `${DBX_CONTENT}/files/upload`, { arg: { path: DBX_PATH, mode, autorename: false, mute: true }, body });
+    const res = await dfetch(s, `${DBX_CONTENT}/files/upload`, {
+      arg: { path: DBX_PATH, mode, autorename: false, mute: true },
+      body,
+    });
     if (res.status === 409) throw new CloudError(E.conflict, { conflict: true });
     if (!res.ok) throw dropboxFailed(res);
     return { rev: ((await res.json()) as { rev: string }).rev };
   },
   async revoke(s) {
-    if (s.token?.access && s.token.expires > Date.now()) await dfetch(s, `${DBX_API}/auth/token/revoke`);
+    if (s.token?.access && s.token.expires > Date.now())
+      await dfetch(s, `${DBX_API}/auth/token/revoke`);
   },
 };
 
@@ -278,7 +332,9 @@ const API: Record<Provider, Api> = { google, dropbox };
 /** Starts the Dropbox round trip (this page is left for Dropbox's). */
 export async function connectDropbox(): Promise<void> {
   const verifier = b64url(crypto.getRandomValues(new Uint8Array(48)));
-  const challenge = b64url(new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(verifier))));
+  const challenge = b64url(
+    new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(verifier))),
+  );
   const state = b64url(crypto.getRandomValues(new Uint8Array(16)));
   try {
     sessionStorage.setItem(PKCE_KEY, JSON.stringify({ verifier, state }));
@@ -305,7 +361,10 @@ export function isDropboxReturn(): boolean {
 
 function takePkce(): { verifier: string; state: string } | null {
   try {
-    const value = JSON.parse(sessionStorage.getItem(PKCE_KEY) ?? 'null') as { verifier: string; state: string } | null;
+    const value = JSON.parse(sessionStorage.getItem(PKCE_KEY) ?? 'null') as {
+      verifier: string;
+      state: string;
+    } | null;
     sessionStorage.removeItem(PKCE_KEY);
     return value;
   } catch {
@@ -318,10 +377,22 @@ export async function finishDropbox(): Promise<SyncResult> {
   const params = new URLSearchParams(location.search);
   const pkce = takePkce();
   history.replaceState(history.state, '', location.pathname + location.hash);
-  if (params.has('error')) throw new CloudError(params.get('error') === 'access_denied' ? E.dropboxDenied : E.dropboxUnfinished);
+  if (params.has('error'))
+    throw new CloudError(
+      params.get('error') === 'access_denied' ? E.dropboxDenied : E.dropboxUnfinished,
+    );
   if (!pkce || pkce.state !== params.get('state')) throw new CloudError(E.dropboxForeign);
-  const r = await dropboxToken({ grant_type: 'authorization_code', code: params.get('code') ?? '', code_verifier: pkce.verifier, redirect_uri: redirectUri() });
-  return connected({ provider: 'dropbox', refresh: r.refresh_token ?? null, token: { access: r.access_token, expires: expiresAt(r.expires_in) } });
+  const r = await dropboxToken({
+    grant_type: 'authorization_code',
+    code: params.get('code') ?? '',
+    code_verifier: pkce.verifier,
+    redirect_uri: redirectUri(),
+  });
+  return connected({
+    provider: 'dropbox',
+    refresh: r.refresh_token ?? null,
+    token: { access: r.access_token, expires: expiresAt(r.expires_in) },
+  });
 }
 
 export async function connectGoogle(): Promise<SyncResult> {
@@ -329,10 +400,20 @@ export async function connectGoogle(): Promise<SyncResult> {
   return connected({ provider: 'google', token });
 }
 
-async function connected(base: Pick<CloudState, 'provider' | 'token'> & Partial<CloudState>): Promise<SyncResult> {
+async function connected(
+  base: Pick<CloudState, 'provider' | 'token'> & Partial<CloudState>,
+): Promise<SyncResult> {
   const prev = cloudState();
   if (prev && prev.provider !== base.provider) await disconnect();
-  const s: CloudState = { account: null, savedAt: null, rev: null, file: null, refresh: null, problem: null, ...base };
+  const s: CloudState = {
+    account: null,
+    savedAt: null,
+    rev: null,
+    file: null,
+    refresh: null,
+    problem: null,
+    ...base,
+  };
   s.account = await API[s.provider].account(s).catch(() => null);
   persist(s);
   startAutoSave();
@@ -391,7 +472,10 @@ async function run({ interactive = false, retry = true } = {}): Promise<SyncResu
     let changes: SyncChanges | null = null;
     if (remote && remote.rev !== s.rev) {
       const parsed = parseFile(await api.download(s, remote));
-      if (!parsed.ok) throw new CloudError(parsed.reason === 'newer' ? E.newer : E.unreadable(PROVIDERS[s.provider], FILE));
+      if (!parsed.ok)
+        throw new CloudError(
+          parsed.reason === 'newer' ? E.newer : E.unreadable(PROVIDERS[s.provider], FILE),
+        );
       // Read, merge and write in one synchronous step, so no change made meanwhile is lost.
       dispatchEvent(new CustomEvent(FLUSH_EVENT));
       const mine = readSave();
@@ -400,7 +484,12 @@ async function run({ interactive = false, retry = true } = {}): Promise<SyncResu
       if (!written) throw new CloudError(E.storage);
       dispatchEvent(new CustomEvent(REPLACED_EVENT));
       changes = merged.changes;
-      s = { ...s, rev: remote.rev, file: remote.id ?? s.file, savedAt: hadNew ? s.savedAt : written.savedAt };
+      s = {
+        ...s,
+        rev: remote.rev,
+        file: remote.id ?? s.file,
+        savedAt: hadNew ? s.savedAt : written.savedAt,
+      };
     }
     const current = readSave();
     if (current && (!remote || hadNew)) {
@@ -415,7 +504,8 @@ async function run({ interactive = false, retry = true } = {}): Promise<SyncResu
     if (err.conflict && retry) return run({ interactive, retry: false });
     // Keep a refreshed token even when the save itself failed.
     const latest = cloudState();
-    if (latest) persist({ ...latest, token: s?.token ?? latest.token, problem: err.auth ? 'auth' : 'error' });
+    if (latest)
+      persist({ ...latest, token: s?.token ?? latest.token, problem: err.auth ? 'auth' : 'error' });
     announce({ state: err.auth ? 'auth' : 'error', message: err.message });
     throw err;
   }

@@ -91,7 +91,13 @@ export function measure() {
     const rel = relative(DIST, file).split(sep).join('/');
     const js = jsClosure(pageEntries(readFileSync(file, 'utf8')));
     const kb = [...js.values()].reduce((a, b) => a + b, 0) / 1024;
-    const limit = rel.startsWith('viewfinder/') ? BUDGET.viewfinderJs : rel.startsWith('lab/') ? BUDGET.labJs : rel.startsWith('user/') ? BUDGET.userJs : BUDGET.pageJs;
+    const limit = rel.startsWith('viewfinder/')
+      ? BUDGET.viewfinderJs
+      : rel.startsWith('lab/')
+        ? BUDGET.labJs
+        : rel.startsWith('user/')
+          ? BUDGET.userJs
+          : BUDGET.pageJs;
     return { page: rel, kb, limit, files: js.size };
   });
   const sw = readFileSync(join(DIST, 'sw.js'), 'utf8');
@@ -115,13 +121,19 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
   for (const r of rows) {
     const over = r.kb > r.limit;
     failed ||= over;
-    console.log(`${over ? 'OVER' : 'ok  '} ${r.page.padEnd(32)} ${r.kb.toFixed(1).padStart(6)} KB gz JS (${r.files} files, budget ${r.limit})`);
+    console.log(
+      `${over ? 'OVER' : 'ok  '} ${r.page.padEnd(32)} ${r.kb.toFixed(1).padStart(6)} KB gz JS (${r.files} files, budget ${r.limit})`,
+    );
   }
   const over = precacheKb > BUDGET.precache;
   failed ||= over;
-  console.log(`${over ? 'OVER' : 'ok  '} ${'precache'.padEnd(32)} ${precacheKb.toFixed(0).padStart(6)} KB (${precacheFiles} files, budget ${BUDGET.precache})`);
+  console.log(
+    `${over ? 'OVER' : 'ok  '} ${'precache'.padEnd(32)} ${precacheKb.toFixed(0).padStart(6)} KB (${precacheFiles} files, budget ${BUDGET.precache})`,
+  );
   if (failed) {
-    console.error('check-size: over budget. Shrink the change, or raise the budget in scripts/check-size.ts on purpose.');
+    console.error(
+      'check-size: over budget. Shrink the change, or raise the budget in scripts/check-size.ts on purpose.',
+    );
     process.exit(1);
   }
 }

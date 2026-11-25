@@ -1,5 +1,11 @@
 import { getDevice } from '../data/index.ts';
-import { fovFromDeviceCamera, fovFromDiagonal, fovFromEquivalent, type Calibration, type CameraFov } from './lens.ts';
+import {
+  fovFromDeviceCamera,
+  fovFromDiagonal,
+  fovFromEquivalent,
+  type Calibration,
+  type CameraFov,
+} from './lens.ts';
 
 // Which phone or webcam the live view assumes, and its field of view.
 
@@ -13,6 +19,9 @@ export function calibrationFov(c: Calibration): CameraFov {
   if (c.kind === 'equivalent') return fovFromEquivalent(c.mm);
   if (c.kind === 'diagonal') return fovFromDiagonal(c.degrees);
   const dev = getDevice(c.deviceId);
-  const cam = dev?.cameras.find((x) => x.id === c.cameraId) ?? dev?.cameras[0] ?? getDevice(ASSUMED.phone.deviceId)!.cameras[0]!;
+  const cam =
+    dev?.cameras.find((x) => x.id === c.cameraId) ??
+    dev?.cameras[0] ??
+    getDevice(ASSUMED.phone.deviceId)!.cameras[0]!;
   return fovFromDeviceCamera(cam);
 }

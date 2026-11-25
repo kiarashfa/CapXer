@@ -17,9 +17,15 @@ import type { Citation } from '../data/index.ts';
 //   (the same grey card the exposure aids measure their bands from), and every
 //   stop of extra exposure doubles the value.
 
-export const EV_SOURCE: Citation = { ref: 'wikipedia-exposure-value', locator: 'Formal definition; Relationship of EV to lighting conditions' };
+export const EV_SOURCE: Citation = {
+  ref: 'wikipedia-exposure-value',
+  locator: 'Formal definition; Relationship of EV to lighting conditions',
+};
 export const METER_K_SOURCE: Citation = { ref: 'sekonic-meter-calibration', locator: 'Answer' };
-export const SHUTTER_ANGLE_SOURCE: Citation = { ref: 'red-shutter-angle', locator: 'Concept; Appearance' };
+export const SHUTTER_ANGLE_SOURCE: Citation = {
+  ref: 'red-shutter-angle',
+  locator: 'Concept; Appearance',
+};
 
 /** Reflected-light meter calibration constant K (cd s / m2 per ISO), Sekonic's value. */
 export const METER_K = 12.5;
@@ -28,7 +34,8 @@ export const METER_K = 12.5;
 export const MID_GREY = 0.18;
 
 function positive(name: string, ...values: number[]) {
-  for (const v of values) if (!(v > 0 && Number.isFinite(v))) throw new RangeError(`${name} must be positive and finite`);
+  for (const v of values)
+    if (!(v > 0 && Number.isFinite(v))) throw new RangeError(`${name} must be positive and finite`);
 }
 
 /** Exposure value of an aperture and shutter time: log2(N^2 / t). */
@@ -58,7 +65,12 @@ export function luminanceFromEv100(ev100: number, k = METER_K): number {
  * How far the settings are from the meter's exposure, in stops. Positive =
  * more light than the meter asks for (brighter, overexposed), negative = darker.
  */
-export function exposureOffsetStops(sceneEv100: number, fNumber: number, seconds: number, iso: number): number {
+export function exposureOffsetStops(
+  sceneEv100: number,
+  fNumber: number,
+  seconds: number,
+  iso: number,
+): number {
   return sceneEv100 - settingsEv100(fNumber, seconds, iso);
 }
 
@@ -73,7 +85,13 @@ export function shutterForEv100(ev100: number, fNumber: number, iso: number): nu
  * tone curve). MID_GREY when the settings match what the meter asks for this
  * luminance; doubles with each stop more exposure.
  */
-export function pictureValue(luminance: number, fNumber: number, seconds: number, iso: number, k = METER_K): number {
+export function pictureValue(
+  luminance: number,
+  fNumber: number,
+  seconds: number,
+  iso: number,
+  k = METER_K,
+): number {
   positive('f-number, shutter time, ISO and K', fNumber, seconds, iso, k);
   if (!(luminance >= 0)) throw new RangeError('luminance must not be negative');
   return (MID_GREY * luminance * iso * seconds) / (k * fNumber * fNumber);
@@ -84,7 +102,8 @@ export function pictureValue(luminance: number, fNumber: number, seconds: number
 
 /** Exposure time (s) of a shutter angle (degrees) at a frame rate (fps). */
 export function shutterTimeFromAngle(angleDeg: number, fps: number): number {
-  if (!(angleDeg > 0 && angleDeg <= 360)) throw new RangeError('shutter angle must be above 0 and at most 360 degrees');
+  if (!(angleDeg > 0 && angleDeg <= 360))
+    throw new RangeError('shutter angle must be above 0 and at most 360 degrees');
   positive('frame rate', fps);
   return angleDeg / 360 / fps;
 }

@@ -14,7 +14,8 @@ export function exportText(file: SaveFile, now = new Date()): string {
   return `${JSON.stringify({ ...file, savedAt: now.toISOString() }, null, 2)}\n`;
 }
 
-export type ParseResult = { ok: true; file: SaveFile } | { ok: false; reason: 'notCapxer' | 'newer' };
+export type ParseResult =
+  { ok: true; file: SaveFile } | { ok: false; reason: 'notCapxer' | 'newer' };
 
 /** Reads an imported file's text. Never throws. */
 export function parseFile(text: string, now = new Date()): ParseResult {
@@ -30,7 +31,8 @@ export function parseFile(text: string, now = new Date()): ParseResult {
   return file ? { ok: true, file } : { ok: false, reason: 'notCapxer' };
 }
 
-const sameSetup = (a: SavedSetup, b: SavedSetup) => a.name === b.name && JSON.stringify(a.setup) === JSON.stringify(b.setup);
+const sameSetup = (a: SavedSetup, b: SavedSetup) =>
+  a.name === b.name && JSON.stringify(a.setup) === JSON.stringify(b.setup);
 
 /** "Name", or "Name (2)", "Name (3)"... whichever is free. */
 export function uniqueName(name: string, taken: ReadonlySet<string>): string {
@@ -73,7 +75,8 @@ function planSetups(mine: SaveFile, theirs: SaveFile) {
     const same = mine.setups.find((m) => m.id === s.id);
     if (same) {
       // The same saved setup (an earlier export of this one): the newer copy wins.
-      if (!sameSetup(same, s) && Date.parse(s.savedAt) > Date.parse(same.savedAt)) out.push({ setup: s, replaces: same.id, renamed: false });
+      if (!sameSetup(same, s) && Date.parse(s.savedAt) > Date.parse(same.savedAt))
+        out.push({ setup: s, replaces: same.id, renamed: false });
       continue;
     }
     const name = uniqueName(s.name, taken);
@@ -107,7 +110,12 @@ function planLabSetups(mine: SavedLab[], theirs: SavedLab[]): SavedLab[] {
  * the file has none); your current setup stays.
  * "replace": the file becomes everything.
  */
-export function mergeSave(mine: SaveFile, theirs: SaveFile, how: 'merge' | 'replace', now = new Date()): SaveFile {
+export function mergeSave(
+  mine: SaveFile,
+  theirs: SaveFile,
+  how: 'merge' | 'replace',
+  now = new Date(),
+): SaveFile {
   if (how === 'replace') return { ...structuredClone(theirs), savedAt: now.toISOString() };
   const setups = [...mine.setups];
   for (const p of planSetups(mine, theirs)) {
@@ -115,11 +123,17 @@ export function mergeSave(mine: SaveFile, theirs: SaveFile, how: 'merge' | 'repl
     else if (setups.length < LIMITS.setups) setups.push(p.setup);
   }
   const cameras = [...mine.gear.cameras];
-  for (const c of theirs.gear.cameras) if (!cameras.some((m) => m.id === c.id) && cameras.length < LIMITS.cameras) cameras.push(c);
+  for (const c of theirs.gear.cameras)
+    if (!cameras.some((m) => m.id === c.id) && cameras.length < LIMITS.cameras) cameras.push(c);
   const lenses = [...mine.gear.lenses];
-  for (const l of theirs.gear.lenses) if (!lenses.includes(l) && lenses.length < LIMITS.lenses) lenses.push(l);
+  for (const l of theirs.gear.lenses)
+    if (!lenses.includes(l) && lenses.length < LIMITS.lenses) lenses.push(l);
   // A profile only comes in when you have none, or theirs is newer.
-  const profile = theirs.profile && (!mine.profile || Date.parse(theirs.profile.changedAt) > Date.parse(mine.profile.changedAt)) ? theirs.profile : mine.profile;
+  const profile =
+    theirs.profile &&
+    (!mine.profile || Date.parse(theirs.profile.changedAt) > Date.parse(mine.profile.changedAt))
+      ? theirs.profile
+      : mine.profile;
   return structuredClone({
     ...mine,
     ...(profile ? { profile } : {}),
@@ -129,6 +143,8 @@ export function mergeSave(mine: SaveFile, theirs: SaveFile, how: 'merge' | 'repl
     calibration: { ...mine.calibration, ...theirs.calibration },
     aids: theirs.aids,
     ...((theirs.lab ?? mine.lab) ? { lab: theirs.lab ?? mine.lab } : {}),
-    ...(mine.labSetups?.length || theirs.labSetups?.length ? { labSetups: planLabSetups(mine.labSetups ?? [], theirs.labSetups ?? []) } : {}),
+    ...(mine.labSetups?.length || theirs.labSetups?.length
+      ? { labSetups: planLabSetups(mine.labSetups ?? [], theirs.labSetups ?? []) }
+      : {}),
   });
 }

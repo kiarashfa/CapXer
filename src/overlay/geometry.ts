@@ -36,7 +36,12 @@ export interface Overlay {
 const PHI_INV = 2 / (1 + Math.sqrt(5));
 
 export function inset(box: Box, margin: number): Box {
-  return { x: box.x + box.w * margin, y: box.y + box.h * margin, w: box.w * (1 - 2 * margin), h: box.h * (1 - 2 * margin) };
+  return {
+    x: box.x + box.w * margin,
+    y: box.y + box.h * margin,
+    w: box.w * (1 - 2 * margin),
+    h: box.h * (1 - 2 * margin),
+  };
 }
 
 export function overlayGeometry(
@@ -49,8 +54,10 @@ export function overlayGeometry(
   const frame: Box = { x: (1 - w) / 2, y: (1 - h) / 2, w, h };
 
   const masks: Box[] = [];
-  if (frame.y > 1e-6) masks.push({ x: 0, y: 0, w: 1, h: frame.y }, { x: 0, y: frame.y + h, w: 1, h: frame.y });
-  if (frame.x > 1e-6) masks.push({ x: 0, y: frame.y, w: frame.x, h }, { x: frame.x + w, y: frame.y, w: frame.x, h });
+  if (frame.y > 1e-6)
+    masks.push({ x: 0, y: 0, w: 1, h: frame.y }, { x: 0, y: frame.y + h, w: 1, h: frame.y });
+  if (frame.x > 1e-6)
+    masks.push({ x: 0, y: frame.y, w: frame.x, h }, { x: frame.x + w, y: frame.y, w: frame.x, h });
 
   const lines: Line[] = [];
   const split = (a: number) => {
@@ -65,6 +72,8 @@ export function overlayGeometry(
     masks,
     lines,
     centre: guides.centre ? { x: frame.x + w / 2, y: frame.y + h / 2 } : undefined,
-    safe: guides.safe ? { action: inset(frame, safeMargins.action), graphics: inset(frame, safeMargins.graphics) } : undefined,
+    safe: guides.safe
+      ? { action: inset(frame, safeMargins.action), graphics: inset(frame, safeMargins.graphics) }
+      : undefined,
   };
 }

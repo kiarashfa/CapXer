@@ -20,7 +20,15 @@ function joinDeleted(a: Deleted, b: Deleted, now: Date): Deleted {
     for (const [k, v] of Object.entries(y)) if (!out[k] || t(v) > t(out[k])) out[k] = v;
     return out;
   };
-  return sanitizeDeleted({ setups: pick(a.setups, b.setups), labSetups: pick(a.labSetups, b.labSetups), cameras: pick(a.cameras, b.cameras), lenses: pick(a.lenses, b.lenses) }, now);
+  return sanitizeDeleted(
+    {
+      setups: pick(a.setups, b.setups),
+      labSetups: pick(a.labSetups, b.labSetups),
+      cameras: pick(a.cameras, b.cameras),
+      lenses: pick(a.lenses, b.lenses),
+    },
+    now,
+  );
 }
 
 /** What the cloud brought in, for a short note ("2 setups from your other devices"). */
@@ -31,7 +39,13 @@ export interface SyncChanges {
 }
 
 /** Union by id, the newer savedAt wins, deleted ones stay deleted (counted into `changes`). */
-function joinNamed<T extends { id: string; savedAt: string }>(mine: T[], theirs: T[], gone: Record<string, string>, limit: number, changes: SyncChanges): T[] {
+function joinNamed<T extends { id: string; savedAt: string }>(
+  mine: T[],
+  theirs: T[],
+  gone: Record<string, string>,
+  limit: number,
+  changes: SyncChanges,
+): T[] {
   const isGone = (s: T) => t(gone[s.id]) >= t(s.savedAt);
   const out: T[] = [];
   const theirsById = new Map(theirs.map((s) => [s.id, s]));
@@ -54,9 +68,17 @@ function joinNamed<T extends { id: string; savedAt: string }>(mine: T[], theirs:
   return out;
 }
 
-export function mergeSync(mine: SaveFile | null, theirs: SaveFile, now = new Date()): { file: SaveFile; changes: SyncChanges } {
+export function mergeSync(
+  mine: SaveFile | null,
+  theirs: SaveFile,
+  now = new Date(),
+): { file: SaveFile; changes: SyncChanges } {
   const stamp = now.toISOString();
-  if (!mine) return { file: { ...structuredClone(theirs), savedAt: stamp }, changes: { added: theirs.setups.length, updated: 0, removed: 0 } };
+  if (!mine)
+    return {
+      file: { ...structuredClone(theirs), savedAt: stamp },
+      changes: { added: theirs.setups.length, updated: 0, removed: 0 },
+    };
   const newerFile = t(theirs.savedAt) > t(mine.savedAt) ? theirs : mine;
   const deleted = joinDeleted(mine.deleted, theirs.deleted, now);
   const gone = (s: SavedSetup) => t(deleted.setups[s.id]) >= t(s.savedAt);
@@ -81,16 +103,38 @@ export function mergeSync(mine: SaveFile | null, theirs: SaveFile, now = new Dat
     changes.added++;
   }
 
-  const cameras = [...mine.gear.cameras, ...theirs.gear.cameras.filter((c) => !mine.gear.cameras.some((m) => m.id === c.id))]
+  const cameras = [
+    ...mine.gear.cameras,
+    ...theirs.gear.cameras.filter((c) => !mine.gear.cameras.some((m) => m.id === c.id)),
+  ]
     .filter((c) => !deleted.cameras[c.id])
     .slice(0, LIMITS.cameras);
   const lensGone = (l: number) => !!deleted.lenses[String(Math.round(l * 10) / 10)];
-  const lenses = [...mine.gear.lenses, ...theirs.gear.lenses.filter((l) => !mine.gear.lenses.includes(l))].filter((l) => !lensGone(l)).slice(0, LIMITS.lenses);
+  const lenses = [
+    ...mine.gear.lenses,
+    ...theirs.gear.lenses.filter((l) => !mine.gear.lenses.includes(l)),
+  ]
+    .filter((l) => !lensGone(l))
+    .slice(0, LIMITS.lenses);
 
-  const profile = !theirs.profile ? mine.profile : !mine.profile || t(theirs.profile.changedAt) > t(mine.profile.changedAt) ? theirs.profile : mine.profile;
+  const profile = !theirs.profile
+    ? mine.profile
+    : !mine.profile || t(theirs.profile.changedAt) > t(mine.profile.changedAt)
+      ? theirs.profile
+      : mine.profile;
   const older = newerFile === mine ? theirs : mine;
-  const lab = !theirs.lab ? mine.lab : !mine.lab || t(theirs.lab.changedAt) > t(mine.lab.changedAt) ? theirs.lab : mine.lab;
-  const labSetups = joinNamed<SavedLab>(mine.labSetups ?? [], theirs.labSetups ?? [], deleted.labSetups, LIMITS.labSetups, changes);
+  const lab = !theirs.lab
+    ? mine.lab
+    : !mine.lab || t(theirs.lab.changedAt) > t(mine.lab.changedAt)
+      ? theirs.lab
+      : mine.lab;
+  const labSetups = joinNamed<SavedLab>(
+    mine.labSetups ?? [],
+    theirs.labSetups ?? [],
+    deleted.labSetups,
+    LIMITS.labSetups,
+    changes,
+  );
 
   return {
     file: structuredClone({

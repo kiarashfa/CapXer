@@ -1,4 +1,4 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 /* CapXer design system ("Studio notes"): about 70% precise, 30% friendly.
    Anything that shows a measurement looks like a drawing (grid paper, mono
@@ -11,7 +11,7 @@
 @custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
 
 :root,
-[data-theme="dark"] {
+[data-theme='dark'] {
   color-scheme: dark;
   --bg: #10151d;
   --surface: #171e28;
@@ -31,7 +31,7 @@
   --act: #ff6b6b;
 }
 
-[data-theme="light"] {
+[data-theme='light'] {
   color-scheme: light;
   --bg: #f4f6f8;
   --surface: #ffffff;
@@ -86,8 +86,8 @@
   --color-accent: var(--accent);
   --color-on-accent: var(--on-accent);
   --color-tint: var(--tint);
-  --font-sans: "Figtree Variable", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  --font-mono: "JetBrains Mono Variable", ui-monospace, "Cascadia Mono", Consolas, monospace;
+  --font-sans: 'Figtree Variable', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono Variable', ui-monospace, 'Cascadia Mono', Consolas, monospace;
 }
 
 @layer base {
@@ -132,7 +132,9 @@
     font-weight: 600;
     text-decoration: none;
     cursor: pointer;
-    transition: background-color 150ms, border-color 150ms;
+    transition:
+      background-color 150ms,
+      border-color 150ms;
   }
   .btn-primary {
     background: var(--ink);
@@ -303,25 +305,37 @@
   :root .lesson-card-art {
     forced-color-adjust: none;
   }
-  :root .seg button[aria-pressed="true"],
-  :root .chip[aria-pressed="true"],
-  :root .dock-icon[aria-pressed="true"],
-  :root .vf-tabs button[aria-selected="true"],
+  :root .seg button[aria-pressed='true'],
+  :root .chip[aria-pressed='true'],
+  :root .dock-icon[aria-pressed='true'],
+  :root .vf-tabs button[aria-selected='true'],
   :root .bar-pages a[aria-current],
   :root .menu-sheet a[aria-current],
-  :root .vf-dialog .item[aria-current="true"] {
+  :root .vf-dialog .item[aria-current='true'] {
     /* Opt out so Chromium draws no Canvas backplate behind the HighlightText. */
     forced-color-adjust: none;
     background: Highlight;
     color: HighlightText;
     border-color: Highlight;
   }
-  :root .swatch[aria-pressed="true"] { outline: 3px solid Highlight; outline-offset: 2px; }
+  :root .swatch[aria-pressed='true'] {
+    outline: 3px solid Highlight;
+    outline-offset: 2px;
+  }
   /* The dock's curved step: SVG fills keep their colour, so match the bar. */
-  :root .bar-hang .curve { fill: Canvas; }
-  :root .switch::after { background: CanvasText; }
-  :root .switch:checked { background: Highlight; border-color: Highlight; }
-  :root .switch:checked::after { background: HighlightText; }
+  :root .bar-hang .curve {
+    fill: Canvas;
+  }
+  :root .switch::after {
+    background: CanvasText;
+  }
+  :root .switch:checked {
+    background: Highlight;
+    border-color: Highlight;
+  }
+  :root .switch:checked::after {
+    background: HighlightText;
+  }
   :root .card,
   :root .toast,
   :root .menu-sheet,

@@ -8,7 +8,12 @@ import { test, expect, openDock } from './fixtures.ts';
 const DESKTOP_MIN = 1024;
 const isDesktop = (page: Page) => (page.viewportSize()?.width ?? 0) >= DESKTOP_MIN;
 
-const PROFILE = { name: 'Sam Kade', picture: null, initials: { letters: 'SK', tint: 'teal' }, changedAt: '2026-01-21T08:00:00.000Z' };
+const PROFILE = {
+  name: 'Sam Kade',
+  picture: null,
+  initials: { letters: 'SK', tint: 'teal' },
+  changedAt: '2026-01-21T08:00:00.000Z',
+};
 const save = (extra: Record<string, unknown> = {}) => ({
   app: 'capxer',
   v: 2,
@@ -21,7 +26,18 @@ const save = (extra: Record<string, unknown> = {}) => ({
   deleted: {},
   ...extra,
 });
-const SETUP = (id: string, name: string) => ({ id, name, savedAt: '2026-01-21T07:00:00.000Z', setup: { mode: 'cinema', sensorId: 'arri/alexa-35', formatId: '4k-16-9', aspect: '2.39', focal: 40 } });
+const SETUP = (id: string, name: string) => ({
+  id,
+  name,
+  savedAt: '2026-01-21T07:00:00.000Z',
+  setup: {
+    mode: 'cinema',
+    sensorId: 'arri/alexa-35',
+    formatId: '4k-16-9',
+    aspect: '2.39',
+    focal: 40,
+  },
+});
 
 /** Seeds localStorage once per test (not on every navigation, so sign out stays signed out). */
 async function seed(page: Page, items: Record<string, unknown>) {
@@ -32,7 +48,8 @@ async function seed(page: Page, items: Record<string, unknown>) {
   }, items);
 }
 
-const stored = (page: Page, key = 'capxer.save') => page.evaluate((k) => JSON.parse(localStorage.getItem(k) ?? 'null'), key);
+const stored = (page: Page, key = 'capxer.save') =>
+  page.evaluate((k) => JSON.parse(localStorage.getItem(k) ?? 'null'), key);
 const circle = (page: Page) => page.getByTestId('profile-button');
 
 test.beforeEach(async ({ page }) => {
@@ -41,7 +58,9 @@ test.beforeEach(async ({ page }) => {
   });
 });
 
-test('an empty browser shows the ways in, and a new profile appears in the bar on every page', async ({ page }) => {
+test('an empty browser shows the ways in, and a new profile appears in the bar on every page', async ({
+  page,
+}) => {
   await page.goto('user/');
   await expect(page.getByTestId('welcome')).toBeVisible();
   await expect(circle(page).locator('.avatar')).not.toHaveAttribute('data-kind');
@@ -53,7 +72,9 @@ test('an empty browser shows the ways in, and a new profile appears in the bar o
   await expect(page.getByTestId('profile-name')).toHaveText('Sam Kade');
   // A first name with no picture gets its initials, in the bar too.
   await expect(circle(page).locator('.avatar')).toHaveAttribute('data-kind', 'initials');
-  await expect(circle(page)).toHaveAccessibleName(/Your profile, Sam Kade, initials SK\. Saved in this browser only/);
+  await expect(circle(page)).toHaveAccessibleName(
+    /Your profile, Sam Kade, initials SK\. Saved in this browser only/,
+  );
 
   // Painted before first paint on the next page (inline script), then the menu.
   await page.goto('lessons/');
@@ -62,7 +83,10 @@ test('an empty browser shows the ways in, and a new profile appears in the bar o
   const menu = page.getByTestId('profile-menu');
   await expect(menu).toBeVisible();
   await expect(menu).toContainText('Sam Kade');
-  await expect(menu.getByRole('link', { name: 'Your profile' })).toHaveAttribute('href', /\/user\/$/);
+  await expect(menu.getByRole('link', { name: 'Your profile' })).toHaveAttribute(
+    'href',
+    /\/user\/$/,
+  );
   await page.keyboard.press('Escape');
   await expect(menu).toBeHidden();
   await expect(circle(page)).toBeFocused();
@@ -96,7 +120,9 @@ test('initials and a cropped photo become the profile picture', async ({ page })
   });
   const chooser = page.waitForEvent('filechooser');
   await page.getByTestId('upload-photo').click();
-  await (await chooser).setFiles({ name: 'me.png', mimeType: 'image/png', buffer: Buffer.from(png, 'base64') });
+  await (
+    await chooser
+  ).setFiles({ name: 'me.png', mimeType: 'image/png', buffer: Buffer.from(png, 'base64') });
   const crop = page.getByTestId('picture-crop');
   await expect(crop).toBeVisible();
   await crop.focus();
@@ -111,7 +137,9 @@ test('initials and a cropped photo become the profile picture', async ({ page })
 });
 
 test('the viewfinder keeps the profile and records deletions when it saves', async ({ page }) => {
-  await seed(page, { 'capxer.save': save({ profile: PROFILE, setups: [SETUP('abc123', 'Old one')] }) });
+  await seed(page, {
+    'capxer.save': save({ profile: PROFILE, setups: [SETUP('abc123', 'Old one')] }),
+  });
   await page.goto('viewfinder/');
   const pane = page.getByTestId('pane-lens');
   if (isDesktop(page)) {
@@ -128,26 +156,44 @@ test('the viewfinder keeps the profile and records deletions when it saves', asy
   expect(file.setups).toHaveLength(1);
 });
 
-test('your save file is your key: opening it on an empty browser brings everything back', async ({ page }) => {
+test('your save file is your key: opening it on an empty browser brings everything back', async ({
+  page,
+}) => {
   await page.goto('user/');
-  const backup = save({ profile: PROFILE, setups: [SETUP('abc123', 'A-cam wide'), SETUP('def456', 'B-cam')] });
-  await page.getByTestId('open-file-input').setInputFiles({ name: 'capxer-2026-11-21.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify(backup)) });
+  const backup = save({
+    profile: PROFILE,
+    setups: [SETUP('abc123', 'A-cam wide'), SETUP('def456', 'B-cam')],
+  });
+  await page.getByTestId('open-file-input').setInputFiles({
+    name: 'capxer-2026-11-21.json',
+    mimeType: 'application/json',
+    buffer: Buffer.from(JSON.stringify(backup)),
+  });
   await expect(page.getByTestId('profile-note')).toContainText('Welcome back');
   await expect(page.getByTestId('profile-name')).toHaveText('Sam Kade');
   await expect(page.getByTestId('profile-card')).toContainText('2 saved setups');
   await expect(circle(page).locator('.avatar-glyph')).toHaveText('SK');
 
   // A second file on a browser with work asks how to join them.
-  await page.getByTestId('open-file-input').setInputFiles({ name: 'other.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify(save({ setups: [SETUP('ghi789', 'C-cam')] }))) });
+  await page.getByTestId('open-file-input').setInputFiles({
+    name: 'other.json',
+    mimeType: 'application/json',
+    buffer: Buffer.from(JSON.stringify(save({ setups: [SETUP('ghi789', 'C-cam')] }))),
+  });
   await page.getByTestId('import-merge').click();
   await expect(page.getByTestId('profile-card')).toContainText('3 saved setups');
 });
 
-test('sign out warns when the work is nowhere else, then leaves nothing behind', async ({ page }) => {
+test('sign out warns when the work is nowhere else, then leaves nothing behind', async ({
+  page,
+}) => {
   await seed(page, { 'capxer.save': save({ profile: PROFILE, setups: [SETUP('abc123', 'A')] }) });
   await page.goto('about/');
   await circle(page).click();
-  await page.getByTestId('profile-menu').getByRole('button', { name: 'Sign out of this browser' }).click();
+  await page
+    .getByTestId('profile-menu')
+    .getByRole('button', { name: 'Sign out of this browser' })
+    .click();
   const dlg = page.getByTestId('signout-dialog');
   await expect(dlg).toContainText('Your work is only in this browser');
   await expect(dlg.getByRole('button', { name: 'Download save file' })).toBeVisible();
@@ -162,11 +208,16 @@ test('sign out warns when the work is nowhere else, then leaves nothing behind',
 test.describe('profile page accessibility', () => {
   for (const theme of ['dark', 'light'] as const) {
     test(`profile, menu and picture dialog pass axe (${theme})`, async ({ page }) => {
-      await seed(page, { 'capxer.save': save({ profile: PROFILE, setups: [SETUP('abc123', 'A')] }) });
+      await seed(page, {
+        'capxer.save': save({ profile: PROFILE, setups: [SETUP('abc123', 'A')] }),
+      });
       await page.addInitScript((t) => localStorage.setItem('capxer.theme', t), theme);
       await page.goto('user/');
       await expect(page.getByTestId('profile-card')).toBeVisible();
-      const axe = () => new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa']).analyze();
+      const axe = () =>
+        new AxeBuilder({ page })
+          .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'])
+          .analyze();
       expect((await axe()).violations).toEqual([]);
       await circle(page).click();
       expect((await axe()).violations).toEqual([]);
@@ -189,15 +240,24 @@ interface Cloud {
 
 async function stubDropbox(page: Page, remote: Cloud['remote'] = null): Promise<Cloud> {
   const cloud: Cloud = { remote, uploads: [], revoked: 0, tokenBodies: [] };
-  const json = (route: Route, status: number, body: unknown) => route.fulfill({ status, contentType: 'application/json', body: JSON.stringify(body) });
+  const json = (route: Route, status: number, body: unknown) =>
+    route.fulfill({ status, contentType: 'application/json', body: JSON.stringify(body) });
   await page.route('https://api.dropboxapi.com/**', async (route) => {
     const path = new URL(route.request().url()).pathname;
     if (path === '/oauth2/token') {
       cloud.tokenBodies.push(route.request().postData() ?? '');
-      return json(route, 200, { access_token: 'access-1', refresh_token: 'refresh-1', expires_in: 14400 });
+      return json(route, 200, {
+        access_token: 'access-1',
+        refresh_token: 'refresh-1',
+        expires_in: 14400,
+      });
     }
-    if (path === '/2/users/get_current_account') return json(route, 200, { name: { display_name: 'Sam Kade' }, email: 'sam@example.com' });
-    if (path === '/2/files/get_metadata') return cloud.remote ? json(route, 200, { rev: cloud.remote.rev }) : json(route, 409, { error_summary: 'path/not_found/' });
+    if (path === '/2/users/get_current_account')
+      return json(route, 200, { name: { display_name: 'Sam Kade' }, email: 'sam@example.com' });
+    if (path === '/2/files/get_metadata')
+      return cloud.remote
+        ? json(route, 200, { rev: cloud.remote.rev })
+        : json(route, 409, { error_summary: 'path/not_found/' });
     if (path === '/2/auth/token/revoke') {
       cloud.revoked++;
       return json(route, 200, null);
@@ -206,7 +266,8 @@ async function stubDropbox(page: Page, remote: Cloud['remote'] = null): Promise<
   });
   await page.route('https://content.dropboxapi.com/**', async (route) => {
     const path = new URL(route.request().url()).pathname;
-    if (path === '/2/files/download') return route.fulfill({ status: 200, body: cloud.remote?.body ?? '' });
+    if (path === '/2/files/download')
+      return route.fulfill({ status: 200, body: cloud.remote?.body ?? '' });
     if (path === '/2/files/upload') {
       const body = route.request().postData() ?? '';
       cloud.uploads.push(body);
@@ -234,18 +295,30 @@ test.describe('cloud save', () => {
   test('coming back from Dropbox connects it and uploads the save', async ({ page }) => {
     const cloud = await stubDropbox(page);
     await seed(page, { 'capxer.save': save({ profile: PROFILE }) });
-    await page.addInitScript(() => sessionStorage.setItem('capxer.dropboxPkce', JSON.stringify({ verifier: 'verifier-1', state: 'state-1' })));
+    await page.addInitScript(() =>
+      sessionStorage.setItem(
+        'capxer.dropboxPkce',
+        JSON.stringify({ verifier: 'verifier-1', state: 'state-1' }),
+      ),
+    );
     await page.goto('user/?code=code-1&state=state-1');
     await expect(page.getByTestId('profile-note')).toContainText('up to date');
     await expect(page).toHaveURL(/\/user\/$/);
     expect(cloud.tokenBodies[0]).toContain('code_verifier=verifier-1');
-    expect(cloud.tokenBodies[0]).toContain(`redirect_uri=${encodeURIComponent('http://localhost:4321/CapXer/user/')}`);
+    expect(cloud.tokenBodies[0]).toContain(
+      `redirect_uri=${encodeURIComponent('http://localhost:4321/CapXer/user/')}`,
+    );
     expect(cloud.uploads).toHaveLength(1);
     expect(JSON.parse(cloud.uploads[0]!).profile.name).toBe('Sam Kade');
     await expect(page.getByTestId('cloud-card')).toContainText('Saved to Dropbox just now');
     await expect(circle(page).locator('.avatar-dot')).toHaveAttribute('data-dot', 'saved');
     const state = await stored(page, 'capxer.cloud');
-    expect(state).toMatchObject({ provider: 'dropbox', refresh: 'refresh-1', rev: 'r2', account: { email: 'sam@example.com' } });
+    expect(state).toMatchObject({
+      provider: 'dropbox',
+      refresh: 'refresh-1',
+      rev: 'r2',
+      account: { email: 'sam@example.com' },
+    });
   });
 
   test('an answer that does not belong to this browser connects nothing', async ({ page }) => {
@@ -256,9 +329,15 @@ test.describe('cloud save', () => {
   });
 
   test('a save from another device is merged in, not overwritten', async ({ page }) => {
-    const theirs = save({ savedAt: '2026-01-21T09:00:00.000Z', setups: [SETUP('abc123', 'Mine'), SETUP('zzz999', 'From the laptop')] });
+    const theirs = save({
+      savedAt: '2026-01-21T09:00:00.000Z',
+      setups: [SETUP('abc123', 'Mine'), SETUP('zzz999', 'From the laptop')],
+    });
     const cloud = await stubDropbox(page, { rev: 'r5', body: JSON.stringify(theirs) });
-    await seed(page, { 'capxer.save': save({ profile: PROFILE, setups: [SETUP('abc123', 'Mine')] }), 'capxer.cloud': connected() });
+    await seed(page, {
+      'capxer.save': save({ profile: PROFILE, setups: [SETUP('abc123', 'Mine')] }),
+      'capxer.cloud': connected(),
+    });
     await page.goto('user/');
     await expect(page.getByTestId('profile-card')).toContainText('2 saved setups');
     const file = await stored(page);
@@ -270,7 +349,10 @@ test.describe('cloud save', () => {
   });
 
   test('changes are saved to the cloud by themselves', async ({ page }) => {
-    const cloud = await stubDropbox(page, { rev: 'r1', body: JSON.stringify(save({ profile: PROFILE })) });
+    const cloud = await stubDropbox(page, {
+      rev: 'r1',
+      body: JSON.stringify(save({ profile: PROFILE })),
+    });
     await seed(page, { 'capxer.save': save({ profile: PROFILE }), 'capxer.cloud': connected() });
     await page.goto('user/');
     await expect(page.getByTestId('cloud-card')).toContainText('Saved to Dropbox');
@@ -284,7 +366,10 @@ test.describe('cloud save', () => {
 
   test('signing out saves first, ends the access and keeps the cloud copy', async ({ page }) => {
     const cloud = await stubDropbox(page, { rev: 'r1', body: JSON.stringify(save()) });
-    await seed(page, { 'capxer.save': save({ profile: PROFILE, savedAt: '2026-01-21T10:00:00.000Z' }), 'capxer.cloud': connected() });
+    await seed(page, {
+      'capxer.save': save({ profile: PROFILE, savedAt: '2026-01-21T10:00:00.000Z' }),
+      'capxer.cloud': connected(),
+    });
     await page.goto('user/');
     await page.getByTestId('sign-out').click();
     const dlg = page.getByTestId('signout-dialog');
@@ -299,11 +384,16 @@ test.describe('cloud save', () => {
 
   test('when Dropbox needs you again the circle says so', async ({ page }) => {
     await stubDropbox(page);
-    await seed(page, { 'capxer.save': save({ profile: PROFILE }), 'capxer.cloud': connected({ problem: 'auth' }) });
+    await seed(page, {
+      'capxer.save': save({ profile: PROFILE }),
+      'capxer.cloud': connected({ problem: 'auth' }),
+    });
     await page.goto('lessons/');
     await expect(circle(page).locator('.avatar-dot')).toHaveAttribute('data-dot', 'auth');
     await expect(circle(page)).toHaveAccessibleName(/Dropbox needs you to connect again/);
     await circle(page).click();
-    await expect(page.getByTestId('profile-menu').getByRole('button', { name: 'Connect Dropbox again' })).toBeVisible();
+    await expect(
+      page.getByTestId('profile-menu').getByRole('button', { name: 'Connect Dropbox again' }),
+    ).toBeVisible();
   });
 });

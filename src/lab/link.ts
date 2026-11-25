@@ -9,7 +9,8 @@ import type { LabLightEdit, LabState } from '../storage/schema.ts';
 // Like the viewfinder's links, the part after "#" never reaches a server.
 // Viewer preferences (aids, quality) are not part of a link.
 
-const enc = (v: string | number) => encodeURIComponent(String(v)).replace(/%2F/g, '/').replace(/%3A/g, ':').replace(/%2C/g, ',');
+const enc = (v: string | number) =>
+  encodeURIComponent(String(v)).replace(/%2F/g, '/').replace(/%3A/g, ':').replace(/%2C/g, ',');
 const r3 = (v: number) => Math.round(v * 1000) / 1000;
 const r6 = (v: number) => Number(v.toPrecision(6));
 
@@ -17,7 +18,14 @@ const r6 = (v: number) => Number(v.toPrecision(6));
 function lightsText(lights: Record<string, LabLightEdit>): string {
   return Object.entries(lights)
     .map(([id, e]) => {
-      const f = [e.on === undefined ? '' : e.on ? 1 : 0, e.stops === undefined ? '' : r3(e.stops), e.size ?? '', e.kelvin ?? '', e.x ?? '', e.z ?? ''];
+      const f = [
+        e.on === undefined ? '' : e.on ? 1 : 0,
+        e.stops === undefined ? '' : r3(e.stops),
+        e.size ?? '',
+        e.kelvin ?? '',
+        e.x ?? '',
+        e.z ?? '',
+      ];
       while (f.length && f.at(-1) === '') f.pop();
       return `${id}:${f.join(',')}`;
     })
@@ -91,7 +99,14 @@ export function decodeLabLink(hash: string, now = new Date()): DecodedLabLink | 
       set: p.get('set'),
       subject: p.get('sub'),
       lighting: p.get('lt'),
-      exposure: { fNumber: p.get('n'), shutter: p.get('t'), angle: p.get('ang'), fps: p.get('fps'), iso: p.get('iso'), kelvin: p.get('wb') },
+      exposure: {
+        fNumber: p.get('n'),
+        shutter: p.get('t'),
+        angle: p.get('ang'),
+        fps: p.get('fps'),
+        iso: p.get('iso'),
+        kelvin: p.get('wb'),
+      },
       focus,
       lights: parseLights(p.get('li') ?? ''),
       ambient: p.get('amb'),

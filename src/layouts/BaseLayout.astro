@@ -38,7 +38,8 @@ const pages = [
   { href: url('about'), label: t.nav.about },
 ];
 // A section page (a lesson under /lessons/) marks its section as current too.
-const current = (href: string) => (path === href ? 'page' : path.startsWith(href) && href !== url() ? 'true' : undefined);
+const current = (href: string) =>
+  path === href ? 'page' : path.startsWith(href) && href !== url() ? 'true' : undefined;
 ---
 
 <!doctype html>
@@ -70,7 +71,9 @@ const current = (href: string) => (path === href ? 'page' : path.startsWith(href
     <!-- Set the theme before first paint. Mirrors resolveTheme() in src/lib/theme.ts. -->
     <script is:inline define:vars={{ key: THEME_KEY }}>
       let stored = null;
-      try { stored = localStorage.getItem(key); } catch {}
+      try {
+        stored = localStorage.getItem(key);
+      } catch {}
       const light = matchMedia('(prefers-color-scheme: light)').matches;
       document.documentElement.dataset.theme =
         stored === 'light' || stored === 'dark' ? stored : light ? 'light' : 'dark';
@@ -80,7 +83,8 @@ const current = (href: string) => (path === href ? 'page' : path.startsWith(href
     <script is:inline>
       (function () {
         var c = window.CSS && CSS.supports;
-        var ok = !!c &&
+        var ok =
+          !!c &&
           CSS.supports('container-type', 'inline-size') &&
           CSS.supports('selector(:has(a))') &&
           CSS.supports('height', '1dvh') &&
@@ -91,53 +95,119 @@ const current = (href: string) => (path === href ? 'page' : path.startsWith(href
       })();
     </script>
     <style is:inline>
-      .old-browser { display: none; }
-      html[data-old] .old-browser { display: block; margin: 0; padding: 12px 16px; background: #fff4d6; color: #1c1c1c; border-bottom: 2px solid #b26b00; font: 16px/1.5 system-ui, sans-serif; }
-      html[data-old] .old-browser strong { display: block; }
-      [data-needs-modern] { display: contents; }
-      html[data-old] [data-needs-modern] { display: none !important; }
+      .old-browser {
+        display: none;
+      }
+      html[data-old] .old-browser {
+        display: block;
+        margin: 0;
+        padding: 12px 16px;
+        background: #fff4d6;
+        color: #1c1c1c;
+        border-bottom: 2px solid #b26b00;
+        font:
+          16px/1.5 system-ui,
+          sans-serif;
+      }
+      html[data-old] .old-browser strong {
+        display: block;
+      }
+      [data-needs-modern] {
+        display: contents;
+      }
+      html[data-old] [data-needs-modern] {
+        display: none !important;
+      }
     </style>
     <slot name="head" />
   </head>
   <body class="flex min-h-dvh flex-col bg-bg font-sans text-ink antialiased">
     <p class="old-browser" role="note" data-testid="old-browser">
       <strong>{t.oldBrowser.title}</strong>
-      {t.oldBrowser.body}{Astro.slots.has('old-browser') && ' '}<slot name="old-browser" />
+      {t.oldBrowser.body}
+      {Astro.slots.has('old-browser') && ' '}
+      <slot name="old-browser" />
     </p>
     <a
       href="#main"
       class="sr-only rounded-full bg-ink px-4 py-2 text-bg no-underline focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50"
-      >{t.nav.skip}</a
     >
+      {t.nav.skip}
+    </a>
 
     <header class="site-bar" data-dock={hasDock ? 'closed' : undefined}>
       <div class="bar-box">
         <div class="bar-inner">
           <a href={url()} class="bar-brand">
-            <svg aria-hidden="true" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+            <svg
+              aria-hidden="true"
+              viewBox="0 0 32 32"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+            >
               <path d="M4 11V4h7M21 4h7v7M28 21v7h-7M11 28H4v-7" />
               <circle cx="16" cy="16" r="2.6" fill="currentColor" stroke="none" />
             </svg>
-            <span>{nameBefore}<span class="text-accent">X</span>{nameAfter}</span>
+            <span>
+              {nameBefore}
+              <span class="text-accent">X</span>
+              {nameAfter}
+            </span>
           </a>
           <nav class="bar-pages" aria-label={t.nav.label}>
             <span class="divider" aria-hidden="true"></span>
             <ul>
-              {pages.map((p) => <li><a href={p.href} aria-current={current(p.href)}>{p.label}</a></li>)}
+              {pages.map((p) => (
+                <li>
+                  <a href={p.href} aria-current={current(p.href)}>
+                    {p.label}
+                  </a>
+                </li>
+              ))}
             </ul>
           </nav>
           <div class="bar-toggles">
             <button type="button" class="btn btn-secondary install-btn" data-install hidden>
-              <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="3" width="12" height="18" rx="2.5"></rect><path d="M12 8v6M9.5 11.5 12 14l2.5-2.5"></path></svg>
+              <svg
+                aria-hidden="true"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <rect x="6" y="3" width="12" height="18" rx="2.5"></rect>
+                <path d="M12 8v6M9.5 11.5 12 14l2.5-2.5"></path>
+              </svg>
               {t.pwa.install}
             </button>
             <ThemeToggle client:load />
-            <button type="button" class="avatar-btn" data-profile aria-expanded="false" aria-controls="profile-menu" aria-label={t.user.circle} title={t.user.circle} data-testid="profile-button">
-              <span class="avatar"><svg class="avatar-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="4"></circle><path d="M4.5 20.5c1.5-3.8 4.3-5.5 7.5-5.5s6 1.7 7.5 5.5"></path></svg></span>
+            <button
+              type="button"
+              class="avatar-btn"
+              data-profile
+              aria-expanded="false"
+              aria-controls="profile-menu"
+              aria-label={t.user.circle}
+              title={t.user.circle}
+              data-testid="profile-button"
+            >
+              <span class="avatar">
+                <svg class="avatar-icon" viewBox="0 0 24 24" aria-hidden="true">
+                  <circle cx="12" cy="9" r="4"></circle>
+                  <path d="M4.5 20.5c1.5-3.8 4.3-5.5 7.5-5.5s6 1.7 7.5 5.5"></path>
+                </svg>
+              </span>
               <span class="avatar-dot" hidden></span>
             </button>
             <!-- Paint the profile circle before first paint (picture, initials, cloud dot). Mirrors paintAvatar() and cloudDot() in src/user/local.ts. -->
-            <script is:inline define:vars={{ saveKey: SAVE_KEY, cloudKey: CLOUD_KEY, tints: TINTS }}>
+            <script
+              is:inline
+              define:vars={{ saveKey: SAVE_KEY, cloudKey: CLOUD_KEY, tints: TINTS }}
+            >
               try {
                 const btn = document.querySelector('[data-profile]');
                 const av = btn.querySelector('.avatar');
@@ -162,59 +232,164 @@ const current = (href: string) => (path === href ? 'page' : path.startsWith(href
                 if (c && c.provider) {
                   const dot = btn.querySelector('.avatar-dot');
                   const newer = (Date.parse(s && s.savedAt) || 0) > (Date.parse(c.savedAt) || 0);
-                  dot.dataset.dot = c.problem === 'auth' ? 'auth' : c.problem === 'error' || newer ? 'pending' : 'saved';
+                  dot.dataset.dot =
+                    c.problem === 'auth'
+                      ? 'auth'
+                      : c.problem === 'error' || newer
+                        ? 'pending'
+                        : 'saved';
                   dot.hidden = false;
                 }
               } catch {}
             </script>
-            <button type="button" class="menu-btn" data-menu-toggle aria-expanded="false" aria-controls="site-menu" aria-label={t.nav.menu}>
-              <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"></path></svg>
+            <button
+              type="button"
+              class="menu-btn"
+              data-menu-toggle
+              aria-expanded="false"
+              aria-controls="site-menu"
+              aria-label={t.nav.menu}
+            >
+              <svg
+                aria-hidden="true"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+              >
+                <path d="M4 7h16M4 12h16M4 17h16"></path>
+              </svg>
             </button>
           </div>
         </div>
 
-        {
-          hasDock && (
-            <>
-              <div class="bar-hang">
-                <svg class="curve" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
-                  <path d="M0 0 C60 0 40 100 100 100 V0 Z" />
-                </svg>
-                <div class="hang-body">
-                  <button type="button" class="dock-handle" aria-expanded="false" aria-controls="dock-tools" aria-label={t.dock.open}>
-                    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6" /></svg>
-                  </button>
-                </div>
-                <svg class="curve" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
-                  <path d="M0 0 V100 C60 100 40 0 100 0 Z" />
-                </svg>
-              </div>
-              <div class="dock-tools" id="dock-tools" role="group" aria-label={dockLabel}>
-                <slot name="dock" />
-                <span class="dock-sep" aria-hidden="true" />
-                <button type="button" class="dock-icon" data-dock-pin aria-pressed="false" aria-label={t.dock.pin} title={t.dock.pin}>
-                  <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6l-1 6 3 3H7l3-3-1-6Z" /><path d="M12 12v9" /></svg>
+        {hasDock && (
+          <>
+            <div class="bar-hang">
+              <svg
+                class="curve"
+                viewBox="0 0 100 100"
+                preserveAspectRatio="none"
+                aria-hidden="true"
+              >
+                <path d="M0 0 C60 0 40 100 100 100 V0 Z" />
+              </svg>
+              <div class="hang-body">
+                <button
+                  type="button"
+                  class="dock-handle"
+                  aria-expanded="false"
+                  aria-controls="dock-tools"
+                  aria-label={t.dock.open}
+                >
+                  <svg
+                    aria-hidden="true"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="m6 9 6 6 6-6" />
+                  </svg>
                 </button>
-                <button type="button" class="dock-icon" data-dock-close aria-label={t.dock.close} title={t.dock.close}>
-                  <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 15 6-6 6 6" /></svg>
-                </button>
               </div>
-            </>
-          )
-        }
+              <svg
+                class="curve"
+                viewBox="0 0 100 100"
+                preserveAspectRatio="none"
+                aria-hidden="true"
+              >
+                <path d="M0 0 V100 C60 100 40 0 100 0 Z" />
+              </svg>
+            </div>
+            <div class="dock-tools" id="dock-tools" role="group" aria-label={dockLabel}>
+              <slot name="dock" />
+              <span class="dock-sep" aria-hidden="true" />
+              <button
+                type="button"
+                class="dock-icon"
+                data-dock-pin
+                aria-pressed="false"
+                aria-label={t.dock.pin}
+                title={t.dock.pin}
+              >
+                <svg
+                  aria-hidden="true"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M9 3h6l-1 6 3 3H7l3-3-1-6Z" />
+                  <path d="M12 12v9" />
+                </svg>
+              </button>
+              <button
+                type="button"
+                class="dock-icon"
+                data-dock-close
+                aria-label={t.dock.close}
+                title={t.dock.close}
+              >
+                <svg
+                  aria-hidden="true"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="m6 15 6-6 6 6" />
+                </svg>
+              </button>
+            </div>
+          </>
+        )}
       </div>
       <nav id="site-menu" class="card menu-sheet" aria-label={t.nav.menuLabel} hidden>
-        {pages.map((p) => <a href={p.href} aria-current={current(p.href)}>{p.label}</a>)}
+        {pages.map((p) => (
+          <a href={p.href} aria-current={current(p.href)}>
+            {p.label}
+          </a>
+        ))}
         <slot name="menu" />
         <button type="button" class="menu-install" data-install hidden>
-          <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="3" width="12" height="18" rx="2.5"></rect><path d="M12 8v6M9.5 11.5 12 14l2.5-2.5"></path></svg>
+          <svg
+            aria-hidden="true"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <rect x="6" y="3" width="12" height="18" rx="2.5"></rect>
+            <path d="M12 8v6M9.5 11.5 12 14l2.5-2.5"></path>
+          </svg>
           {t.pwa.install}
         </button>
       </nav>
-      <div id="profile-menu" class="card profile-menu" role="group" aria-label={t.user.menu.label} data-testid="profile-menu" hidden></div>
+      <div
+        id="profile-menu"
+        class="card profile-menu"
+        role="group"
+        aria-label={t.user.menu.label}
+        data-testid="profile-menu"
+        hidden
+      ></div>
     </header>
 
-    <main id="main" tabindex="-1" class="mx-auto w-full max-w-page flex-1 px-4 py-8 desktop:px-8 desktop:py-12">
+    <main
+      id="main"
+      tabindex="-1"
+      class="mx-auto w-full max-w-page flex-1 px-4 py-8 desktop:px-8 desktop:py-12"
+    >
       <slot />
     </main>
 
@@ -224,7 +399,13 @@ const current = (href: string) => (path === href ? 'page' : path.startsWith(href
         style="padding-bottom: max(1rem, env(safe-area-inset-bottom));"
       >
         <a href={`${url('about')}#privacy`}>{t.nav.privacy}</a>
-        <button type="button" class="min-h-11 cursor-pointer text-accent underline underline-offset-3" data-open-consent>{t.consent.settings}</button>
+        <button
+          type="button"
+          class="min-h-11 cursor-pointer text-accent underline underline-offset-3"
+          data-open-consent
+        >
+          {t.consent.settings}
+        </button>
         <a href={url('about')}>{t.nav.about}</a>
         <a href={REPO_URL}>{t.footer.source}</a>
         <span class="ml-auto font-semibold">{SITE_NAME}</span>
@@ -233,35 +414,69 @@ const current = (href: string) => (path === href ? 'page' : path.startsWith(href
 
     <ConsentBanner client:load />
 
-    <dialog class="dlg" id="signout-dialog" aria-labelledby="signout-title" data-testid="signout-dialog">
+    <dialog
+      class="dlg"
+      id="signout-dialog"
+      aria-labelledby="signout-title"
+      data-testid="signout-dialog"
+    >
       <h2 id="signout-title">{t.user.signOut.confirmTitle}</h2>
       <p>{t.user.signOut.body}</p>
       <p class="strong" data-signout-note></p>
       <p class="dlg-error" role="alert" data-signout-error hidden></p>
       <div class="dlg-acts">
-        <button type="button" class="btn btn-secondary" data-signout-download hidden>{t.user.menu.download}</button>
-        <button type="button" class="btn btn-secondary" data-signout-cancel>{t.user.signOut.cancel}</button>
-        <button type="button" class="btn btn-primary" data-signout-confirm>{t.user.signOut.confirm}</button>
+        <button type="button" class="btn btn-secondary" data-signout-download hidden>
+          {t.user.menu.download}
+        </button>
+        <button type="button" class="btn btn-secondary" data-signout-cancel>
+          {t.user.signOut.cancel}
+        </button>
+        <button type="button" class="btn btn-primary" data-signout-confirm>
+          {t.user.signOut.confirm}
+        </button>
       </div>
     </dialog>
 
     <!-- Notes at the bottom of the screen: the update note here, page notes (src/storage) join it. -->
     <div id="toasts" class="toasts" aria-live="polite">
       <div class="toast" data-update hidden>
-        <div class="toast-msg"><b>{t.pwa.update[0]}</b><span>{t.pwa.update[1]}</span></div>
+        <div class="toast-msg">
+          <b>{t.pwa.update[0]}</b>
+          <span>{t.pwa.update[1]}</span>
+        </div>
         <div class="toast-acts">
-          <button type="button" class="main" data-update-reload>{t.pwa.reload}</button>
-          <button type="button" class="x" data-update-later aria-label={t.pwa.later} title={t.pwa.later}>
-            <svg aria-hidden="true" viewBox="0 0 24 24" class="size-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"></path></svg>
+          <button type="button" class="main" data-update-reload>
+            {t.pwa.reload}
+          </button>
+          <button
+            type="button"
+            class="x"
+            data-update-later
+            aria-label={t.pwa.later}
+            title={t.pwa.later}
+          >
+            <svg
+              aria-hidden="true"
+              viewBox="0 0 24 24"
+              class="size-5"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linecap="round"
+            >
+              <path d="M6 6l12 12M18 6 6 18"></path>
+            </svg>
           </button>
         </div>
       </div>
     </div>
 
     <script define:vars={{ eventName: CONSENT_OPEN_EVENT }} is:inline>
-      document.querySelectorAll('[data-open-consent]').forEach((el) =>
-        el.addEventListener('click', () => window.dispatchEvent(new Event(eventName))),
-      );
+      document
+        .querySelectorAll('[data-open-consent]')
+        .forEach((el) =>
+          el.addEventListener('click', () => window.dispatchEvent(new Event(eventName))),
+        );
     </script>
     <script>
       import { initSiteBar } from '../lib/site-bar.ts';

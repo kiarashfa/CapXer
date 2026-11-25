@@ -28,7 +28,15 @@ export function labCamera(setup: Setup, area: Area): LabCamera {
   // Horizontal angle comes from the desqueezed width (an anamorphic lens sees wider).
   const tanW = Math.tan((d.fov.horizontal * Math.PI) / 360);
   const tanH = Math.tan((d.fov.vertical * Math.PI) / 360);
-  return { focal: setup.focal, frame, aspect: tanW / tanH, vFov: d.fov.vertical, tanW, tanH, coc: circleOfConfusion(frame) };
+  return {
+    focal: setup.focal,
+    frame,
+    aspect: tanW / tanH,
+    vFov: d.fov.vertical,
+    tanW,
+    tanH,
+    coc: circleOfConfusion(frame),
+  };
 }
 
 /** Entrance pupil radius in metres (the disc the camera samples for depth of field). */
@@ -56,7 +64,10 @@ export function timeSample(i: number): number {
 
 /** Sub-pixel offset in [-0.5, 0.5) for sample i (R2 sequence), for smooth edges. */
 export function pixelJitter(i: number): { x: number; y: number } {
-  return { x: ((0.5 + i * 0.7548776662466927) % 1) - 0.5, y: ((0.5 + i * 0.5698402909980532) % 1) - 0.5 };
+  return {
+    x: ((0.5 + i * 0.7548776662466927) % 1) - 0.5,
+    y: ((0.5 + i * 0.5698402909980532) % 1) - 0.5,
+  };
 }
 
 /**
@@ -66,7 +77,13 @@ export function pixelJitter(i: number): { x: number; y: number } {
  * on the same pixel from every point of the pupil; nearer and farther points
  * spread into blur discs, as through a real lens.
  */
-export function focusShift(dx: number, dy: number, focusM: number, tanW: number, tanH: number): { x: number; y: number } {
+export function focusShift(
+  dx: number,
+  dy: number,
+  focusM: number,
+  tanW: number,
+  tanH: number,
+): { x: number; y: number } {
   return { x: dx / (focusM * tanW), y: dy / (focusM * tanH) };
 }
 

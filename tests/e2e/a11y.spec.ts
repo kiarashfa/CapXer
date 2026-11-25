@@ -12,7 +12,9 @@ async function hiddenFocus(page: Page, maxTabs = 80): Promise<string[]> {
   for (let i = 0; i < maxTabs; i++) {
     await page.keyboard.press('Tab');
     // WebKit scrolls a newly focused element into view a frame later.
-    await page.evaluate(() => new Promise((ok) => requestAnimationFrame(() => requestAnimationFrame(ok))));
+    await page.evaluate(
+      () => new Promise((ok) => requestAnimationFrame(() => requestAnimationFrame(ok))),
+    );
     const r = await page.evaluate(() => {
       const el = document.activeElement as HTMLElement | null;
       if (!el || el === document.body) return null;
@@ -57,7 +59,9 @@ test.describe('reflow at 320 CSS px (1.4.10)', () => {
   for (const path of PAGES) {
     test(path, async ({ page }) => {
       await page.goto(path);
-      const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+      const overflow = await page.evaluate(
+        () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+      );
       expect(overflow).toBeLessThanOrEqual(0);
     });
   }
@@ -72,19 +76,37 @@ test.describe('text spacing override (1.4.12)', () => {
         content: `* { line-height: 1.5 !important; letter-spacing: 0.12em !important; word-spacing: 0.16em !important; }
                   p { margin-bottom: 2em !important; }`,
       });
-      const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+      const overflow = await page.evaluate(
+        () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+      );
       expect(overflow).toBeLessThanOrEqual(0);
       // Text cut off inside a fixed-size box: a clipping element whose content is taller or wider than itself.
       const clipped = await page.evaluate(() =>
         [...document.querySelectorAll<HTMLElement>('main *, header *')]
           .filter((el) => {
             const cs = getComputedStyle(el);
-            if (cs.display === 'none' || cs.visibility === 'hidden' || el.closest('[aria-hidden="true"], .sr-only')) return false;
-            const clips = /(hidden|clip)/.test(cs.overflowX + cs.overflowY) && !/(auto|scroll)/.test(cs.overflowX + cs.overflowY);
-            const hasText = [...el.childNodes].some((n) => n.nodeType === 3 && n.textContent!.trim());
-            return clips && hasText && (el.scrollHeight > el.clientHeight + 2 || el.scrollWidth > el.clientWidth + 2);
+            if (
+              cs.display === 'none' ||
+              cs.visibility === 'hidden' ||
+              el.closest('[aria-hidden="true"], .sr-only')
+            )
+              return false;
+            const clips =
+              /(hidden|clip)/.test(cs.overflowX + cs.overflowY) &&
+              !/(auto|scroll)/.test(cs.overflowX + cs.overflowY);
+            const hasText = [...el.childNodes].some(
+              (n) => n.nodeType === 3 && n.textContent!.trim(),
+            );
+            return (
+              clips &&
+              hasText &&
+              (el.scrollHeight > el.clientHeight + 2 || el.scrollWidth > el.clientWidth + 2)
+            );
           })
-          .map((el) => `${el.tagName.toLowerCase()}.${[...el.classList].join('.')} "${el.textContent!.trim().slice(0, 30)}"`),
+          .map(
+            (el) =>
+              `${el.tagName.toLowerCase()}.${[...el.classList].join('.')} "${el.textContent!.trim().slice(0, 30)}"`,
+          ),
       );
       expect(clipped).toEqual([]);
     });
@@ -100,10 +122,18 @@ test.describe('reduced motion', () => {
         [...document.querySelectorAll<HTMLElement>('*')]
           .filter((el) => {
             const cs = getComputedStyle(el);
-            const dur = (s: string) => Math.max(...s.split(',').map((v) => parseFloat(v) * (v.trim().endsWith('ms') ? 1 : 1000)));
-            const animated = cs.animationName !== 'none' && dur(cs.animationDuration) > 10 && cs.animationIterationCount !== '0';
+            const dur = (s: string) =>
+              Math.max(
+                ...s.split(',').map((v) => parseFloat(v) * (v.trim().endsWith('ms') ? 1 : 1000)),
+              );
+            const animated =
+              cs.animationName !== 'none' &&
+              dur(cs.animationDuration) > 10 &&
+              cs.animationIterationCount !== '0';
             // Transitions of movement only (colour fades are fine).
-            const moves = /transform|translate|left|top|width|height|grid|all/.test(cs.transitionProperty) && dur(cs.transitionDuration) > 10;
+            const moves =
+              /transform|translate|left|top|width|height|grid|all/.test(cs.transitionProperty) &&
+              dur(cs.transitionDuration) > 10;
             return animated || moves;
           })
           .map((el) => `${el.tagName.toLowerCase()}.${[...el.classList].slice(0, 3).join('.')}`),

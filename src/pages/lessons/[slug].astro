@@ -25,7 +25,10 @@ const { Content, headings, remarkPluginFrontmatter } = await render(lesson);
 const components = { Figure, RatioFrames, FovWedges, GuideFrame, Try, TryLink, OurView };
 ---
 
-<LessonLayout lesson={lesson} minutes={readingMinutes(lesson.body ?? '')} headings={headings}
+<LessonLayout
+  lesson={lesson}
+  minutes={readingMinutes(lesson.body ?? '')}
+  headings={headings}
   sources={remarkPluginFrontmatter.sources ?? []}
   citedAt={remarkPluginFrontmatter.citedAt ?? []}
   next={next}

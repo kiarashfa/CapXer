@@ -14,13 +14,23 @@ test.beforeEach(async ({ page }) => {
 test('the Lessons page lists the lesson and the bar marks the section', async ({ page }) => {
   await page.goto('lessons/');
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Lessons');
-  const card = page.locator('.lesson-card').filter({ has: page.getByRole('link', { name: 'Aspect ratios' }) });
+  const card = page
+    .locator('.lesson-card')
+    .filter({ has: page.getByRole('link', { name: 'Aspect ratios' }) });
   await expect(card).toContainText(/\d+ min read/);
   await expect(card).toContainText(/\d+ sources?/);
-  if (isDesktop(page)) await expect(page.locator('.bar-pages').getByRole('link', { name: 'Lessons' })).toHaveAttribute('aria-current', 'page');
+  if (isDesktop(page))
+    await expect(page.locator('.bar-pages').getByRole('link', { name: 'Lessons' })).toHaveAttribute(
+      'aria-current',
+      'page',
+    );
   await card.getByRole('link', { name: 'Aspect ratios' }).click();
   await expect(page).toHaveURL(/lessons\/aspect-ratios\/$/);
-  if (isDesktop(page)) await expect(page.locator('.bar-pages').getByRole('link', { name: 'Lessons' })).toHaveAttribute('aria-current', 'true');
+  if (isDesktop(page))
+    await expect(page.locator('.bar-pages').getByRole('link', { name: 'Lessons' })).toHaveAttribute(
+      'aria-current',
+      'true',
+    );
 });
 
 test('the Lessons page card shows the lesson drawing', async ({ page }) => {
@@ -54,21 +64,26 @@ test('citations are raised source numbers, numbered by first appearance', async 
   }
   expect(highest).toBe(sources);
   // Several sources at once read "6,1", never "61".
-  for (const html of await page.locator('sup.cites').evaluateAll((els) => els.map((e) => e.innerHTML))) {
+  for (const html of await page
+    .locator('sup.cites')
+    .evaluateAll((els) => els.map((e) => e.innerHTML))) {
     expect(html).not.toMatch(/<\/a><a/);
   }
   // No raw markers survive the build.
   expect(await page.locator('main').innerText()).not.toContain('[@');
 });
 
-test('sources: one entry per source with every place cited, collapsible and open by default', async ({ page }) => {
+test('sources: one entry per source with every place cited, collapsible and open by default', async ({
+  page,
+}) => {
   await page.goto(LESSON);
   const box = page.locator('details.lesson-sources');
   await expect(box).toHaveAttribute('open', '');
   const first = page.locator('#source-1');
   await expect(first.getByRole('link', { name: 'Open source' })).toHaveCount(1);
   await expect(first.locator('.src-at')).toContainText(/Cited at: .+/);
-  for (const li of await page.locator('.lesson-sources li').all()) await expect(li.getByRole('link', { name: 'Open source' })).toHaveCount(1);
+  for (const li of await page.locator('.lesson-sources li').all())
+    await expect(li.getByRole('link', { name: 'Open source' })).toHaveCount(1);
   // Collapse, then a link into the list opens it again.
   await page.locator('details.lesson-sources > summary').click();
   await expect(first).toBeHidden();
@@ -102,13 +117,17 @@ test('desktop: the contents list on the left follows the reader', async ({ page 
   const bodyBox = (await page.locator('.lesson-body').boundingBox())!;
   expect(tocBox.x + tocBox.width).toBeLessThan(bodyBox.x);
   await toc.getByRole('link', { name: 'Cinema containers' }).click();
-  await expect(toc.getByRole('link', { name: 'Cinema containers' })).toHaveAttribute('aria-current', 'true');
+  await expect(toc.getByRole('link', { name: 'Cinema containers' })).toHaveAttribute(
+    'aria-current',
+    'true',
+  );
   await expect(toc).toBeInViewport();
 });
 
 test('text size buttons scale the lesson text and are remembered', async ({ page }) => {
   await page.goto(LESSON);
-  const size = () => page.locator('.lesson-body').evaluate((el) => parseFloat(getComputedStyle(el).fontSize));
+  const size = () =>
+    page.locator('.lesson-body').evaluate((el) => parseFloat(getComputedStyle(el).fontSize));
   const base = await size();
   let group;
   if (isDesktop(page)) {

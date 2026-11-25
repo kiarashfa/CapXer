@@ -7,7 +7,17 @@
 import { t } from '../i18n/en.ts';
 import { url } from '../lib/url.ts';
 import { REPLACED_EVENT, SAVE_EVENT } from '../storage/events.ts';
-import { ago, CLOUD_EVENT, cloudDot, cloudState, paintAvatar, PROVIDERS, savedHead, type CloudState, type Dot } from './local.ts';
+import {
+  ago,
+  CLOUD_EVENT,
+  cloudDot,
+  cloudState,
+  paintAvatar,
+  PROVIDERS,
+  savedHead,
+  type CloudState,
+  type Dot,
+} from './local.ts';
 
 const U = t.user;
 
@@ -29,19 +39,35 @@ export function statusText(s: CloudState | null, dot: Dot, now = Date.now()): st
   if (live.state === 'saving') return U.status.saving(p);
   if (dot === 'auth') return U.status.auth(p);
   if (s.problem === 'error') return U.status.error(p);
-  if (dot === 'pending') return s.provider === 'google' && !(s.token && s.token.expires > now) ? `${U.status.pending(p)}. ${U.status.googleWait}` : U.status.pending(p);
+  if (dot === 'pending')
+    return s.provider === 'google' && !(s.token && s.token.expires > now)
+      ? `${U.status.pending(p)}. ${U.status.googleWait}`
+      : U.status.pending(p);
   return U.status.saved(p, ago(s.syncedAt ?? s.savedAt, now));
 }
 
-function el<K extends keyof HTMLElementTagNameMap>(tag: K, attrs: Record<string, string> = {}, text = ''): HTMLElementTagNameMap[K] {
+function el<K extends keyof HTMLElementTagNameMap>(
+  tag: K,
+  attrs: Record<string, string> = {},
+  text = '',
+): HTMLElementTagNameMap[K] {
   const e = document.createElement(tag);
   for (const [k, v] of Object.entries(attrs)) e.setAttribute(k, v);
   if (text) e.textContent = text;
   return e;
 }
 
-function item(kind: 'a' | 'button', icon: keyof typeof ICONS, label: string, attrs: Record<string, string> = {}): HTMLElement {
-  const e = el(kind, { class: 'pm-item', ...(kind === 'button' ? { type: 'button' } : {}), ...attrs });
+function item(
+  kind: 'a' | 'button',
+  icon: keyof typeof ICONS,
+  label: string,
+  attrs: Record<string, string> = {},
+): HTMLElement {
+  const e = el(kind, {
+    class: 'pm-item',
+    ...(kind === 'button' ? { type: 'button' } : {}),
+    ...attrs,
+  });
   e.innerHTML = `<svg viewBox="0 0 24 24" aria-hidden="true">${ICONS[icon]}</svg>`;
   e.append(label);
   return e;
@@ -49,7 +75,10 @@ function item(kind: 'a' | 'button', icon: keyof typeof ICONS, label: string, att
 
 /** Downloads the save file ("capxer-2026-11-21.json"). */
 export async function downloadSave(): Promise<void> {
-  const [{ readSave }, { exportName, exportText }] = await Promise.all([import('../storage/store.ts'), import('../storage/file.ts')]);
+  const [{ readSave }, { exportName, exportText }] = await Promise.all([
+    import('../storage/store.ts'),
+    import('../storage/file.ts'),
+  ]);
   const file = readSave();
   if (!file) return;
   const a = document.createElement('a');
@@ -127,14 +156,32 @@ export function initProfile(): void {
     const who = el('span');
     who.append(el('b', {}, head.profile?.name || (head.work ? U.circle : U.noProfile)));
     const small = el('small');
-    if (dot) small.append(el('span', { class: 'status-dot', 'data-dot': dot, 'aria-hidden': 'true' }));
+    if (dot)
+      small.append(el('span', { class: 'status-dot', 'data-dot': dot, 'aria-hidden': 'true' }));
     small.append(line);
     who.append(small);
     top.append(big, who);
 
     const items: HTMLElement[] = [top];
-    if (s && dot === 'pending' && s.provider === 'google' && !(s.token && s.token.expires > Date.now())) items.push(item('button', 'cloud', U.menu.saveNow(p), { class: 'pm-item attention', 'data-act': 'save' }));
-    if (s && dot === 'auth') items.push(item('button', 'cloud', U.menu.reconnect(p), { class: 'pm-item attention', 'data-act': 'reconnect' }));
+    if (
+      s &&
+      dot === 'pending' &&
+      s.provider === 'google' &&
+      !(s.token && s.token.expires > Date.now())
+    )
+      items.push(
+        item('button', 'cloud', U.menu.saveNow(p), {
+          class: 'pm-item attention',
+          'data-act': 'save',
+        }),
+      );
+    if (s && dot === 'auth')
+      items.push(
+        item('button', 'cloud', U.menu.reconnect(p), {
+          class: 'pm-item attention',
+          'data-act': 'reconnect',
+        }),
+      );
     if (head.work) {
       items.push(item('a', 'user', U.menu.profile, { href: url('user') }));
       items.push(item('button', 'down', U.menu.download, { 'data-act': 'download' }));
@@ -168,12 +215,14 @@ export function initProfile(): void {
     btn.setAttribute('aria-expanded', String(open));
     if (focusButton) btn.focus();
     // Google's sign-in script must be ready before a click asks it for a window.
-    if (open && cloudState()?.provider === 'google') import('./cloud.ts').then((m) => m.loadGoogle()).catch(() => {});
+    if (open && cloudState()?.provider === 'google')
+      import('./cloud.ts').then((m) => m.loadGoogle()).catch(() => {});
   };
 
   btn.addEventListener('click', () => setOpen(menu.hidden !== false));
   document.addEventListener('click', (e) => {
-    if (!menu.hidden && !menu.contains(e.target as Node) && !btn.contains(e.target as Node)) setOpen(false);
+    if (!menu.hidden && !menu.contains(e.target as Node) && !btn.contains(e.target as Node))
+      setOpen(false);
   });
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && !menu.hidden) setOpen(false, true);
@@ -190,7 +239,8 @@ export function initProfile(): void {
     } else if (act === 'save' || act === 'reconnect') {
       const cloud = await import('./cloud.ts');
       const s = cloudState();
-      if (act === 'reconnect' && s?.provider === 'dropbox') return void cloud.connectDropbox().catch(() => {});
+      if (act === 'reconnect' && s?.provider === 'dropbox')
+        return void cloud.connectDropbox().catch(() => {});
       cloud.sync({ interactive: true }).catch(() => {});
     }
   });

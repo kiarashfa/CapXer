@@ -18,7 +18,10 @@ test.describe('consent banner', () => {
     expect(gaRequests).toHaveLength(0);
   });
 
-  test('accept: loads analytics, and again on the next page without asking', async ({ page, gaRequests }) => {
+  test('accept: loads analytics, and again on the next page without asking', async ({
+    page,
+    gaRequests,
+  }) => {
     await page.goto('./');
     await page.getByRole('button', { name: 'Allow analytics' }).click();
     await expect(page.getByTestId('consent-banner')).toBeHidden();
@@ -38,7 +41,11 @@ test.describe('consent banner', () => {
     await expect(banner).toBeVisible();
     await expect(banner).toBeFocused();
     await banner.getByRole('button', { name: 'Decline' }).click();
-    expect(await page.evaluate(() => (window as unknown as Record<string, unknown>)['ga-disable-G-W290FFPWK4'])).toBe(true);
+    expect(
+      await page.evaluate(
+        () => (window as unknown as Record<string, unknown>)['ga-disable-G-W290FFPWK4'],
+      ),
+    ).toBe(true);
     const stored = await page.evaluate(() => localStorage.getItem('capxer.consent'));
     expect(JSON.parse(stored ?? '{}').analytics).toBe('denied');
   });

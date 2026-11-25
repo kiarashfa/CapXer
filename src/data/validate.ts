@@ -1,5 +1,12 @@
 import { z } from 'zod';
-import { DeviceSchema, MakerSchema, SENSOR_PATH, SensorSchema, type DeviceFile, type SensorFile } from './schema.ts';
+import {
+  DeviceSchema,
+  MakerSchema,
+  SENSOR_PATH,
+  SensorSchema,
+  type DeviceFile,
+  type SensorFile,
+} from './schema.ts';
 import { ReferenceSchema } from '../references/schema.ts';
 
 // Validation for the camera database, beyond the schema shape:
@@ -67,7 +74,8 @@ export function validateDatabase(
     }
     errors.push(...checkDevice(`devices/${path}`, parsed.data, refIds));
   }
-  for (const id of makerIds) if (!usedMakers.has(id)) errors.push(`makers.json: "${id}" has no sensors or devices folder`);
+  for (const id of makerIds)
+    if (!usedMakers.has(id)) errors.push(`makers.json: "${id}" has no sensors or devices folder`);
   return errors;
 }
 
@@ -77,7 +85,8 @@ function checkDevice(path: string, d: DeviceFile, refIds: Set<string>): string[]
   for (const c of d.cameras) {
     if (ids.has(c.id)) errors.push(`${path}: duplicate camera id "${c.id}"`);
     ids.add(c.id);
-    if (!refIds.has(c.citation.ref)) errors.push(`${path}: cites unknown reference "${c.citation.ref}"`);
+    if (!refIds.has(c.citation.ref))
+      errors.push(`${path}: cites unknown reference "${c.citation.ref}"`);
   }
   return errors;
 }
@@ -110,12 +119,17 @@ function checkSensor(path: string, s: SensorFile, refIds: Set<string>): string[]
     if (f.photosites) {
       const [px, py] = f.photosites;
       const mismatch = Math.abs(px / py / (f.width / f.height) - 1);
-      if (mismatch > RATIO_TOLERANCE) at(`format "${f.id}": photosite aspect and mm aspect disagree by ${(mismatch * 100).toFixed(1)}%`);
+      if (mismatch > RATIO_TOLERANCE)
+        at(
+          `format "${f.id}": photosite aspect and mm aspect disagree by ${(mismatch * 100).toFixed(1)}%`,
+        );
       if (s.pitch) {
         const w = (px * s.pitch.value) / 1000;
         const h = (py * s.pitch.value) / 1000;
         if (Math.abs(w - f.width) > MM_TOLERANCE || Math.abs(h - f.height) > MM_TOLERANCE) {
-          at(`format "${f.id}": photosites x pitch gives ${w.toFixed(2)} x ${h.toFixed(2)} mm, data says ${f.width} x ${f.height}`);
+          at(
+            `format "${f.id}": photosites x pitch gives ${w.toFixed(2)} x ${h.toFixed(2)} mm, data says ${f.width} x ${f.height}`,
+          );
         }
       }
     }

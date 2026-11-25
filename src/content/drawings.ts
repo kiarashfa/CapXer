@@ -23,7 +23,9 @@ export function firstDrawing(body: string): Drawing | null {
     try {
       props[key] = JSON.parse(value);
     } catch {
-      throw new Error(`<${m[1]}> prop ${key} must be plain JSON (numbers, strings, arrays), got {${value}}`);
+      throw new Error(
+        `<${m[1]}> prop ${key} must be plain JSON (numbers, strings, arrays), got {${value}}`,
+      );
     }
   }
   return { name: m[1] as DrawingName, props };

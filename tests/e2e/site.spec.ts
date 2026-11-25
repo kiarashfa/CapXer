@@ -34,9 +34,9 @@ test.describe('pages', () => {
   for (const path of PAGES) {
     test(`${path} keeps internal links under the base path`, async ({ page }) => {
       await page.goto(path);
-      const hrefs = await page.locator('a[href^="/"], link[href^="/"]').evaluateAll((els) =>
-        els.map((e) => e.getAttribute('href') ?? ''),
-      );
+      const hrefs = await page
+        .locator('a[href^="/"], link[href^="/"]')
+        .evaluateAll((els) => els.map((e) => e.getAttribute('href') ?? ''));
       expect(hrefs.length).toBeGreaterThan(0);
       for (const h of hrefs) expect(h.startsWith('/CapXer/')).toBe(true);
     });
@@ -49,7 +49,9 @@ test.describe('pages', () => {
       await page.goto(path);
       const html = await page.locator('main').innerHTML();
       // Lesson citations are raised numbers joined by commas ("6,1") on purpose.
-      const glued = (html.match(/[A-Za-z0-9,.:;!?]<(a|button|code|strong|em)\b[^>]*>.{0,30}/g) ?? []).filter((m) => !/class="cite"/.test(m));
+      const glued = (
+        html.match(/[A-Za-z0-9,.:;!?]<(a|button|code|strong|em)\b[^>]*>.{0,30}/g) ?? []
+      ).filter((m) => !/class="cite"/.test(m));
       expect(glued).toEqual([]);
     });
   }
@@ -71,7 +73,9 @@ test.describe('accessibility (WCAG 2.2 AA)', () => {
         const results = await new AxeBuilder({ page })
           .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'])
           .analyze();
-        expect(results.violations.map((v) => `${v.id}: ${v.nodes.map((n) => n.target).join(', ')}`)).toEqual([]);
+        expect(
+          results.violations.map((v) => `${v.id}: ${v.nodes.map((n) => n.target).join(', ')}`),
+        ).toEqual([]);
       });
     }
   }
@@ -85,7 +89,9 @@ test.describe('old browsers', () => {
     await expect(page.getByTestId('vf-stage')).toBeVisible();
   });
 
-  test('a browser missing a needed feature gets a plain note and no broken viewfinder', async ({ page }) => {
+  test('a browser missing a needed feature gets a plain note and no broken viewfinder', async ({
+    page,
+  }) => {
     // Stand-in for an old browser: remove one ES2022-era built-in before any page script runs.
     await page.addInitScript(() => {
       // @ts-expect-error test-only removal
@@ -108,7 +114,9 @@ test.describe('findable', () => {
   test('the sitemap lists every built page except 404', async ({ request }) => {
     const xml = await (await request.get('sitemap.xml')).text();
     const locs = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => new URL(m[1]).pathname);
-    const expected = PAGES.filter((p) => p !== '404.html').map((p) => `/CapXer/${p === './' ? '' : p}`);
+    const expected = PAGES.filter((p) => p !== '404.html').map(
+      (p) => `/CapXer/${p === './' ? '' : p}`,
+    );
     expect(locs.sort()).toEqual(expected.sort());
   });
 

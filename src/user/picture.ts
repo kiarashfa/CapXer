@@ -39,7 +39,11 @@ export function clampCrop(c: Crop, w: number, h: number): Crop {
 }
 
 /** The square of the photo inside the circle, in photo pixels. */
-export function sourceRect(c: Crop, w: number, h: number): { sx: number; sy: number; side: number } {
+export function sourceRect(
+  c: Crop,
+  w: number,
+  h: number,
+): { sx: number; sy: number; side: number } {
   const side = Math.min(w, h) / c.zoom;
   // The circle's centre sits -offset away from the photo's centre.
   const cx = w / 2 - c.x * side;

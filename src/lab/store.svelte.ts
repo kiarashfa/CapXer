@@ -20,7 +20,17 @@ import { distance, labCamera } from './camera.ts';
 import { noiseCoefficients } from './render/noise.ts';
 import { TIERS, type Tier } from './render/tiers.ts';
 import { SETS, getSet } from './sets/index.ts';
-import { ANGLES, APERTURES, FOCUS_DISTANCES, FRAME_RATES, ISOS, SHUTTERS, WHITE_BALANCES, nearestIndex, step } from './stops.ts';
+import {
+  ANGLES,
+  APERTURES,
+  FOCUS_DISTANCES,
+  FRAME_RATES,
+  ISOS,
+  SHUTTERS,
+  WHITE_BALANCES,
+  nearestIndex,
+  step,
+} from './stops.ts';
 import { SUBJECTS, getSubject } from './subjects/index.ts';
 import { clampPlace } from './place.ts';
 import type { Light, Point } from './types.ts';
@@ -69,7 +79,12 @@ class LabStore {
 
   // Exposure settings, as positions in the step lists (src/lab/stops.ts).
   // Defaults: f/2.8 (T2.8), 1/50 s or 180 degrees at 24 fps, ISO (EI) 400, 5600 K.
-  apertureIndex = $state(nearestIndex(APERTURES.map((s) => s.value), 2.8));
+  apertureIndex = $state(
+    nearestIndex(
+      APERTURES.map((s) => s.value),
+      2.8,
+    ),
+  );
   shutterIndex = $state(SHUTTERS.findIndex((s) => s.label === '1/50 s'));
   angleIndex = $state(ANGLES.indexOf(180));
   fpsIndex = $state(FRAME_RATES.indexOf(24));
@@ -114,18 +129,26 @@ class LabStore {
   fps = $derived(FRAME_RATES[this.fpsIndex]!);
   angle = $derived(ANGLES[this.angleIndex]!);
   /** Exposure time in seconds: from the shutter angle and frame rate in Cinema, the shutter speed in Stills. */
-  shutter = $derived(this.cinema ? shutterTimeFromAngle(this.angle, this.fps) : SHUTTERS[this.shutterIndex]!.value);
+  shutter = $derived(
+    this.cinema ? shutterTimeFromAngle(this.angle, this.fps) : SHUTTERS[this.shutterIndex]!.value,
+  );
   iso = $derived(ISOS[this.isoIndex]!);
   kelvin = $derived(WHITE_BALANCES[this.wbIndex]!);
 
   set = $derived(getSet(this.setId));
-  subject = $derived(getSubject(this.set.subjects.includes(this.subjectId) ? this.subjectId : this.set.subjects[0]));
-  lighting = $derived(this.set.lighting.find((l) => l.id === this.lightingId) ?? this.set.lighting[0]!);
+  subject = $derived(
+    getSubject(this.set.subjects.includes(this.subjectId) ? this.subjectId : this.set.subjects[0]),
+  );
+  lighting = $derived(
+    this.set.lighting.find((l) => l.id === this.lightingId) ?? this.set.lighting[0]!,
+  );
   format = $derived.by(() => {
     const s = getSensor(this.setup.sensorId)!;
     return s.formats.find((f) => f.id === this.setup.formatId) ?? s.formats[0]!;
   });
-  camera = $derived(labCamera(this.setup, { width: this.format.width, height: this.format.height }));
+  camera = $derived(
+    labCamera(this.setup, { width: this.format.width, height: this.format.height }),
+  );
   /** Every light of the scenario with the user's edits, including the ones switched off. */
   allLights = $derived<LabLight[]>(
     this.lighting.lights.map((l) => {
@@ -144,24 +167,43 @@ class LabStore {
   /** The lights that are on: what the scene draws. */
   lights = $derived(this.allLights.filter((l) => l.on));
   ambient = $derived(this.lighting.ambient * 2 ** this.ambientStops);
-  cameraAt = $derived<Point>(this.cameraPlace ? { x: this.cameraPlace.x, y: this.set.camera.y, z: this.cameraPlace.z } : this.set.camera);
+  cameraAt = $derived<Point>(
+    this.cameraPlace
+      ? { x: this.cameraPlace.x, y: this.set.camera.y, z: this.cameraPlace.z }
+      : this.set.camera,
+  );
   /** Where the camera looks: the subject's eyes. */
   focusPoint = $derived<Point>({ x: 0, y: this.subject.focusHeight, z: 0 });
   subjectM = $derived(distance(this.cameraAt, this.focusPoint));
   /** Focus distance, metres (may be Infinity). */
   focusM = $derived(this.focusManual ?? this.subjectM);
   dof = $derived.by<DepthOfField>(() => {
-    if (Number.isFinite(this.focusM)) return depthOfField(this.camera.focal, this.fNumber, this.camera.coc, this.focusM * 1000);
-    return { near: hyperfocal(this.camera.focal, this.fNumber, this.camera.coc), far: Infinity, total: Infinity };
+    if (Number.isFinite(this.focusM))
+      return depthOfField(this.camera.focal, this.fNumber, this.camera.coc, this.focusM * 1000);
+    return {
+      near: hyperfocal(this.camera.focal, this.fNumber, this.camera.coc),
+      far: Infinity,
+      total: Infinity,
+    };
   });
   /** Picture value per cd/m2 for the current settings (metered luminance -> 18 % grey). */
-  exposureScale = $derived((MID_GREY * this.iso * this.shutter) / (METER_K * this.fNumber * this.fNumber));
+  exposureScale = $derived(
+    (MID_GREY * this.iso * this.shutter) / (METER_K * this.fNumber * this.fNumber),
+  );
   gains = $derived(whiteBalanceGains(this.kelvin));
   noise = $derived(noiseCoefficients(this.iso));
   settingsEv = $derived(settingsEv100(this.fNumber, this.shutter, this.iso));
-  sceneEv = $derived(this.meteredLuminance && this.meteredLuminance > 0 ? ev100FromLuminance(this.meteredLuminance) : null);
+  sceneEv = $derived(
+    this.meteredLuminance && this.meteredLuminance > 0
+      ? ev100FromLuminance(this.meteredLuminance)
+      : null,
+  );
   /** Stops brighter (+) or darker (-) than the meter asks for. */
-  offset = $derived(this.sceneEv === null ? null : exposureOffsetStops(this.sceneEv, this.fNumber, this.shutter, this.iso));
+  offset = $derived(
+    this.sceneEv === null
+      ? null
+      : exposureOffsetStops(this.sceneEv, this.fNumber, this.shutter, this.iso),
+  );
   target = $derived(TIERS[this.tier].samples);
 
   load() {
@@ -227,7 +269,12 @@ class LabStore {
       lights: $state.snapshot(this.lightEdits),
       ambient: this.ambientStops,
       camera: this.cameraPlace ? { ...this.cameraPlace } : null,
-      aids: { histogram: this.histogram, histMode: this.histMode, picture: this.picture, zebra: this.zebra },
+      aids: {
+        histogram: this.histogram,
+        histMode: this.histMode,
+        picture: this.picture,
+        zebra: this.zebra,
+      },
       changedAt: now.toISOString(),
     };
   }
@@ -236,22 +283,33 @@ class LabStore {
   applyState(st: LabState) {
     const set = SETS.find((x) => x.id === st.set) ?? SETS[0]!;
     this.setId = set.id;
-    this.subjectId = set.subjects.includes(st.subject) && SUBJECTS.some((x) => x.id === st.subject) ? st.subject : set.subjects[0]!;
+    this.subjectId =
+      set.subjects.includes(st.subject) && SUBJECTS.some((x) => x.id === st.subject)
+        ? st.subject
+        : set.subjects[0]!;
     const lighting = set.lighting.find((l) => l.id === st.lighting) ?? set.lighting[0]!;
     this.lightingId = lighting.id;
     const e = st.exposure;
-    this.apertureIndex = nearestIndex(APERTURES.map((x) => x.value), e.fNumber);
-    this.shutterIndex = nearestIndex(SHUTTERS.map((x) => x.value), e.shutter);
+    this.apertureIndex = nearestIndex(
+      APERTURES.map((x) => x.value),
+      e.fNumber,
+    );
+    this.shutterIndex = nearestIndex(
+      SHUTTERS.map((x) => x.value),
+      e.shutter,
+    );
     this.angleIndex = nearestIndex(ANGLES, e.angle);
     this.fpsIndex = nearestIndex(FRAME_RATES, e.fps);
     this.isoIndex = nearestIndex(ISOS, e.iso);
     this.wbIndex = nearestIndex(WHITE_BALANCES, e.kelvin);
-    this.focusManual = st.focus === 'subject' ? null : st.focus === 'infinity' ? Infinity : st.focus;
+    this.focusManual =
+      st.focus === 'subject' ? null : st.focus === 'infinity' ? Infinity : st.focus;
     const edits: Record<string, LightEdit> = {};
     for (const [id, edit] of Object.entries(st.lights)) {
       if (!lighting.lights.some((l) => l.id === id)) continue;
       const e2 = { ...edit };
-      if (e2.x !== undefined && e2.z !== undefined) Object.assign(e2, clampPlace(set.room, e2.x, e2.z, 0.6));
+      if (e2.x !== undefined && e2.z !== undefined)
+        Object.assign(e2, clampPlace(set.room, e2.x, e2.z, 0.6));
       edits[id] = e2;
     }
     this.lightEdits = edits;
@@ -312,9 +370,21 @@ class LabStore {
     const ev = this.sceneEv;
     const offsetFor = (n: number, t: number) => Math.abs(exposureOffsetStops(ev, n, t, this.iso));
     if (this.cinema) {
-      this.apertureIndex = APERTURES.reduce((best, s, i) => (offsetFor(s.value, this.shutter) < offsetFor(APERTURES[best]!.value, this.shutter) ? i : best), 0);
+      this.apertureIndex = APERTURES.reduce(
+        (best, s, i) =>
+          offsetFor(s.value, this.shutter) < offsetFor(APERTURES[best]!.value, this.shutter)
+            ? i
+            : best,
+        0,
+      );
     } else {
-      this.shutterIndex = SHUTTERS.reduce((best, s, i) => (offsetFor(this.fNumber, s.value) < offsetFor(this.fNumber, SHUTTERS[best]!.value) ? i : best), 0);
+      this.shutterIndex = SHUTTERS.reduce(
+        (best, s, i) =>
+          offsetFor(this.fNumber, s.value) < offsetFor(this.fNumber, SHUTTERS[best]!.value)
+            ? i
+            : best,
+        0,
+      );
     }
   }
 }

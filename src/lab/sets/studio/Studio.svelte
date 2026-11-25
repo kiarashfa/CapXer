@@ -30,7 +30,11 @@
 </script>
 
 <!-- Floor and background wall -->
-<T.Mesh rotation.x={-Math.PI / 2} position={[0, 0, (room.wallZ + room.depth + room.wallZ) / 2]} receiveShadow>
+<T.Mesh
+  rotation.x={-Math.PI / 2}
+  position={[0, 0, (room.wallZ + room.depth + room.wallZ) / 2]}
+  receiveShadow
+>
   <T.PlaneGeometry args={[room.width, room.depth]} />
   <T.MeshStandardMaterial color={room.floorColour} roughness={0.95} />
 </T.Mesh>
@@ -46,7 +50,11 @@
     {:else}
       <T.CylinderGeometry args={[p.size.w / 2, p.size.w / 2, p.size.h, 32]} />
     {/if}
-    <T.MeshStandardMaterial color={p.colour} roughness={p.roughness ?? 0.6} metalness={p.metalness ?? 0} />
+    <T.MeshStandardMaterial
+      color={p.colour}
+      roughness={p.roughness ?? 0.6}
+      metalness={p.metalness ?? 0}
+    />
   </T.Mesh>
 {/each}
 
@@ -68,7 +76,10 @@
       {#each [0, 1, 2, 3] as b (b)}
         <T.Mesh rotation.z={(b * Math.PI) / 2} position={[0, 0, 0.01]} castShadow>
           <T.BoxGeometry args={[p.size.w, 0.09, 0.015]} />
-          <T.MeshStandardMaterial color={b % 2 ? p.colour : '#e7ecf2'} roughness={p.roughness ?? 0.5} />
+          <T.MeshStandardMaterial
+            color={b % 2 ? p.colour : '#e7ecf2'}
+            roughness={p.roughness ?? 0.5}
+          />
         </T.Mesh>
       {/each}
     </T.Group>

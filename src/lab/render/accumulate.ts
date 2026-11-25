@@ -24,7 +24,8 @@ import {
 // Metering: luminance of a small grid of points, packed into 8-bit pixels and
 // read back without stalling the GPU (readRenderTargetPixelsAsync).
 
-const QUAD_VS = 'varying vec2 vUv; void main() { vUv = uv; gl_Position = vec4(position.xy, 0.0, 1.0); }';
+const QUAD_VS =
+  'varying vec2 vUv; void main() { vUv = uv; gl_Position = vec4(position.xy, 0.0, 1.0); }';
 
 const LUMA = 'const vec3 LUMA = vec3(0.2126, 0.7152, 0.0722);';
 
@@ -76,12 +77,19 @@ export class Accumulator {
     this.renderer = renderer;
     this.sample = new WebGLRenderTarget(width, height, { type: HalfFloatType, depthBuffer: true });
     this.accum = new WebGLRenderTarget(width, height, { type: HalfFloatType, depthBuffer: false });
-    this.meterTarget = new WebGLRenderTarget(METER_W, METER_H, { type: UnsignedByteType, depthBuffer: false });
-    this.histTarget = new WebGLRenderTarget(HIST_W, HIST_H, { type: UnsignedByteType, depthBuffer: false });
+    this.meterTarget = new WebGLRenderTarget(METER_W, METER_H, {
+      type: UnsignedByteType,
+      depthBuffer: false,
+    });
+    this.histTarget = new WebGLRenderTarget(HIST_W, HIST_H, {
+      type: UnsignedByteType,
+      depthBuffer: false,
+    });
     this.blend = new ShaderMaterial({
       uniforms: { tex: { value: this.sample.texture }, weight: { value: 1 } },
       vertexShader: QUAD_VS,
-      fragmentShader: 'uniform sampler2D tex; uniform float weight; varying vec2 vUv; void main() { gl_FragColor = vec4(texture2D(tex, vUv).rgb, weight); }',
+      fragmentShader:
+        'uniform sampler2D tex; uniform float weight; varying vec2 vUv; void main() { gl_FragColor = vec4(texture2D(tex, vUv).rgb, weight); }',
       transparent: true,
       depthTest: false,
       depthWrite: false,
@@ -213,7 +221,12 @@ export class Accumulator {
    * Draw the averaged picture to the screen: white balance gains, exposure
    * scale (picture value per cd/m2) and the noise coefficients for the ISO.
    */
-  present(scale: number, gains: readonly [number, number, number] = [1, 1, 1], noise = { a: 0, b: 0 }, seed = 0) {
+  present(
+    scale: number,
+    gains: readonly [number, number, number] = [1, 1, 1],
+    noise = { a: 0, b: 0 },
+    seed = 0,
+  ) {
     const r = this.renderer;
     this.setShow(scale, gains, noise, seed);
     this.quad.material = this.show;
@@ -235,7 +248,12 @@ export class Accumulator {
   }
 
   /** A small copy of the shown picture (no aids), 8-bit sRGB, for the histogram. */
-  async readPicture(scale: number, gains: readonly [number, number, number], noise: { a: number; b: number }, seed: number): Promise<Uint8Array> {
+  async readPicture(
+    scale: number,
+    gains: readonly [number, number, number],
+    noise: { a: number; b: number },
+    seed: number,
+  ): Promise<Uint8Array> {
     const r = this.renderer;
     const u = this.show.uniforms;
     const aid = u.aid!.value;
@@ -252,7 +270,12 @@ export class Accumulator {
     return px;
   }
 
-  private setShow(scale: number, gains: readonly [number, number, number], noise: { a: number; b: number }, seed: number) {
+  private setShow(
+    scale: number,
+    gains: readonly [number, number, number],
+    noise: { a: number; b: number },
+    seed: number,
+  ) {
     const u = this.show.uniforms;
     u.scale!.value = scale;
     u.gains!.value = [...gains];

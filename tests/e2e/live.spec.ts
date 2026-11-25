@@ -12,7 +12,8 @@ async function openLivePane(page: Page, isMobile: boolean) {
   } else {
     await openDock(page);
     // Choosing Live as the source may already have opened this panel; the tool button toggles it.
-    if (!(await page.getByTestId('pane-live').isVisible())) await page.locator('#dock-tools').getByRole('button', { name: 'Live', exact: true }).click();
+    if (!(await page.getByTestId('pane-live').isVisible()))
+      await page.locator('#dock-tools').getByRole('button', { name: 'Live', exact: true }).click();
   }
   await expect(page.getByTestId('pane-live')).toBeVisible();
 }
@@ -22,7 +23,10 @@ function stubCamera(page: Page, error: string) {
   // Linux assigning getUserMedia on the real one does not stick (the real call then refuses).
   return page.addInitScript((name) => {
     const fail = () => Promise.reject(new DOMException('stub', name));
-    Object.defineProperty(navigator, 'mediaDevices', { configurable: true, value: { getUserMedia: fail, enumerateDevices: async () => [] } });
+    Object.defineProperty(navigator, 'mediaDevices', {
+      configurable: true,
+      value: { getUserMedia: fail, enumerateDevices: async () => [] },
+    });
   }, error);
 }
 
@@ -84,7 +88,9 @@ test('a device from the list calibrates the camera', async ({ page, isMobile }) 
   await dialog.getByRole('searchbox').fill('iphone 17');
   await dialog.getByRole('button', { name: /Apple iPhone 17/ }).click();
   await expect(page.getByTestId('calibration-result')).toContainText('26.0 mm');
-  await expect(page.getByTestId('pane-live').getByRole('button', { name: 'Ultra Wide' })).toBeVisible();
+  await expect(
+    page.getByTestId('pane-live').getByRole('button', { name: 'Ultra Wide' }),
+  ).toBeVisible();
 });
 
 test.describe('with the fake webcam', () => {
@@ -109,7 +115,9 @@ test.describe('with the fake webcam', () => {
     await expect(mode).toBeVisible();
     // The last number in the label is the remaining digital (or camera) factor; the total grows either way.
     const total = async () => {
-      const nums = [...((await mode.textContent()) ?? '').matchAll(/([\d.]+)x/g)].map((m) => Number(m[1]));
+      const nums = [...((await mode.textContent()) ?? '').matchAll(/([\d.]+)x/g)].map((m) =>
+        Number(m[1]),
+      );
       return nums.reduce((a, b) => a * b, 1);
     };
     await expect.poll(total).toBeGreaterThan(0);
@@ -132,14 +140,21 @@ test.describe('with the fake webcam', () => {
   });
 
   for (const scheme of ['dark', 'light'] as const) {
-    test(`the live view and its panel pass accessibility checks (${scheme})`, async ({ page, isMobile }) => {
+    test(`the live view and its panel pass accessibility checks (${scheme})`, async ({
+      page,
+      isMobile,
+    }) => {
       await page.emulateMedia({ colorScheme: scheme });
       await page.goto('viewfinder/');
       await turnOn(page);
       await expect(page.getByTestId('vf-video')).toBeVisible();
       await openLivePane(page, isMobile);
-      const results = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa']).analyze();
-      expect(results.violations.map((v) => `${v.id}: ${v.nodes.map((n) => n.target).join(', ')}`)).toEqual([]);
+      const results = await new AxeBuilder({ page })
+        .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'])
+        .analyze();
+      expect(
+        results.violations.map((v) => `${v.id}: ${v.nodes.map((n) => n.target).join(', ')}`),
+      ).toEqual([]);
     });
   }
 });

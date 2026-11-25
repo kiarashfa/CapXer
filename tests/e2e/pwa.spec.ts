@@ -12,14 +12,22 @@ test.beforeEach(async ({ page }) => {
   });
 });
 
-test('the manifest makes an installable app that opens on the viewfinder', async ({ page, request }) => {
+test('the manifest makes an installable app that opens on the viewfinder', async ({
+  page,
+  request,
+}) => {
   await page.goto('./');
   const href = await page.locator('link[rel="manifest"]').getAttribute('href');
   expect(href).toBe(`${BASE_PATH}manifest.webmanifest`);
   const res = await request.get('manifest.webmanifest');
   expect(res.ok()).toBe(true);
   const m = await res.json();
-  expect(m).toMatchObject({ name: 'CapXer', start_url: `${BASE_PATH}viewfinder/`, scope: BASE_PATH, display: 'standalone' });
+  expect(m).toMatchObject({
+    name: 'CapXer',
+    start_url: `${BASE_PATH}viewfinder/`,
+    scope: BASE_PATH,
+    display: 'standalone',
+  });
   const purposes = m.icons.map((i: { purpose: string }) => i.purpose);
   expect(purposes).toContain('maskable');
   for (const icon of m.icons) {
@@ -32,7 +40,10 @@ test('the manifest makes an installable app that opens on the viewfinder', async
 });
 
 test('after one visit, every page works offline', async ({ page, context, browserName }) => {
-  test.skip(browserName !== 'chromium', 'Playwright drives service workers and offline mode in Chromium');
+  test.skip(
+    browserName !== 'chromium',
+    'Playwright drives service workers and offline mode in Chromium',
+  );
   await page.goto('viewfinder/');
   await page.evaluate(async () => {
     await navigator.serviceWorker.ready;
@@ -42,7 +53,14 @@ test('after one visit, every page works offline', async ({ page, context, browse
   await expect.poll(() => page.evaluate(() => !!navigator.serviceWorker.controller)).toBe(true);
 
   await context.setOffline(true);
-  for (const path of ['./', 'about/', 'user/', 'lessons/', 'lessons/aspect-ratios/', 'viewfinder/']) {
+  for (const path of [
+    './',
+    'about/',
+    'user/',
+    'lessons/',
+    'lessons/aspect-ratios/',
+    'viewfinder/',
+  ]) {
     await page.goto(path);
     await expect(page.locator('main')).toBeVisible();
   }
@@ -63,7 +81,10 @@ test('no install button until the browser offers one', async ({ page }) => {
   await page.goto('./');
   await expect(page.locator('[data-install]').first()).toBeHidden();
   await page.evaluate(() => {
-    const e = new Event('beforeinstallprompt', { cancelable: true }) as Event & { prompt: () => Promise<void>; userChoice: Promise<unknown> };
+    const e = new Event('beforeinstallprompt', { cancelable: true }) as Event & {
+      prompt: () => Promise<void>;
+      userChoice: Promise<unknown>;
+    };
     e.prompt = async () => {};
     e.userChoice = Promise.resolve({ outcome: 'dismissed' });
     window.dispatchEvent(e);

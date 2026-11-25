@@ -57,7 +57,18 @@ export async function takePhoto({ video, frame, box, lines, colors }: PhotoInput
   const sy = Math.max(0, src.y);
   const ex = Math.min(video.videoWidth, src.x + src.w);
   const ey = Math.min(video.videoHeight, src.y + src.h);
-  if (ex > sx && ey > sy) ctx.drawImage(video, sx, sy, ex - sx, ey - sy, (sx - src.x) * scale, (sy - src.y) * scale, (ex - sx) * scale, (ey - sy) * scale);
+  if (ex > sx && ey > sy)
+    ctx.drawImage(
+      video,
+      sx,
+      sy,
+      ex - sx,
+      ey - sy,
+      (sx - src.x) * scale,
+      (sy - src.y) * scale,
+      (ex - sx) * scale,
+      (ey - sy) * scale,
+    );
 
   ctx.textBaseline = 'top';
   lines.forEach((line, i) => {
@@ -66,11 +77,17 @@ export async function takePhoto({ video, frame, box, lines, colors }: PhotoInput
     ctx.fillText(line, pad, h + pad + i * size * 1.5, w - 2 * pad);
   });
 
-  return new Promise((resolve, reject) => canvas.toBlob((b) => (b ? resolve(b) : reject(new Error('toBlob failed'))), 'image/jpeg', 0.92));
+  return new Promise((resolve, reject) =>
+    canvas.toBlob((b) => (b ? resolve(b) : reject(new Error('toBlob failed'))), 'image/jpeg', 0.92),
+  );
 }
 
 /** Phone: the share sheet (save to photos, send). Otherwise, or if sharing is not possible: a download. */
-export async function savePhoto(blob: Blob, name: string, preferShare: boolean): Promise<'shared' | 'downloaded' | 'cancelled'> {
+export async function savePhoto(
+  blob: Blob,
+  name: string,
+  preferShare: boolean,
+): Promise<'shared' | 'downloaded' | 'cancelled'> {
   const file = new File([blob], name, { type: 'image/jpeg' });
   if (preferShare && navigator.canShare?.({ files: [file] })) {
     try {

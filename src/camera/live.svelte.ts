@@ -46,7 +46,8 @@ class LiveStore {
   effective = $derived.by((): Calibration => {
     if (this.calibration) return this.calibration;
     const a = this.phone ? ASSUMED.phone : ASSUMED.desktop;
-    const front = this.facing === 'user' && getDevice(a.deviceId)?.cameras.find((c) => c.facing === 'front');
+    const front =
+      this.facing === 'user' && getDevice(a.deviceId)?.cameras.find((c) => c.facing === 'front');
     return { kind: 'device', deviceId: a.deviceId, cameraId: front ? front.id : a.cameraId };
   });
   fov = $derived(calibrationFov(this.effective));
@@ -56,7 +57,9 @@ class LiveStore {
     const size = displaySize(vf.derived.area, vf.derived.squeeze);
     return { x: size.width / (2 * vf.setup.focal), y: size.height / (2 * vf.setup.focal) };
   });
-  streamTan = $derived(this.video.width > 0 ? streamTangents(this.fov, this.video.width, this.video.height) : null);
+  streamTan = $derived(
+    this.video.width > 0 ? streamTangents(this.fov, this.video.width, this.video.height) : null,
+  );
   plan = $derived(this.streamTan ? planZoom(this.lens, this.streamTan, this.caps.zoom) : null);
   /** Video placement as fractions of the stage, using the zoom the camera actually applied. */
   box = $derived(this.streamTan ? videoBox(this.lens, this.streamTan, this.appliedZoom) : null);
@@ -70,7 +73,10 @@ class LiveStore {
     if (!p) return '';
     if (p.mode === 'wider') return m.wider;
     const x = (n: number) => `${n.toFixed(1)}x`;
-    if (p.mode === 'camera') return this.digital > 1.01 ? `${m.camera} ${x(this.appliedZoom)} + ${m.plusDigital} ${x(this.digital)}` : `${m.camera} ${x(this.appliedZoom)}`;
+    if (p.mode === 'camera')
+      return this.digital > 1.01
+        ? `${m.camera} ${x(this.appliedZoom)} + ${m.plusDigital} ${x(this.digital)}`
+        : `${m.camera} ${x(this.appliedZoom)}`;
     return p.total < 1.01 ? m.none : `${m.digital} ${x(this.digital)}`;
   });
 
@@ -100,7 +106,12 @@ class LiveStore {
       const track = stream.getVideoTracks()[0]!;
       const settings = track.getSettings();
       this.deviceId = settings.deviceId ?? deviceId;
-      this.facing = settings.facingMode === 'user' ? 'user' : settings.facingMode === 'environment' ? 'environment' : undefined;
+      this.facing =
+        settings.facingMode === 'user'
+          ? 'user'
+          : settings.facingMode === 'environment'
+            ? 'environment'
+            : undefined;
       this.caps = s.capabilities(track);
       this.appliedZoom = (settings as { zoom?: number }).zoom ?? 1;
       this.ev = (settings as { exposureCompensation?: number }).exposureCompensation ?? 0;
@@ -121,7 +132,12 @@ class LiveStore {
     if (cal?.kind !== 'device') return;
     const cams = getDevice(cal.deviceId)?.cameras ?? [];
     const current = cams.find((c) => c.id === cal.cameraId);
-    const want = this.facing === 'user' ? cams.find((c) => c.facing === 'front') : current?.facing === 'front' ? cams[0] : undefined;
+    const want =
+      this.facing === 'user'
+        ? cams.find((c) => c.facing === 'front')
+        : current?.facing === 'front'
+          ? cams[0]
+          : undefined;
     if (want && want.id !== cal.cameraId) this.calibration = { ...cal, cameraId: want.id };
   }
 
@@ -177,13 +193,16 @@ class LiveStore {
   async zoom(value: number) {
     const track = this.stream?.getVideoTracks()[0];
     if (!track || !this.caps.zoom) return;
-    if (await (await streamModule()).setZoom(track, value)) this.appliedZoom = (track.getSettings() as { zoom?: number }).zoom ?? value;
+    if (await (await streamModule()).setZoom(track, value))
+      this.appliedZoom = (track.getSettings() as { zoom?: number }).zoom ?? value;
   }
 
   async exposure(ev: number) {
     const track = this.stream?.getVideoTracks()[0];
     if (!track || !this.caps.exposure) return;
-    if (await (await streamModule()).setExposure(track, ev)) this.ev = (track.getSettings() as { exposureCompensation?: number }).exposureCompensation ?? ev;
+    if (await (await streamModule()).setExposure(track, ev))
+      this.ev =
+        (track.getSettings() as { exposureCompensation?: number }).exposureCompensation ?? ev;
   }
 }
 

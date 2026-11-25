@@ -22,7 +22,8 @@
 
   function settings(c: HTMLCanvasElement, hex: (v: string) => [number, number, number]): AidFrame {
     let color: string = FRAME_COLORS[aids.peakColor];
-    if (color.startsWith('var(')) color = getComputedStyle(c).getPropertyValue(color.slice(4, -1)).trim();
+    if (color.startsWith('var('))
+      color = getComputedStyle(c).getPropertyValue(color.slice(4, -1)).trim();
     return {
       mode: aids.picture === 'zebras' ? 1 : aids.picture === 'falseColour' ? 2 : 0,
       zebra: zebraThreshold(aids.zebra),
@@ -95,5 +96,13 @@
 </script>
 
 {#if aids.overlay && live.showing}
-  <canvas bind:this={canvas} class="vf-aids" class:mirror={live.facing === 'user'} {style} data-testid="vf-aids" data-mode={aids.picture} data-peaking={aids.peaking}></canvas>
+  <canvas
+    bind:this={canvas}
+    class="vf-aids"
+    class:mirror={live.facing === 'user'}
+    {style}
+    data-testid="vf-aids"
+    data-mode={aids.picture}
+    data-peaking={aids.peaking}
+  ></canvas>
 {/if}

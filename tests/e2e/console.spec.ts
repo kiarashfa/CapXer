@@ -19,7 +19,11 @@ async function watch(page: Page) {
     // Chrome's software WebGL (SwiftShader, used in CI) reports any pixel readback as a
     // driver performance note, even the lab meter's one small asynchronous read after a
     // finished picture. A driver diagnostic, not a site problem; only this exact note is skipped.
-    if (m.type() === 'warning' && /GL Driver Message \(OpenGL, Performance, [^)]*\): GPU stall due to ReadPixels/.test(m.text())) return;
+    if (
+      m.type() === 'warning' &&
+      /GL Driver Message \(OpenGL, Performance, [^)]*\): GPU stall due to ReadPixels/.test(m.text())
+    )
+      return;
     if (m.type() === 'error' || m.type() === 'warning') problems.push(`${m.type()}: ${m.text()}`);
   });
   page.on('pageerror', (e) => problems.push(`exception: ${e.message}`));
@@ -39,7 +43,10 @@ test.describe('console stays clean', () => {
   }
 
   test('viewfinder live camera and photo', async ({ page, browserName }) => {
-    test.skip(browserName === 'webkit', 'WebKit has no fake camera; getUserMedia is stubbed elsewhere');
+    test.skip(
+      browserName === 'webkit',
+      'WebKit has no fake camera; getUserMedia is stubbed elsewhere',
+    );
     const problems = await watch(page);
     await page.goto('viewfinder/');
     await setSource(page, 'live');

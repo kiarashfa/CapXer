@@ -2,7 +2,12 @@
   import { onMount, tick } from 'svelte';
   import { t } from '../../i18n/en.ts';
   import { url } from '../../lib/url.ts';
-  import { CONSENT_OPEN_EVENT, readConsent, writeConsent, type ConsentChoice } from '../../lib/consent.ts';
+  import {
+    CONSENT_OPEN_EVENT,
+    readConsent,
+    writeConsent,
+    type ConsentChoice,
+  } from '../../lib/consent.ts';
   import { disableAnalytics, enableAnalytics } from '../../lib/analytics.ts';
 
   let open = $state(false);

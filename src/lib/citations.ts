@@ -42,8 +42,11 @@ export function initCitations(): void {
     a.setAttribute('aria-expanded', 'true');
     pop.querySelector('.cite-pop-title')!.textContent = a.dataset.source ?? '';
     const body = pop.querySelector<HTMLElement>('.cite-pop-body')!;
-    body.replaceChildren(...[...li.querySelectorAll('.src-text, .src-links')].map((n) => n.cloneNode(true)));
-    pop.querySelector('.cite-pop-at')!.textContent = `${pop.dataset.citedAt}: ${a.dataset.locator ?? ''}`;
+    body.replaceChildren(
+      ...[...li.querySelectorAll('.src-text, .src-links')].map((n) => n.cloneNode(true)),
+    );
+    pop.querySelector('.cite-pop-at')!.textContent =
+      `${pop.dataset.citedAt}: ${a.dataset.locator ?? ''}`;
     pop.querySelector<HTMLAnchorElement>('.cite-pop-all')!.href = `#source-${a.dataset.source}`;
     pop.hidden = false;
     // Below the number, inside the screen's 16 px gutters.
@@ -73,7 +76,12 @@ export function initCitations(): void {
   });
   document.addEventListener('pointerdown', (e) => {
     const target = e.target as Node;
-    if (!pop.hidden && !pop.contains(target) && !(target instanceof Element && target.closest('a.cite'))) closePop(false);
+    if (
+      !pop.hidden &&
+      !pop.contains(target) &&
+      !(target instanceof Element && target.closest('a.cite'))
+    )
+      closePop(false);
   });
   addEventListener('resize', () => closePop(false));
 }
@@ -82,7 +90,9 @@ export function initCitations(): void {
 export function initLessonToc(): void {
   const links = [...document.querySelectorAll<HTMLAnchorElement>('.lesson-toc a')];
   if (!links.length) return;
-  const targets = links.map((l) => document.getElementById(decodeURIComponent(l.hash.slice(1)))).filter((x): x is HTMLElement => !!x);
+  const targets = links
+    .map((l) => document.getElementById(decodeURIComponent(l.hash.slice(1))))
+    .filter((x): x is HTMLElement => !!x);
   // A section is "being read" once its heading passes this line (below the site bar;
   // in-page links land headings at 6rem, html scroll-padding-top).
   const update = () => {
@@ -92,8 +102,11 @@ export function initLessonToc(): void {
       if (h.getBoundingClientRect().top <= line) cur = i;
     });
     // At the very end of the page the last section is the one being read.
-    if (innerHeight + scrollY >= document.documentElement.scrollHeight - 4) cur = targets.length - 1;
-    links.forEach((l, i) => (i === cur ? l.setAttribute('aria-current', 'true') : l.removeAttribute('aria-current')));
+    if (innerHeight + scrollY >= document.documentElement.scrollHeight - 4)
+      cur = targets.length - 1;
+    links.forEach((l, i) =>
+      i === cur ? l.setAttribute('aria-current', 'true') : l.removeAttribute('aria-current'),
+    );
   };
   // A handful of rectangle reads per scroll event is cheap; no frame scheduling needed.
   addEventListener('scroll', update, { passive: true });

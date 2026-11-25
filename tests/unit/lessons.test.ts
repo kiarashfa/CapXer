@@ -62,7 +62,10 @@ describe('lesson anatomy', () => {
         for (const t of tries) expect(t[1]).toMatch(/<TryLink\b/);
         expect(count(b, /<OurView>/g)).toBe(ANATOMY.ourView);
         const last = sections.at(-1)!.split('\n').slice(1).join('\n').trim();
-        expect(last.startsWith('<OurView>') && last.endsWith('</OurView>'), 'last section holds only <OurView>').toBe(true);
+        expect(
+          last.startsWith('<OurView>') && last.endsWith('</OurView>'),
+          'last section holds only <OurView>',
+        ).toBe(true);
       });
     });
   }

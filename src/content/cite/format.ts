@@ -24,9 +24,15 @@ const initials = (given: string) =>
   given
     .split(/\s+/)
     .filter(Boolean)
-    .map((g) => g.split('-').map((p) => `${p[0]}.`).join('-'))
+    .map((g) =>
+      g
+        .split('-')
+        .map((p) => `${p[0]}.`)
+        .join('-'),
+    )
     .join(' ');
-const name = (n: Name) => ('literal' in n ? n.literal : n.given ? `${initials(n.given)} ${n.family}` : n.family);
+const name = (n: Name) =>
+  'literal' in n ? n.literal : n.given ? `${initials(n.given)} ${n.family}` : n.family;
 
 export function formatNames(names: Name[] | undefined): string | undefined {
   if (!names?.length) return undefined;
@@ -48,7 +54,8 @@ export function formatReference(r: Reference): FormattedReference {
   const year = r.issued?.['date-parts'][0][0];
   const editors = formatNames(r.editor);
   const details: string[] = [
-    r['container-title'] && (editors ? `in ${r['container-title']}, ed. ${editors}` : r['container-title']),
+    r['container-title'] &&
+      (editors ? `in ${r['container-title']}, ed. ${editors}` : r['container-title']),
     r.volume && `vol. ${r.volume}`,
     r.issue && `no. ${r.issue}`,
     r.edition && `${r.edition} ed.`,

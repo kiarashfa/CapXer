@@ -20,7 +20,8 @@ const distDir = fileURLToPath(dist);
 // The lab's code (three.js, Threlte, sets, subjects) is large and online only.
 // Leave out every script that only the lab page can reach, through static or
 // dynamic imports; scripts shared with other pages stay in the precache.
-const SCRIPT = /<script[^>]*\bsrc="([^"]+\.js)"|\b(?:component|renderer)-url="([^"]+\.js)"|<link[^>]*rel="modulepreload"[^>]*href="([^"]+\.js)"/g;
+const SCRIPT =
+  /<script[^>]*\bsrc="([^"]+\.js)"|\b(?:component|renderer)-url="([^"]+\.js)"|<link[^>]*rel="modulepreload"[^>]*href="([^"]+\.js)"/g;
 const IMPORT = /\b(?:import|from)\s*\(?\s*["'`]([^"'`]+\.js)["'`]/g;
 
 function reachable(htmlFile: string): Set<string> {
@@ -36,7 +37,8 @@ function reachable(htmlFile: string): Set<string> {
   };
   const html = readFileSync(htmlFile, 'utf8');
   for (const m of html.matchAll(SCRIPT)) visit(m[1] ?? m[2] ?? m[3]!);
-  for (const m of html.matchAll(/<script type="module">([\s\S]*?)<\/script>/g)) for (const i of m[1]!.matchAll(IMPORT)) visit(i[1]!);
+  for (const m of html.matchAll(/<script type="module">([\s\S]*?)<\/script>/g))
+    for (const i of m[1]!.matchAll(IMPORT)) visit(i[1]!);
   return seen;
 }
 
@@ -50,8 +52,12 @@ function htmlFiles(dir: string): string[] {
 
 const pagesHtml = htmlFiles(distDir);
 const labHtml = pagesHtml.filter((p) => relative(distDir, p).split(sep)[0] === 'lab');
-const shared = new Set(pagesHtml.filter((p) => !labHtml.includes(p)).flatMap((p) => [...reachable(p)]));
-const labOnly = [...new Set(labHtml.flatMap((p) => [...reachable(p)]))].filter((u) => !shared.has(u)).map((u) => u.slice(base.length));
+const shared = new Set(
+  pagesHtml.filter((p) => !labHtml.includes(p)).flatMap((p) => [...reachable(p)]),
+);
+const labOnly = [...new Set(labHtml.flatMap((p) => [...reachable(p)]))]
+  .filter((u) => !shared.has(u))
+  .map((u) => u.slice(base.length));
 
 const { count, size, warnings } = await generateSW({
   globDirectory: dist.pathname.replace(/^\/([A-Za-z]:)/, '$1'),
@@ -80,7 +86,8 @@ const { count, size, warnings } = await generateSW({
   mode: 'production',
   runtimeCaching: [
     {
-      urlPattern: ({ url }) => url.pathname.startsWith(`${base}_astro/`) && url.pathname.endsWith('.woff2'),
+      urlPattern: ({ url }) =>
+        url.pathname.startsWith(`${base}_astro/`) && url.pathname.endsWith('.woff2'),
       handler: 'CacheFirst',
       options: { cacheName: 'capxer-fonts', expiration: { maxEntries: 30 } },
     },

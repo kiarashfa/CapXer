@@ -19,7 +19,8 @@ const lum = ([r, g, b]: number[]) => LUMA[0] * r! + LUMA[1] * g! + LUMA[2] * b!;
 
 describe('colour sources', () => {
   it('cite the reference library', () => {
-    for (const c of [CMF_SOURCE, C2_SOURCE, PRIMARIES_SOURCE]) expect(getReference(c.ref), c.ref).toBeDefined();
+    for (const c of [CMF_SOURCE, C2_SOURCE, PRIMARIES_SOURCE])
+      expect(getReference(c.ref), c.ref).toBeDefined();
   });
 
   it('use the 2022 CODATA second radiation constant', () => {
@@ -34,7 +35,11 @@ describe('BT.709 matrix', () => {
   });
 
   it('R = G = B = 1 is the D65 white of item 1.4', () => {
-    const [X, Y, Z] = rgbToXyzMatrix().map((row) => row[0] + row[1] + row[2]) as [number, number, number];
+    const [X, Y, Z] = rgbToXyzMatrix().map((row) => row[0] + row[1] + row[2]) as [
+      number,
+      number,
+      number,
+    ];
     expect(X / (X + Y + Z)).toBeCloseTo(BT709_PRIMARIES.white[0], 6);
     expect(Y / (X + Y + Z)).toBeCloseTo(BT709_PRIMARIES.white[1], 6);
     expect(xyzToRgb([X, Y, Z]).every((c) => Math.abs(c - 1) < 1e-9)).toBe(true);

@@ -46,7 +46,9 @@ function watchUpdates(reg: ServiceWorkerRegistration) {
 
   note.querySelector('[data-update-reload]')?.addEventListener('click', () => {
     if (!waiting) return;
-    navigator.serviceWorker.addEventListener('controllerchange', () => location.reload(), { once: true });
+    navigator.serviceWorker.addEventListener('controllerchange', () => location.reload(), {
+      once: true,
+    });
     waiting.postMessage({ type: 'SKIP_WAITING' });
   });
   note.querySelector('[data-update-later]')?.addEventListener('click', () => {

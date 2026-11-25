@@ -19,12 +19,27 @@
   <div class="vf-txt"><b>{t.vf.guides.color[0]}</b><span>{t.vf.guides.color[1]}</span></div>
   <div class="swatches" role="group" aria-label={t.vf.guides.color[0]}>
     {#each colors as c}
-      <button type="button" class="swatch" style={`background:${FRAME_COLORS[c]}`} aria-label={t.vf.guides.colors[c]} aria-pressed={vf.setup.frameColor === c} onclick={() => (vf.setup.frameColor = c)}></button>
+      <button
+        type="button"
+        class="swatch"
+        style={`background:${FRAME_COLORS[c]}`}
+        aria-label={t.vf.guides.colors[c]}
+        aria-pressed={vf.setup.frameColor === c}
+        onclick={() => (vf.setup.frameColor = c)}
+      ></button>
     {/each}
   </div>
 </div>
 
 <label class="vf-row">
   <span class="vf-txt"><b>{t.vf.guides.mask[0]}</b><span>{t.vf.guides.mask[1]}</span></span>
-  <input class="slider" style="max-width: 180px" type="range" min="0" max="0.9" step="0.05" bind:value={vf.setup.mask} />
+  <input
+    class="slider"
+    style="max-width: 180px"
+    type="range"
+    min="0"
+    max="0.9"
+    step="0.05"
+    bind:value={vf.setup.mask}
+  />
 </label>

@@ -45,7 +45,8 @@ function initMenu(): void {
     }
   });
   document.addEventListener('click', (e) => {
-    if (!sheet.hidden && !sheet.contains(e.target as Node) && !btn.contains(e.target as Node)) set(false);
+    if (!sheet.hidden && !sheet.contains(e.target as Node) && !btn.contains(e.target as Node))
+      set(false);
   });
 }
 
@@ -99,7 +100,8 @@ function initDock(): void {
   const scheduleClose = () => {
     clearTimeout(timer);
     timer = setTimeout(() => {
-      if (pinned || panelOpen() || bar.matches(':hover') || bar.contains(document.activeElement)) return;
+      if (pinned || panelOpen() || bar.matches(':hover') || bar.contains(document.activeElement))
+        return;
       set(false);
     }, CLOSE_DELAY);
   };

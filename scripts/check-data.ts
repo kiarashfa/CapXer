@@ -17,9 +17,15 @@ function walk(dir: string, prefix = ''): string[] {
   });
 }
 
-const sensorFiles = walk(sensorDir).map((path) => ({ path, data: readJson(join(sensorDir, path)) }));
+const sensorFiles = walk(sensorDir).map((path) => ({
+  path,
+  data: readJson(join(sensorDir, path)),
+}));
 const deviceDir = join(dataDir, 'devices');
-const deviceFiles = walk(deviceDir).map((path) => ({ path, data: readJson(join(deviceDir, path)) }));
+const deviceFiles = walk(deviceDir).map((path) => ({
+  path,
+  data: readJson(join(deviceDir, path)),
+}));
 
 const errors = validateDatabase(
   sensorFiles,
@@ -33,4 +39,6 @@ if (errors.length > 0) {
   console.error(`\ncheck-data: ${errors.length} problem(s) in the camera database.`);
   process.exit(1);
 }
-console.log(`check-data: ${sensorFiles.length} sensors and ${deviceFiles.length} devices valid, every value cited.`);
+console.log(
+  `check-data: ${sensorFiles.length} sensors and ${deviceFiles.length} devices valid, every value cited.`,
+);

@@ -17,8 +17,17 @@ import { readFileSync, readdirSync, statSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const GA = ['https://*.google-analytics.com', 'https://*.analytics.google.com', 'https://*.googletagmanager.com'];
-const CLOUD = ['https://accounts.google.com', 'https://www.googleapis.com', 'https://api.dropboxapi.com', 'https://content.dropboxapi.com'];
+const GA = [
+  'https://*.google-analytics.com',
+  'https://*.analytics.google.com',
+  'https://*.googletagmanager.com',
+];
+const CLOUD = [
+  'https://accounts.google.com',
+  'https://www.googleapis.com',
+  'https://api.dropboxapi.com',
+  'https://content.dropboxapi.com',
+];
 
 export const DIRECTIVES: Record<string, string[]> = {
   'default-src': ["'self'"],
@@ -34,14 +43,19 @@ export const DIRECTIVES: Record<string, string[]> = {
   'connect-src': ["'self'", ...GA, ...CLOUD],
   'frame-src': ['https://accounts.google.com'],
   'style-src': ["'self'", "'unsafe-inline'", 'https://accounts.google.com/gsi/style'],
-  'script-src': ["'self'", 'https://www.googletagmanager.com', 'https://accounts.google.com/gsi/client'],
+  'script-src': [
+    "'self'",
+    'https://www.googletagmanager.com',
+    'https://accounts.google.com/gsi/client',
+  ],
 };
 
 export function policyFor(html: string): string {
   const hashes = new Set<string>();
   for (const m of html.matchAll(/<script(\s[^>]*)?>([\s\S]*?)<\/script>/g)) {
     const attrs = m[1] ?? '';
-    if (/\ssrc=/.test(attrs) || /type="(application\/(ld\+)?json|text\/plain)"/.test(attrs)) continue;
+    if (/\ssrc=/.test(attrs) || /type="(application\/(ld\+)?json|text\/plain)"/.test(attrs))
+      continue;
     hashes.add(`'sha256-${createHash('sha256').update(m[2], 'utf8').digest('base64')}'`);
   }
   return Object.entries(DIRECTIVES)
@@ -50,7 +64,8 @@ export function policyFor(html: string): string {
 }
 
 export function withPolicy(html: string): string {
-  if (html.includes('http-equiv="content-security-policy"')) throw new Error('page already has a CSP tag');
+  if (html.includes('http-equiv="content-security-policy"'))
+    throw new Error('page already has a CSP tag');
   const tag = `<meta http-equiv="content-security-policy" content="${policyFor(html)}">`;
   // Right after <meta charset>, which must stay in the first bytes of the document.
   const out = html.replace(/(<head>\s*<meta charset="utf-8">)/i, `$1${tag}`);

@@ -29,11 +29,15 @@ export async function openDock(page: Page) {
 /** Switches between the drawn scene and the live camera: the bar toggle on phone/tablet, the Live tool on desktop. */
 export async function setSource(page: Page, source: 'scene' | 'live') {
   if (!isDesktop(page)) {
-    await page.getByRole('button', { name: source === 'live' ? 'Live' : 'Scene', exact: true }).first().click();
+    await page
+      .getByRole('button', { name: source === 'live' ? 'Live' : 'Scene', exact: true })
+      .first()
+      .click();
     return;
   }
   await openDock(page);
   const pane = page.getByTestId('pane-live');
-  if (!(await pane.isVisible())) await page.locator('#dock-tools').getByRole('button', { name: 'Live', exact: true }).click();
+  if (!(await pane.isVisible()))
+    await page.locator('#dock-tools').getByRole('button', { name: 'Live', exact: true }).click();
   await pane.getByTestId(`pane-source-${source}`).click();
 }

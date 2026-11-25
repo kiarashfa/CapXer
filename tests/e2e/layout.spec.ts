@@ -26,20 +26,24 @@ test.describe('layout', () => {
           const main = document.querySelector('main')!;
           let left = Infinity;
           let right = -Infinity;
-          for (const el of main.querySelectorAll('h1, h2, h3, h4, p, li, figure, img, svg, table, pre, blockquote, form, canvas, video')) {
+          for (const el of main.querySelectorAll(
+            'h1, h2, h3, h4, p, li, figure, img, svg, table, pre, blockquote, form, canvas, video',
+          )) {
             const r = el.getBoundingClientRect();
             if (r.width <= 1 || r.height <= 1) continue; // sr-only and empty elements
             left = Math.min(left, r.left);
             right = Math.max(right, r.right);
           }
           const cs = getComputedStyle(main);
-          const available = main.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+          const available =
+            main.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
           return { leftGap: left, rightGap: vw - right, fill: (right - left) / available, vw };
         });
 
-        expect(m.fill, `${route} (${s.name}, ${s.width}px): content fills only ${Math.round(m.fill * 100)}% of its container`).toBeGreaterThanOrEqual(
-          MIN_FILL,
-        );
+        expect(
+          m.fill,
+          `${route} (${s.name}, ${s.width}px): content fills only ${Math.round(m.fill * 100)}% of its container`,
+        ).toBeGreaterThanOrEqual(MIN_FILL);
         expect(
           Math.abs(m.leftGap - m.rightGap),
           `${route} (${s.name}, ${s.width}px): off-centre (left ${Math.round(m.leftGap)}px, right ${Math.round(m.rightGap)}px)`,

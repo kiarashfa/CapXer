@@ -7,13 +7,26 @@ const datePartsSchema = z.strictObject({
   'date-parts': z.array(z.array(z.int()).min(1).max(3)).length(1),
 });
 
-const namesSchema = z.array(
-  z.union([z.strictObject({ family: z.string().min(1), given: z.string().optional() }), z.strictObject({ literal: z.string().min(1) })]),
-).min(1);
+const namesSchema = z
+  .array(
+    z.union([
+      z.strictObject({ family: z.string().min(1), given: z.string().optional() }),
+      z.strictObject({ literal: z.string().min(1) }),
+    ]),
+  )
+  .min(1);
 
 export const ReferenceSchema = z.strictObject({
   id: z.string().regex(/^[a-z0-9]+(-[a-z0-9]+)*$/),
-  type: z.enum(['webpage', 'standard', 'book', 'article-journal', 'report', 'chapter', 'motion_picture']),
+  type: z.enum([
+    'webpage',
+    'standard',
+    'book',
+    'article-journal',
+    'report',
+    'chapter',
+    'motion_picture',
+  ]),
   title: z.string().min(1),
   author: namesSchema.optional(),
   editor: namesSchema.optional(),
@@ -26,7 +39,10 @@ export const ReferenceSchema = z.strictObject({
   'publisher-place': z.string().optional(),
   number: z.string().optional(),
   issued: datePartsSchema.optional(),
-  DOI: z.string().regex(/^10\.\d{4,9}\/\S+$/).optional(),
+  DOI: z
+    .string()
+    .regex(/^10\.\d{4,9}\/\S+$/)
+    .optional(),
   URL: z.url().optional(),
   accessed: datePartsSchema.optional(),
 });

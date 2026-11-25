@@ -13,7 +13,7 @@ CapXer includes or relies on the third-party material listed here. Each item sta
 | [Workbox](https://github.com/GoogleChrome/workbox) | Offline support (service worker, built in by workbox-build) | MIT |
 | [Tailwind CSS](https://github.com/tailwindlabs/tailwindcss) | Styling (the generated style sheet) | MIT |
 
-Build and development tools are not shipped to visitors: Satteri (Markdown processing for lessons), TypeScript (type checking), Vitest and jsdom (unit tests), Playwright (browser tests and the social image), axe-core (accessibility tests), Zod (data validation) and sharp (making the app icons, `scripts/make-icons.ts`).
+Build and development tools are not shipped to visitors: Satteri (Markdown processing for lessons), TypeScript (type checking), Vitest and jsdom (unit tests), Playwright (browser tests and the social image), axe-core (accessibility tests), Zod (data validation), Prettier (code formatting) and sharp (making the app icons, `scripts/make-icons.ts`).
 
 ## Fonts
 

@@ -15,7 +15,8 @@ interface Props {
   decorative?: boolean;
 }
 const { width, focals, labels, decorative = false } = Astro.props;
-if (!(width > 0) || !focals.length || focals.some((f) => !(f > 0))) throw new Error(`FovWedges: bad width ${width} or focals ${focals.join(', ')}`);
+if (!(width > 0) || !focals.length || focals.some((f) => !(f > 0)))
+  throw new Error(`FovWedges: bad width ${width} or focals ${focals.join(', ')}`);
 
 const W = 640;
 const H = 400;
@@ -46,15 +47,20 @@ const aria = `Horizontal angle of view across a ${width} mm wide image: ${wedges
 ---
 
 <div class="grid-paper lesson-drawing">
-  <svg viewBox={`0 0 ${W} ${H}`} role={decorative ? undefined : 'img'} aria-label={decorative ? undefined : aria} aria-hidden={decorative ? 'true' : undefined}>
-    {
-      wedges.map((w) => (
-        <g class:list={['fw-wedge', w.strong && 'fw-strong']}>
-          <path d={w.d} />
-          <text x={Math.min(w.lx, W - 8)} y={w.ly} text-anchor={w.lx > W - 150 ? 'end' : 'start'}>{w.text}</text>
-        </g>
-      ))
-    }
+  <svg
+    viewBox={`0 0 ${W} ${H}`}
+    role={decorative ? undefined : 'img'}
+    aria-label={decorative ? undefined : aria}
+    aria-hidden={decorative ? 'true' : undefined}
+  >
+    {wedges.map((w) => (
+      <g class:list={['fw-wedge', w.strong && 'fw-strong']}>
+        <path d={w.d} />
+        <text x={Math.min(w.lx, W - 8)} y={w.ly} text-anchor={w.lx > W - 150 ? 'end' : 'start'}>
+          {w.text}
+        </text>
+      </g>
+    ))}
     <circle class="fw-camera" cx={cx} cy={cy} r="6" />
   </svg>
 </div>

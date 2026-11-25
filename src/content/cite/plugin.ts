@@ -65,16 +65,23 @@ export function citations(options: CitationOptions) {
     const order = new Map<string, number>();
     const errors: string[] = [];
     const uncited: string[] = [];
-    const at = (node: Node) => `${shown}:${node.position?.start.line ?? '?'}:${node.position?.start.column ?? '?'}`;
+    const at = (node: Node) =>
+      `${shown}:${node.position?.start.line ?? '?'}:${node.position?.start.column ?? '?'}`;
 
     const inExempt = (node: Node, ctx: Ctx) => {
       for (let p = ctx.parent(node); p; p = ctx.parent(p)) {
-        if ((p.type === 'mdxJsxFlowElement' || p.type === 'mdxJsxTextElement') && p.name && exempt.has(p.name)) return true;
+        if (
+          (p.type === 'mdxJsxFlowElement' || p.type === 'mdxJsxTextElement') &&
+          p.name &&
+          exempt.has(p.name)
+        )
+          return true;
       }
       return false;
     };
     const inCode = (node: Node, ctx: Ctx) => {
-      for (let p = ctx.parent(node); p; p = ctx.parent(p)) if (p.type === 'inlineCode' || p.type === 'code') return true;
+      for (let p = ctx.parent(node); p; p = ctx.parent(p))
+        if (p.type === 'inlineCode' || p.type === 'code') return true;
       return false;
     };
 
@@ -120,7 +127,8 @@ export function citations(options: CitationOptions) {
           }
           const unknown = parsed.items.filter((i) => !keys.has(i.key));
           if (unknown.length) {
-            for (const i of unknown) errors.push(`${at(node)}  [@${i.key}] is not in src/references/references.json`);
+            for (const i of unknown)
+              errors.push(`${at(node)}  [@${i.key}] is not in src/references/references.json`);
             continue;
           }
           // The raised number sits right after the word: drop the space before the marker.
@@ -134,17 +142,26 @@ export function citations(options: CitationOptions) {
             const list = places.get(item.key) ?? [];
             if (!list.includes(item.locator)) places.set(item.key, [...list, item.locator]);
           }
-          const links = [...byKey].map(([key, items]) => link(order.get(key)!, items.map((it) => it.locator)));
+          const links = [...byKey].map(([key, items]) =>
+            link(
+              order.get(key)!,
+              items.map((it) => it.locator),
+            ),
+          );
           // Two markers in a row ("[@a, p. 1] [@b, p. 2]") join one group, never "12".
           const prev = out.at(-1) as { type?: string; children?: unknown[] } | undefined;
-          if (!before && prev?.type === 'citeGroup') prev.children!.push(...links.flatMap((l) => [{ type: 'text', value: ',' }, l]));
+          if (!before && prev?.type === 'citeGroup')
+            prev.children!.push(...links.flatMap((l) => [{ type: 'text', value: ',' }, l]));
           else out.push(group(links));
           last = m.index + m[0].length;
           opened++;
         }
         const openers = [...value.matchAll(OPENER)].length;
         const complete = [...value.matchAll(MARKER)].length;
-        if (openers > complete) errors.push(`${at(node)}  a citation "[@" is not closed with "]" (or contains formatting; keep markers plain text)`);
+        if (openers > complete)
+          errors.push(
+            `${at(node)}  a citation "[@" is not closed with "]" (or contains formatting; keep markers plain text)`,
+          );
         if (!opened) return;
         if (last < value.length) out.push({ type: 'text', value: value.slice(last) });
         ctx.replaceNode(node, out);
@@ -155,7 +172,9 @@ export function citations(options: CitationOptions) {
         const text = ctx.textContent(node).trim();
         // A paragraph that is only a component, image or punctuation states nothing.
         if (!/[\p{L}\p{N}]/u.test(text) || hasMarker(text) || inExempt(node, ctx)) return;
-        uncited.push(`${at(node)}  no citation: "${text.length > 70 ? `${text.slice(0, 67)}...` : text}"`);
+        uncited.push(
+          `${at(node)}  no citation: "${text.length > 70 ? `${text.slice(0, 67)}...` : text}"`,
+        );
       },
 
       table(node: Node, ctx: Ctx) {
@@ -175,7 +194,10 @@ export function citations(options: CitationOptions) {
         }
         const natural = (a: string, b: string) => a.localeCompare(b, 'en', { numeric: true });
         const sources = [...order.keys()];
-        const data: CitationData = { sources, citedAt: sources.map((k) => [...(places.get(k) ?? [])].sort(natural)) };
+        const data: CitationData = {
+          sources,
+          citedAt: sources.map((k) => [...(places.get(k) ?? [])].sort(natural)),
+        };
         const astro = ctx.data.astro;
         if (astro?.frontmatter) {
           astro.frontmatter.sources = data.sources;

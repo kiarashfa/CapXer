@@ -49,8 +49,14 @@ describe('angle of view', () => {
 
   it('widens horizontally by the anamorphic squeeze', () => {
     // A 2x anamorphic 50 mm on a 22 mm wide area sees what a spherical 50 mm sees on 44 mm.
-    expect(fieldOfView({ width: 22, height: 18.59 }, 50, 2).horizontal).toBeCloseTo(angleOfView(44, 50), 10);
-    expect(fieldOfView({ width: 22, height: 18.59 }, 50, 2).vertical).toBeCloseTo(angleOfView(18.59, 50), 10);
+    expect(fieldOfView({ width: 22, height: 18.59 }, 50, 2).horizontal).toBeCloseTo(
+      angleOfView(44, 50),
+      10,
+    );
+    expect(fieldOfView({ width: 22, height: 18.59 }, 50, 2).vertical).toBeCloseTo(
+      angleOfView(18.59, 50),
+      10,
+    );
   });
 });
 

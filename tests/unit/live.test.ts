@@ -35,8 +35,16 @@ describe('calibration', () => {
   });
 
   it('reads a device camera from the database', () => {
-    expect(equivalentOf(calibrationFov({ kind: 'device', deviceId: 'apple/iphone-17', cameraId: 'main' }))).toBeCloseTo(26, 6);
-    expect(equivalentOf(calibrationFov({ kind: 'device', deviceId: 'samsung/galaxy-s25', cameraId: 'wide' }))).toBeCloseTo(23.6, 1);
+    expect(
+      equivalentOf(
+        calibrationFov({ kind: 'device', deviceId: 'apple/iphone-17', cameraId: 'main' }),
+      ),
+    ).toBeCloseTo(26, 6);
+    expect(
+      equivalentOf(
+        calibrationFov({ kind: 'device', deviceId: 'samsung/galaxy-s25', cameraId: 'wide' }),
+      ),
+    ).toBeCloseTo(23.6, 1);
   });
 });
 
@@ -71,15 +79,26 @@ describe('planZoom', () => {
   });
 
   it('uses the camera zoom when it reaches', () => {
-    expect(planZoom(lens, stream, { min: 1, max: 10 })).toMatchObject({ camera: 4, digital: 1, mode: 'camera' });
+    expect(planZoom(lens, stream, { min: 1, max: 10 })).toMatchObject({
+      camera: 4,
+      digital: 1,
+      mode: 'camera',
+    });
   });
 
   it('adds digital zoom beyond the camera maximum', () => {
-    expect(planZoom(lens, stream, { min: 1, max: 2 })).toMatchObject({ camera: 2, digital: 2, mode: 'camera' });
+    expect(planZoom(lens, stream, { min: 1, max: 2 })).toMatchObject({
+      camera: 2,
+      digital: 2,
+      mode: 'camera',
+    });
   });
 
   it('snaps to the camera zoom step', () => {
-    expect(planZoom({ x: 0.3, y: 0.1 }, stream, { min: 1, max: 10, step: 0.1 }).camera).toBeCloseTo(2.7, 9);
+    expect(planZoom({ x: 0.3, y: 0.1 }, stream, { min: 1, max: 10, step: 0.1 }).camera).toBeCloseTo(
+      2.7,
+      9,
+    );
   });
 
   it('reports a lens wider than the camera', () => {
@@ -88,7 +107,10 @@ describe('planZoom', () => {
   });
 
   it('zooms out where the camera allows it (ultra-wide behind a 0.5x control)', () => {
-    expect(planZoom({ x: 1, y: 0.5 }, stream, { min: 0.5, max: 10 })).toMatchObject({ camera: 0.8, mode: 'camera' });
+    expect(planZoom({ x: 1, y: 0.5 }, stream, { min: 0.5, max: 10 })).toMatchObject({
+      camera: 0.8,
+      mode: 'camera',
+    });
   });
 });
 

@@ -57,7 +57,12 @@ export function startLabPersistence(): () => void {
       lastWritten = keyOf(f.lab);
       lab.applyState(f.lab);
     }
-    if (f?.current && getSensor(f.current.sensorId) && JSON.stringify(f.current) !== JSON.stringify(lab.setup)) lab.setup = f.current;
+    if (
+      f?.current &&
+      getSensor(f.current.sensorId) &&
+      JSON.stringify(f.current) !== JSON.stringify(lab.setup)
+    )
+      lab.setup = f.current;
   };
   const onStorage = (e: StorageEvent) => {
     if (e.key === SAVE_KEY) reload();
@@ -135,7 +140,10 @@ function writeSaved(list: SavedLab[]) {
   }
 }
 
-const snapshot = (): { setup: typeof lab.setup; lab: LabState } => ({ setup: $state.snapshot(lab.setup), lab: lab.toState() });
+const snapshot = (): { setup: typeof lab.setup; lab: LabState } => ({
+  setup: $state.snapshot(lab.setup),
+  lab: lab.toState(),
+});
 
 export function suggestedLabName(): string {
   return suggestLabName(lab.setup, lab.toState());
@@ -147,7 +155,12 @@ export function saveLab(name: string): boolean {
     return false;
   }
   const taken = new Set(lab.savedLabs.map((s) => s.name));
-  const entry: SavedLab = { id: newId(), name: uniqueName(cleanName(name, suggestedLabName()), taken), ...snapshot(), savedAt: new Date().toISOString() };
+  const entry: SavedLab = {
+    id: newId(),
+    name: uniqueName(cleanName(name, suggestedLabName()), taken),
+    ...snapshot(),
+    savedAt: new Date().toISOString(),
+  };
   writeSaved([...lab.savedLabs, entry]);
   if (lab.shared) keepShared();
   labNotify({ title: N.saved, body: entry.name });
@@ -169,13 +182,21 @@ export function renameLab(id: string, name: string) {
   const clean = cleanName(name);
   if (!s || !clean || clean === s.name) return;
   const taken = new Set(lab.savedLabs.filter((x) => x.id !== id).map((x) => x.name));
-  writeSaved(lab.savedLabs.map((x) => (x.id === id ? { ...x, name: uniqueName(clean, taken), savedAt: new Date().toISOString() } : x)));
+  writeSaved(
+    lab.savedLabs.map((x) =>
+      x.id === id ? { ...x, name: uniqueName(clean, taken), savedAt: new Date().toISOString() } : x,
+    ),
+  );
 }
 
 export function replaceLab(id: string) {
   const s = lab.savedLabs.find((x) => x.id === id);
   if (!s) return;
-  writeSaved(lab.savedLabs.map((x) => (x.id === id ? { ...x, ...snapshot(), savedAt: new Date().toISOString() } : x)));
+  writeSaved(
+    lab.savedLabs.map((x) =>
+      x.id === id ? { ...x, ...snapshot(), savedAt: new Date().toISOString() } : x,
+    ),
+  );
   labNotify({ title: N.replaced, body: s.name });
 }
 

@@ -81,7 +81,11 @@ export function zebraThreshold(level: number): number {
 export type PeakSensitivity = 'low' | 'medium' | 'high';
 
 /** Edge strength (Sobel magnitude of luma, divided by 4 so a hard black-white edge is 1) that counts as sharp. */
-export const PEAK_THRESHOLD: Record<PeakSensitivity, number> = { low: 0.22, medium: 0.14, high: 0.08 };
+export const PEAK_THRESHOLD: Record<PeakSensitivity, number> = {
+  low: 0.22,
+  medium: 0.14,
+  high: 0.08,
+};
 
 export interface Histogram {
   bins: number;
@@ -101,7 +105,16 @@ export const CLIP_SHARE = 0.005;
 
 /** Counts RGBA pixel data (as from getImageData) into `bins` bins of luma and of each channel. */
 export function histogram(data: Uint8ClampedArray, bins = 64): Histogram {
-  const h: Histogram = { bins, luma: new Uint32Array(bins), r: new Uint32Array(bins), g: new Uint32Array(bins), b: new Uint32Array(bins), count: 0, low: 0, high: 0 };
+  const h: Histogram = {
+    bins,
+    luma: new Uint32Array(bins),
+    r: new Uint32Array(bins),
+    g: new Uint32Array(bins),
+    b: new Uint32Array(bins),
+    count: 0,
+    low: 0,
+    high: 0,
+  };
   const bin = (v: number) => Math.min(bins - 1, Math.floor((v / 256) * bins));
   let low = 0;
   let high = 0;

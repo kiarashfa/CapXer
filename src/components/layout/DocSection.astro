@@ -12,8 +12,14 @@ const { id, title, wide = false, tone = 'card' } = Astro.props;
 
 <section
   aria-labelledby={id}
-  class:list={['space-y-3 p-6 leading-relaxed', tone === 'note' ? 'note' : 'card', wide && 'desktop:col-span-2']}
+  class:list={[
+    'space-y-3 p-6 leading-relaxed',
+    tone === 'note' ? 'note' : 'card',
+    wide && 'desktop:col-span-2',
+  ]}
 >
-  <h2 id={id} class="text-lg font-bold">{title}</h2>
+  <h2 id={id} class="text-lg font-bold">
+    {title}
+  </h2>
   <slot />
 </section>

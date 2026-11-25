@@ -26,7 +26,8 @@ function apply(z: number): void {
   for (const group of document.querySelectorAll<HTMLElement>('[data-text-size-group]')) {
     const i = TEXT_STEPS.indexOf(z as (typeof TEXT_STEPS)[number]);
     group.querySelector<HTMLButtonElement>('[data-text-size="down"]')!.disabled = i <= 0;
-    group.querySelector<HTMLButtonElement>('[data-text-size="up"]')!.disabled = i >= TEXT_STEPS.length - 1;
+    group.querySelector<HTMLButtonElement>('[data-text-size="up"]')!.disabled =
+      i >= TEXT_STEPS.length - 1;
     const reset = group.querySelector<HTMLButtonElement>('[data-text-size="reset"]')!;
     reset.textContent = `${Math.round(z * 100)}%`;
     reset.disabled = z === 1;
@@ -42,7 +43,10 @@ export function initTextSize(): void {
     if (!btn) return;
     const i = TEXT_STEPS.indexOf(z as (typeof TEXT_STEPS)[number]);
     const step = btn.dataset.textSize;
-    z = step === 'reset' ? 1 : TEXT_STEPS[Math.min(TEXT_STEPS.length - 1, Math.max(0, i + (step === 'up' ? 1 : -1)))];
+    z =
+      step === 'reset'
+        ? 1
+        : TEXT_STEPS[Math.min(TEXT_STEPS.length - 1, Math.max(0, i + (step === 'up' ? 1 : -1)))];
     apply(z);
   });
 }

@@ -12,7 +12,11 @@ const STRAY = /(?<![\w-])(sm|md|lg|xl|2xl|max-sm|max-md|max-lg|max-xl):[a-z[]/g;
 function files(dir: string): string[] {
   return readdirSync(dir).flatMap((n) => {
     const p = join(dir, n);
-    return statSync(p).isDirectory() ? files(p) : ['.astro', '.svelte', '.ts', '.mdx'].includes(extname(n)) ? [p] : [];
+    return statSync(p).isDirectory()
+      ? files(p)
+      : ['.astro', '.svelte', '.ts', '.mdx'].includes(extname(n))
+        ? [p]
+        : [];
   });
 }
 

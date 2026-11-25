@@ -18,7 +18,9 @@ export async function signOut(): Promise<void> {
         await sync({ interactive: true });
       } catch (error) {
         const reason = error instanceof Error ? ` ${error.message}` : '';
-        throw new Error(`${t.user.signOut.failed(PROVIDERS[cloud.provider])}${reason}`, { cause: error });
+        throw new Error(`${t.user.signOut.failed(PROVIDERS[cloud.provider])}${reason}`, {
+          cause: error,
+        });
       }
     }
     await disconnect();

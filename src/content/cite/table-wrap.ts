@@ -3,6 +3,10 @@
 export const tableWrap = {
   name: 'capxer-table-wrap',
   table(node: unknown, ctx: { wrapNode(node: unknown, parent: unknown): void }) {
-    ctx.wrapNode(node, { type: 'tableWrap', data: { hName: 'div', hProperties: { className: ['table-wrap'] } }, children: [] });
+    ctx.wrapNode(node, {
+      type: 'tableWrap',
+      data: { hName: 'div', hProperties: { className: ['table-wrap'] } },
+      children: [],
+    });
   },
 };

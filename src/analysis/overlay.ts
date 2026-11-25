@@ -90,30 +90,48 @@ const hexRgb = (hex: string): [number, number, number] => {
 
 /** Null when the browser has no WebGL2 (the panel then says the picture aids are unavailable). */
 export function createRenderer(canvas: HTMLCanvasElement): AidRenderer | null {
-  const gl = canvas.getContext('webgl2', { premultipliedAlpha: true, antialias: false, depth: false, stencil: false });
+  const gl = canvas.getContext('webgl2', {
+    premultipliedAlpha: true,
+    antialias: false,
+    depth: false,
+    stencil: false,
+  });
   if (!gl) return null;
   const info = gl.getExtension('WEBGL_debug_renderer_info');
-  const software = /swiftshader|llvmpipe|softpipe|software|basic render/i.test(String(gl.getParameter(info ? info.UNMASKED_RENDERER_WEBGL : gl.RENDERER)));
+  const software = /swiftshader|llvmpipe|softpipe|software|basic render/i.test(
+    String(gl.getParameter(info ? info.UNMASKED_RENDERER_WEBGL : gl.RENDERER)),
+  );
   const maxSide = software ? SOFTWARE.maxSide : MAX_SIDE;
 
   const shader = (type: number, src: string) => {
     const s = gl.createShader(type)!;
     gl.shaderSource(s, src);
     gl.compileShader(s);
-    if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(s) ?? 'shader');
+    if (!gl.getShaderParameter(s, gl.COMPILE_STATUS))
+      throw new Error(gl.getShaderInfoLog(s) ?? 'shader');
     return s;
   };
   const prog = gl.createProgram()!;
   gl.attachShader(prog, shader(gl.VERTEX_SHADER, VERT));
   gl.attachShader(prog, shader(gl.FRAGMENT_SHADER, FRAG));
   gl.linkProgram(prog);
-  if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(prog) ?? 'link');
+  if (!gl.getProgramParameter(prog, gl.LINK_STATUS))
+    throw new Error(gl.getProgramInfoLog(prog) ?? 'link');
   gl.useProgram(prog);
   const u = (name: string) => gl.getUniformLocation(prog, name);
 
-  gl.uniform1fv(u('u_lo'), BANDS.map((b) => b.lo));
-  gl.uniform1fv(u('u_hi'), BANDS.map((b) => b.hi));
-  gl.uniform3fv(u('u_col'), BANDS.flatMap((b) => hexRgb(b.color)));
+  gl.uniform1fv(
+    u('u_lo'),
+    BANDS.map((b) => b.lo),
+  );
+  gl.uniform1fv(
+    u('u_hi'),
+    BANDS.map((b) => b.hi),
+  );
+  gl.uniform3fv(
+    u('u_col'),
+    BANDS.flatMap((b) => hexRgb(b.color)),
+  );
 
   const tex = gl.createTexture();
   gl.bindTexture(gl.TEXTURE_2D, tex);
@@ -125,7 +143,14 @@ export function createRenderer(canvas: HTMLCanvasElement): AidRenderer | null {
   gl.bindVertexArray(vao);
   gl.clearColor(0, 0, 0, 0);
 
-  const loc = { texel: u('u_texel'), mode: u('u_mode'), zebra: u('u_zebra'), stripe: u('u_stripe'), peak: u('u_peak'), peakColor: u('u_peakColor') };
+  const loc = {
+    texel: u('u_texel'),
+    mode: u('u_mode'),
+    zebra: u('u_zebra'),
+    stripe: u('u_stripe'),
+    peak: u('u_peak'),
+    peakColor: u('u_peakColor'),
+  };
 
   return {
     interval: software ? SOFTWARE.interval : 0,

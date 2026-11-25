@@ -7,7 +7,8 @@ export const en = {
     tagline: "A director's viewfinder in your browser",
     description:
       "CapXer is a free director's viewfinder in your browser. Pick a sensor, aspect ratio and focal length, and see the frame on your phone or webcam.",
-    cardAlt: "CapXer: a director's viewfinder in your browser. A drawn scene seen through 2.39:1 frame lines.",
+    cardAlt:
+      "CapXer: a director's viewfinder in your browser. A drawn scene seen through 2.39:1 frame lines.",
   },
   nav: {
     label: 'Main',
@@ -53,7 +54,8 @@ export const en = {
     title: 'Your profile',
     description: 'Your CapXer profile: your name and picture, your save file and cloud save.',
     lead: 'Your name, your picture and where your work is kept. All of it lives in your save file, never on a CapXer server.',
-    welcomeLead: 'CapXer has no accounts and no passwords. Your save file is your key: bring it here, or let your own Google Drive or Dropbox keep it for you.',
+    welcomeLead:
+      'CapXer has no accounts and no passwords. Your save file is your key: bring it here, or let your own Google Drive or Dropbox keep it for you.',
     circle: 'Your profile',
     initialsLabel: (letters: string) => `initials ${letters}`,
     noProfile: 'No profile yet',
@@ -79,11 +81,20 @@ export const en = {
       reconnect: (p: string) => `Connect ${p} again`,
     },
     ways: {
-      open: ['Open your save file', 'Pick the file you downloaded from CapXer before. Your setups, cameras, lenses and profile come back on this device.'],
+      open: [
+        'Open your save file',
+        'Pick the file you downloaded from CapXer before. Your setups, cameras, lenses and profile come back on this device.',
+      ],
       drop: 'Drop the file here, or',
       choose: 'Choose file',
-      cloud: ['Sign in with your cloud', 'Saved to Google Drive or Dropbox on another device? Connect the same one here and your work comes with it.'],
-      fresh: ['Start fresh', 'New here? Add your name and a picture. Everything you save in the viewfinder stays in this browser until you choose otherwise.'],
+      cloud: [
+        'Sign in with your cloud',
+        'Saved to Google Drive or Dropbox on another device? Connect the same one here and your work comes with it.',
+      ],
+      fresh: [
+        'Start fresh',
+        'New here? Add your name and a picture. Everything you save in the viewfinder stays in this browser until you choose otherwise.',
+      ],
       setup: 'Set up your profile',
       viewfinder: 'Open the viewfinder',
       noCloud: 'Cloud save is not available in this copy of CapXer.',
@@ -112,11 +123,20 @@ export const en = {
       chooseOther: 'Choose another photo',
       choose: 'Choose a photo',
       zoom: 'Zoom',
-      cropHint: 'Drag or use the arrow keys to move, and zoom to fit your face in the circle. Kept as a small picture inside your save file.',
+      cropHint:
+        'Drag or use the arrow keys to move, and zoom to fit your face in the circle. Kept as a small picture inside your save file.',
       cropLabel: 'Photo position. Use the arrow keys to move it, plus and minus to zoom.',
       letters: 'Letters',
       colour: 'Colour',
-      tints: { blue: 'Blue', teal: 'Teal', green: 'Green', amber: 'Amber', rose: 'Rose', violet: 'Violet', slate: 'Slate' },
+      tints: {
+        blue: 'Blue',
+        teal: 'Teal',
+        green: 'Green',
+        amber: 'Amber',
+        rose: 'Rose',
+        violet: 'Violet',
+        slate: 'Slate',
+      },
       use: 'Use this picture',
       cancel: 'Cancel',
       notImage: 'This picture could not be opened. Try a JPEG, PNG or WebP photo.',
@@ -124,7 +144,8 @@ export const en = {
     },
     cloud: {
       title: 'Cloud save',
-      intro: 'Keep your save in your own Google Drive or Dropbox, and open it on any device. CapXer can only see its own private folder there, nothing else.',
+      intro:
+        'Keep your save in your own Google Drive or Dropbox, and open it on any device. CapXer can only see its own private folder there, nothing else.',
       off: 'Off until you connect. It then updates by itself a few seconds after each change.',
       connect: (p: string) => `Connect ${p}`,
       saveNow: 'Save now',
@@ -136,7 +157,10 @@ export const en = {
       last: 'Last saved',
       never: 'Not yet',
       connecting: (p: string) => `Connecting ${p}`,
-      brought: (n: number) => (n === 1 ? 'Brought in 1 change from your other devices.' : `Brought in ${n} changes from your other devices.`),
+      brought: (n: number) =>
+        n === 1
+          ? 'Brought in 1 change from your other devices.'
+          : `Brought in ${n} changes from your other devices.`,
       upToDate: 'Your save is up to date.',
       disconnected: (p: string) => `Disconnected from ${p}. Your save there stays where it is.`,
     },
@@ -153,7 +177,8 @@ export const en = {
       title: 'Sign out of this browser',
       body: 'Removes your profile, setups, cameras, lenses and calibration from this browser, for example on a shared computer.',
       kept: (p: string) => `Your save stays in your ${p}, so you can sign in again on any device.`,
-      notKept: 'Your work is only in this browser. Download your save file first if you want to keep it.',
+      notKept:
+        'Your work is only in this browser. Download your save file first if you want to keep it.',
       button: 'Sign out',
       confirmTitle: 'Sign out of this browser?',
       cancel: 'Cancel',
@@ -164,22 +189,29 @@ export const en = {
     },
     errors: {
       googleStart: "Google's sign-in did not start.",
-      googleLoad: "Google's sign-in could not load. Check the connection (or a blocker) and try again.",
+      googleLoad:
+        "Google's sign-in could not load. Check the connection (or a blocker) and try again.",
       googleUnfinished: 'Google sign-in did not finish.',
-      googleScope: 'Google Drive access was not allowed, so nothing can be saved there. Connect again and tick the Drive box.',
+      googleScope:
+        'Google Drive access was not allowed, so nothing can be saved there. Connect again and tick the Drive box.',
       googleClosed: 'The Google window closed before it finished.',
-      googlePopup: "Google's sign-in window could not open. Allow pop-ups for this site and try again.",
+      googlePopup:
+        "Google's sign-in window could not open. Allow pop-ups for this site and try again.",
       googleAgain: 'Google needs you to sign in again.',
       googleClick: 'Google needs a click to save again.',
       dropboxAgain: 'Dropbox needs you to connect again.',
       dropboxDenied: 'Dropbox access was not allowed, so nothing was connected.',
       dropboxUnfinished: 'Dropbox did not finish connecting.',
-      dropboxForeign: 'That Dropbox answer does not belong to this browser. Connect again from here.',
-      failed: (p: string, code: number) => `${p} answered with an error (${code}). Try again later.`,
+      dropboxForeign:
+        'That Dropbox answer does not belong to this browser. Connect again from here.',
+      failed: (p: string, code: number) =>
+        `${p} answered with an error (${code}). Try again later.`,
       conflict: 'Another device saved at the same moment.',
       storage: 'This browser is not letting CapXer store anything, so cloud save cannot work here.',
-      newer: 'The save in your cloud comes from a newer version of CapXer. Reload the page to update, then try again.',
-      unreadable: (p: string, file: string) => `The save in your ${p} cannot be read. Remove ${file} there to start a new one.`,
+      newer:
+        'The save in your cloud comes from a newer version of CapXer. Reload the page to update, then try again.',
+      unreadable: (p: string, file: string) =>
+        `The save in your ${p} cannot be read. Remove ${file} there to start a new one.`,
       generic: 'Saving to the cloud failed. Check the connection and try again.',
     },
   },
@@ -193,10 +225,14 @@ export const en = {
     minutes: (n: number) => `${n} min read`,
     sources: (n: number) => (n === 1 ? '1 source' : `${n} sources`),
     updated: 'Updated',
-    more: ['More lessons are on the way', 'Each one goes through the same checks: every fact is cited, with the page, section or table it comes from.'],
+    more: [
+      'More lessons are on the way',
+      'Each one goes through the same checks: every fact is cited, with the page, section or table it comes from.',
+    ],
     sourcesTitle: 'Sources',
     source: 'Source',
-    sourcesHint: 'The small raised numbers in the text point here. "Cited at" lists the exact pages, sections or tables used from each source.',
+    sourcesHint:
+      'The small raised numbers in the text point here. "Cited at" lists the exact pages, sections or tables used from each source.',
     citedAt: 'Cited at',
     citedHere: 'Cited here',
     allSources: 'All sources',
@@ -225,12 +261,47 @@ export const en = {
   },
   vf: {
     tools: 'Viewfinder tools',
-    panels: { camera: 'Camera', frame: 'Frame', lens: 'Lens', guides: 'Guides', live: 'Live', exposure: 'Exposure', info: 'Info', saved: 'Saved' },
+    panels: {
+      camera: 'Camera',
+      frame: 'Frame',
+      lens: 'Lens',
+      guides: 'Guides',
+      live: 'Live',
+      exposure: 'Exposure',
+      info: 'Info',
+      saved: 'Saved',
+    },
     close: 'Close panel',
-    mode: { label: 'Mode', hint: 'Changes the presets and lens stops', cinema: 'Cinema', stills: 'Stills' },
-    camera: { label: 'Camera', hint: 'Search by maker or model', format: 'Recording format', formatStills: 'Sensor format' },
-    custom: { label: 'Custom sensor', hint: 'Your own size, saved in this browser', add: 'Add', name: 'Name', width: 'Width (mm)', height: 'Height (mm)', squeeze: 'Anamorphic squeeze', submit: 'Use this sensor', defaultName: 'My sensor' },
-    picker: { title: 'Choose a camera', search: 'Search cameras', none: 'No camera matches your search.', close: 'Close', yours: 'Your sensors' },
+    mode: {
+      label: 'Mode',
+      hint: 'Changes the presets and lens stops',
+      cinema: 'Cinema',
+      stills: 'Stills',
+    },
+    camera: {
+      label: 'Camera',
+      hint: 'Search by maker or model',
+      format: 'Recording format',
+      formatStills: 'Sensor format',
+    },
+    custom: {
+      label: 'Custom sensor',
+      hint: 'Your own size, saved in this browser',
+      add: 'Add',
+      name: 'Name',
+      width: 'Width (mm)',
+      height: 'Height (mm)',
+      squeeze: 'Anamorphic squeeze',
+      submit: 'Use this sensor',
+      defaultName: 'My sensor',
+    },
+    picker: {
+      title: 'Choose a camera',
+      search: 'Search cameras',
+      none: 'No camera matches your search.',
+      close: 'Close',
+      yours: 'Your sensors',
+    },
     classes: {
       'medium-format': 'Medium format',
       'full-frame': 'Full frame',
@@ -241,7 +312,13 @@ export const en = {
       'super-16': 'Super 16',
       phone: 'Phone',
     },
-    frame: { label: 'Aspect ratio', hint: 'The frame drawn inside the format', squeeze: 'Anamorphic squeeze', squeezeHint: 'For anamorphic lenses', spherical: 'None (spherical)' },
+    frame: {
+      label: 'Aspect ratio',
+      hint: 'The frame drawn inside the format',
+      squeeze: 'Anamorphic squeeze',
+      squeezeHint: 'For anamorphic lenses',
+      spherical: 'None (spherical)',
+    },
     lens: {
       label: 'Focal length',
       entry: 'Entry',
@@ -275,8 +352,10 @@ export const en = {
     aids: {
       label: 'Exposure aids',
       note: "Measured on the video your browser receives, after your camera's own exposure and processing, not on RAW. A guide to light and contrast, not a light meter.",
-      sceneOnly: 'These work on the live camera. Switch to Live to use them; your choices are kept.',
-      noGpu: 'Zebras, false colour and focus peaking need WebGL2, which this browser does not offer. The histogram still works.',
+      sceneOnly:
+        'These work on the live camera. Switch to Live to use them; your choices are kept.',
+      noGpu:
+        'Zebras, false colour and focus peaking need WebGL2, which this browser does not offer. The histogram still works.',
       histogram: ['Histogram', 'Brightness inside the frame lines'],
       histMode: ['Show', 'A red edge means clipped shadows or highlights'],
       luma: 'Brightness',
@@ -296,7 +375,8 @@ export const en = {
       },
       otherBands: 'Everything else',
       otherShown: 'grey',
-      bandsNote: 'Bands follow the BT.709 video curve. Phones tone-map their picture, so the stop labels are approximate.',
+      bandsNote:
+        'Bands follow the BT.709 video curve. Phones tone-map their picture, so the stop labels are approximate.',
       peaking: ['Focus peaking', 'Outlines the sharpest edges'],
       peakColor: 'Colour',
       peakSens: ['Sensitivity', 'High marks softer edges too'],
@@ -327,13 +407,18 @@ export const en = {
       done: 'Done',
       replace: 'Replace with this setup',
       remove: 'Delete',
-      data: ['Your data', 'Kept in this browser, and in your own cloud if you turn on cloud save in your profile. Export a file to keep a copy or to move everything to another device.'],
-      unavailable: 'This browser is not letting CapXer store anything (private browsing or blocked site data). Saving lasts until you close the page; export a file to keep it.',
+      data: [
+        'Your data',
+        'Kept in this browser, and in your own cloud if you turn on cloud save in your profile. Export a file to keep a copy or to move everything to another device.',
+      ],
+      unavailable:
+        'This browser is not letting CapXer store anything (private browsing or blocked site data). Saving lasts until you close the page; export a file to keep it.',
       exportFile: 'Export file',
       importFile: 'Import file',
       clear: 'Clear all saved data',
       clearTitle: 'Clear all saved data?',
-      clearBody: 'This deletes your profile, saved setups, lab setups, custom cameras and lenses, calibration and exposure-aid choices from this browser, and disconnects cloud save (the copy in your cloud stays). Export a file first if you want to keep them. It cannot be undone.',
+      clearBody:
+        'This deletes your profile, saved setups, lab setups, custom cameras and lenses, calibration and exposure-aid choices from this browser, and disconnects cloud save (the copy in your cloud stays). Export a file first if you want to keep them. It cannot be undone.',
       clearConfirm: 'Clear everything',
       cancel: 'Cancel',
       close: 'Close',
@@ -349,13 +434,20 @@ export const en = {
         aids: 'Exposure-aid choices',
         yes: 'Included',
         how: 'How to import',
-        merge: ['Add to mine', 'Your setups stay. Calibration and exposure-aid choices from the file replace yours.'],
-        replace: ['Replace everything', 'Everything stored in this browser is swapped for the file.'],
+        merge: [
+          'Add to mine',
+          'Your setups stay. Calibration and exposure-aid choices from the file replace yours.',
+        ],
+        replace: [
+          'Replace everything',
+          'Everything stored in this browser is swapped for the file.',
+        ],
         submit: 'Import',
       },
       notice: {
         shared: 'Opened a shared setup',
-        sharedUnknown: 'The link uses a camera CapXer does not know, so the default camera is shown.',
+        sharedUnknown:
+          'The link uses a camera CapXer does not know, so the default camera is shown.',
         saveIt: 'Save it',
         backToMine: 'Back to mine',
         keep: 'Keep it',
@@ -369,7 +461,8 @@ export const en = {
         imported: 'Imported',
         cleared: 'Everything CapXer stored in this browser is cleared',
         notCapxer: 'This is not a CapXer save file.',
-        newer: 'This file comes from a newer version of CapXer. Reload the page to update, then try again.',
+        newer:
+          'This file comes from a newer version of CapXer. Reload the page to update, then try again.',
         full: 'The list is full. Delete a setup to save a new one.',
       },
     },
@@ -393,18 +486,35 @@ export const en = {
       resume: 'Resume',
       retry: 'Try again',
       errors: {
-        denied: ['Camera blocked', 'Allow the camera for this site in your browser settings (usually the icon next to the address), then try again.'],
+        denied: [
+          'Camera blocked',
+          'Allow the camera for this site in your browser settings (usually the icon next to the address), then try again.',
+        ],
         none: ['No camera found', 'This device has no camera the browser can use.'],
-        busy: ['Camera in use', 'Another app or tab is using the camera. Close it, then try again.'],
+        busy: [
+          'Camera in use',
+          'Another app or tab is using the camera. Close it, then try again.',
+        ],
         insecure: ['Camera needs a secure page', 'Browsers only allow the camera on https pages.'],
-        unsupported: ['Camera not supported', 'This browser cannot give websites camera access. Try a current Chrome, Safari, Firefox or Edge.'],
+        unsupported: [
+          'Camera not supported',
+          'This browser cannot give websites camera access. Try a current Chrome, Safari, Firefox or Edge.',
+        ],
         error: ['Camera did not start', 'Something went wrong while starting the camera.'],
       },
-      mode: { camera: 'Camera zoom', digital: 'Digital crop', wider: 'Wider than your camera', none: 'No zoom needed', plusDigital: 'digital' },
+      mode: {
+        camera: 'Camera zoom',
+        digital: 'Digital crop',
+        wider: 'Wider than your camera',
+        none: 'No zoom needed',
+        plusDigital: 'digital',
+      },
       modeHelp: {
         camera: 'Your camera zooms natively, the best quality there is.',
-        digital: 'The browser offers no camera zoom here, so CapXer enlarges the video. Fine detail gets softer.',
-        wider: 'The simulated lens sees more than your camera can. The hatched area is outside its view.',
+        digital:
+          'The browser offers no camera zoom here, so CapXer enlarges the video. Fine detail gets softer.',
+        wider:
+          'The simulated lens sees more than your camera can. The hatched area is outside its view.',
       },
       zoomRange: 'Camera zoom available',
       noZoom: 'No camera zoom in this browser',
@@ -420,18 +530,26 @@ export const en = {
       apply: 'Use',
       result: 'Your camera',
       across: 'across',
-      approx: 'Approximate: phones crop video slightly for stabilisation, and makers round their figures. Saved in this browser.',
+      approx:
+        'Approximate: phones crop video slightly for stabilisation, and makers round their figures. Saved in this browser.',
       level: ['Level', 'Horizon line from the motion sensors'],
       levelFlat: 'Hold the device upright',
       levelOk: 'Level',
       levelDenied: 'Motion sensors are not available or were not allowed.',
-      picker: { title: 'Choose your device', search: 'Search phones and webcams', none: 'No device matches. Type its focal length or angle instead.', phone: 'Phones', webcam: 'Webcams' },
+      picker: {
+        title: 'Choose your device',
+        search: 'Search phones and webcams',
+        none: 'No device matches. Type its focal length or angle instead.',
+        phone: 'Phones',
+        webcam: 'Webcams',
+      },
       photo: { downloaded: 'Photo saved to your downloads', failed: 'Could not take the photo' },
     },
   },
   lab: {
     title: 'Lab',
-    description: 'Stand in a small studio and take the shot: aperture, shutter and ISO change the picture like a real camera, with a meter and a top view of the set.',
+    description:
+      'Stand in a small studio and take the shot: aperture, shutter and ISO change the picture like a real camera, with a meter and a top view of the set.',
     set: 'Set',
     subject: 'Subject',
     light: 'Light',
@@ -440,8 +558,18 @@ export const en = {
     pictureLabel: 'Rendered picture of the studio:',
     rendering: 'Rendering',
     sharp: 'Finished',
-    noWebgl: ['This browser cannot draw 3D', 'The lab needs WebGL 2. Try a current Chrome, Edge, Firefox or Safari with hardware acceleration turned on.'],
-    settings: { aperture: 'Aperture', shutter: 'Shutter', iso: 'ISO', ei: 'EI', wb: 'White balance', focus: 'Focus' },
+    noWebgl: [
+      'This browser cannot draw 3D',
+      'The lab needs WebGL 2. Try a current Chrome, Edge, Firefox or Safari with hardware acceleration turned on.',
+    ],
+    settings: {
+      aperture: 'Aperture',
+      shutter: 'Shutter',
+      iso: 'ISO',
+      ei: 'EI',
+      wb: 'White balance',
+      focus: 'Focus',
+    },
     steps: {
       less: 'less light',
       more: 'more light',
@@ -454,7 +582,8 @@ export const en = {
     match: 'Match the meter',
     focusSubject: 'Focus on the subject',
     onSubject: 'on the subject',
-    noiseNote: 'The grain is a simplified model of sensor noise, not a specific camera. The lens passes all its light, so a T-stop equals the f-number here.',
+    noiseNote:
+      'The grain is a simplified model of sensor noise, not a specific camera. The lens passes all its light, so a T-stop equals the f-number here.',
     meter: {
       label: 'Meter',
       measuring: 'Measuring',
@@ -540,7 +669,10 @@ export const en = {
     },
     cameraPane: {
       shared: 'The same camera as the viewfinder: a change here changes it there too.',
-      mode: ['Vocabulary', 'Cinema: T-stops, shutter angle, EI. Stills: f-stops, shutter speed, ISO.'],
+      mode: [
+        'Vocabulary',
+        'Cinema: T-stops, shutter angle, EI. Stills: f-stops, shutter speed, ISO.',
+      ],
       cinema: 'Cinema',
       stills: 'Stills',
       camera: 'Camera',
@@ -558,7 +690,8 @@ export const en = {
     aidsPane: {
       note: 'Measured on the rendered picture, like the aids on a camera monitor.',
       histogram: ['Histogram', 'Brightness of the whole picture'],
-      bandsNote: 'Middle grey, one stop over and deep shadow are measured on the light that reached the sensor, in stops around the 18% grey the meter aims for; clipping and crushed blacks on the picture itself.',
+      bandsNote:
+        'Middle grey, one stop over and deep shadow are measured on the light that reached the sensor, in stops around the 18% grey the meter aims for; clipping and crushed blacks on the picture itself.',
     },
     phone: {
       title: 'The lab needs a computer',

@@ -10,7 +10,10 @@ import makerList from './makers.json';
 export const makers = makerList as Maker[];
 const makerById = new Map(makers.map((m) => [m.id, m]));
 
-const files = import.meta.glob<SensorFile>('./sensors/*/*.json', { eager: true, import: 'default' });
+const files = import.meta.glob<SensorFile>('./sensors/*/*.json', {
+  eager: true,
+  import: 'default',
+});
 
 const classOrder = new Map<string, number>(FORMAT_CLASSES.map((c, i) => [c, i]));
 
@@ -22,7 +25,8 @@ export const sensors: readonly Sensor[] = Object.entries(files)
   })
   .sort(
     (a, b) =>
-      classOrder.get(a.formatClass)! - classOrder.get(b.formatClass)! || displayName(a).localeCompare(displayName(b)),
+      classOrder.get(a.formatClass)! - classOrder.get(b.formatClass)! ||
+      displayName(a).localeCompare(displayName(b)),
   );
 
 const byId = new Map(sensors.map((s) => [s.id, s]));
@@ -43,7 +47,10 @@ export function fullFormat(sensor: Sensor): Format {
 }
 
 // Phones and webcams, for calibrating the live camera: src/data/devices/<maker>/<model>.json.
-const deviceFiles = import.meta.glob<DeviceFile>('./devices/*/*.json', { eager: true, import: 'default' });
+const deviceFiles = import.meta.glob<DeviceFile>('./devices/*/*.json', {
+  eager: true,
+  import: 'default',
+});
 
 /** All devices, phones first, then by display name. */
 export const devices: readonly Device[] = Object.entries(deviceFiles)
@@ -51,7 +58,11 @@ export const devices: readonly Device[] = Object.entries(deviceFiles)
     const [, maker = '', model = ''] = SENSOR_PATH.exec(path.replace('./devices/', '')) ?? [];
     return { ...file, id: `${maker}/${model}`, maker: makerById.get(maker)! };
   })
-  .sort((a, b) => Number(a.kind !== 'phone') - Number(b.kind !== 'phone') || displayName(a).localeCompare(displayName(b)));
+  .sort(
+    (a, b) =>
+      Number(a.kind !== 'phone') - Number(b.kind !== 'phone') ||
+      displayName(a).localeCompare(displayName(b)),
+  );
 
 const deviceById = new Map(devices.map((d) => [d.id, d]));
 
@@ -60,4 +71,13 @@ export function getDevice(id: string): Device | undefined {
   return deviceById.get(id);
 }
 
-export type { Device, DeviceCamera, Format, Maker, Sensor, SensorKind, FormatClass, Citation } from './schema.ts';
+export type {
+  Device,
+  DeviceCamera,
+  Format,
+  Maker,
+  Sensor,
+  SensorKind,
+  FormatClass,
+  Citation,
+} from './schema.ts';

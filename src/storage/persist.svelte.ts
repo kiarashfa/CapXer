@@ -8,11 +8,29 @@ import type { CustomSensor, Setup } from '../setup/types.ts';
 import { url } from '../lib/url.ts';
 import { t } from '../i18n/en.ts';
 import { decodeLink, encodeLink } from './link.ts';
-import { exportName, exportText, mergeSave, parseFile, summarize, uniqueName, type ImportSummary } from './file.ts';
+import {
+  exportName,
+  exportText,
+  mergeSave,
+  parseFile,
+  summarize,
+  uniqueName,
+  type ImportSummary,
+} from './file.ts';
 import { SAVE_KEY } from './local.ts';
 import { cleanName, DEFAULT_AIDS, emptyDeleted, emptySave } from './sanitize.ts';
 import { FLUSH_EVENT, local, readSave, REPLACED_EVENT, writeSave, clearSave } from './store.ts';
-import { LIMITS, newId, type Calibrations, type Deleted, type LabState, type Profile, type SavedLab, type SaveFile, type SavedSetup } from './schema.ts';
+import {
+  LIMITS,
+  newId,
+  type Calibrations,
+  type Deleted,
+  type LabState,
+  type Profile,
+  type SavedLab,
+  type SaveFile,
+  type SavedSetup,
+} from './schema.ts';
 import { cloudState, forgetCloud } from '../user/local.ts';
 
 // Connects the viewfinder's stores to the save file: restores on load, writes
@@ -46,7 +64,9 @@ export const saved = new SavedStore();
 /** The calibration slot of the other device kind, kept as loaded so it is never lost. */
 let calibrations: Calibrations = {};
 /** Parts of the save the viewfinder does not edit, kept as loaded so a write never drops them. */
-let extras: { profile?: Profile; deleted: Deleted; lab?: LabState; labSetups?: SavedLab[] } = { deleted: emptyDeleted() };
+let extras: { profile?: Profile; deleted: Deleted; lab?: LabState; labSetups?: SavedLab[] } = {
+  deleted: emptyDeleted(),
+};
 /** The file this page's state came from (deletions are measured against it). */
 let base: SaveFile | null = null;
 let noticeTimer: ReturnType<typeof setTimeout> | undefined;
@@ -54,7 +74,10 @@ let noticeTimer: ReturnType<typeof setTimeout> | undefined;
 const kind = () => (live.phone ? 'phone' : 'webcam');
 const clone = <T>(v: T): T => structuredClone($state.snapshot(v) as T);
 
-export function notify(n: Notice | null, ms = n && (n.kind === 'shared' || n.kind === 'link') ? 0 : 5000) {
+export function notify(
+  n: Notice | null,
+  ms = n && (n.kind === 'shared' || n.kind === 'link') ? 0 : 5000,
+) {
   clearTimeout(noticeTimer);
   saved.notice = n;
   if (n && ms) noticeTimer = setTimeout(() => (saved.notice = null), ms);
@@ -72,7 +95,8 @@ export function summaryOf(setup: Setup, customs: readonly CustomSensor[] = vf.cu
 
 /** A suggested name: "ALEXA 35, 2.39:1, 35 mm". */
 export function suggestName(setup: Setup = vf.setup): string {
-  const model = getSensor(setup.sensorId)?.name ?? vf.customs.find((c) => c.id === setup.sensorId)?.name ?? '';
+  const model =
+    getSensor(setup.sensorId)?.name ?? vf.customs.find((c) => c.id === setup.sensorId)?.name ?? '';
   return cleanName(`${model}, ${aspectText(setup.mode, setup.aspect)}, ${setup.focal} mm`);
 }
 
@@ -93,7 +117,15 @@ function snapshot(): SaveFile {
     setups: clone(saved.setups),
     gear: { cameras: clone(vf.customs), lenses: clone(vf.customLenses) },
     calibration: cal,
-    aids: { histogram: aids.histogram, histMode: aids.histMode, picture: aids.picture, zebra: aids.zebra, peaking: aids.peaking, peakColor: aids.peakColor, peakSens: aids.peakSens },
+    aids: {
+      histogram: aids.histogram,
+      histMode: aids.histMode,
+      picture: aids.picture,
+      zebra: aids.zebra,
+      peaking: aids.peaking,
+      peakColor: aids.peakColor,
+      peakSens: aids.peakSens,
+    },
     deleted: clone(extras.deleted),
     ...(extras.lab ? { lab: clone(extras.lab) } : {}),
     ...(extras.labSetups ? { labSetups: clone(extras.labSetups) } : {}),
@@ -111,7 +143,12 @@ function apply(file: SaveFile, opts: { current: boolean }) {
   calibrations = file.calibration;
   live.calibration = file.calibration[kind()] ?? null;
   Object.assign(aids, file.aids);
-  extras = { profile: file.profile, deleted: file.deleted, lab: file.lab, labSetups: file.labSetups };
+  extras = {
+    profile: file.profile,
+    deleted: file.deleted,
+    lab: file.lab,
+    labSetups: file.labSetups,
+  };
   if (opts.current) vf.setup = file.current;
   base = file;
 }
@@ -248,7 +285,13 @@ function openLink(hash: string) {
   let setup = link.setup;
   if (link.custom) {
     const c = link.custom;
-    const same = vf.customs.find((x) => x.name === c.name && x.width === c.width && x.height === c.height && x.squeeze === c.squeeze);
+    const same = vf.customs.find(
+      (x) =>
+        x.name === c.name &&
+        x.width === c.width &&
+        x.height === c.height &&
+        x.squeeze === c.squeeze,
+    );
     const id = same?.id ?? `custom/${newId()}`;
     if (!same) {
       vf.customs.push({ ...c, id });
@@ -258,7 +301,11 @@ function openLink(hash: string) {
   }
   vf.setup = setup;
   saved.shared = { previous, addedCamera, unknownCamera: link.unknownCamera };
-  notify({ kind: 'shared', title: N.shared, body: link.unknownCamera ? N.sharedUnknown : summaryOf(setup) });
+  notify({
+    kind: 'shared',
+    title: N.shared,
+    body: link.unknownCamera ? N.sharedUnknown : summaryOf(setup),
+  });
 }
 
 /** Keeps the shared setup as your own (the note's close button). */
@@ -276,7 +323,8 @@ export function backToMine() {
   const s = saved.shared;
   if (!s) return;
   vf.setup = s.previous;
-  if (s.addedCamera && !saved.setups.some((x) => x.setup.sensorId === s.addedCamera)) vf.customs = vf.customs.filter((c) => c.id !== s.addedCamera);
+  if (s.addedCamera && !saved.setups.some((x) => x.setup.sensorId === s.addedCamera))
+    vf.customs = vf.customs.filter((c) => c.id !== s.addedCamera);
   saved.shared = null;
   notify(null);
 }
@@ -289,7 +337,12 @@ export function saveCurrent(name: string): boolean {
     return false;
   }
   const taken = new Set(saved.setups.map((s) => s.name));
-  const entry: SavedSetup = { id: newId(), name: uniqueName(cleanName(name, suggestName()), taken), setup: clone(vf.setup), savedAt: new Date().toISOString() };
+  const entry: SavedSetup = {
+    id: newId(),
+    name: uniqueName(cleanName(name, suggestName()), taken),
+    setup: clone(vf.setup),
+    savedAt: new Date().toISOString(),
+  };
   saved.setups.push(entry);
   if (saved.shared) saved.shared = null;
   notify({ kind: 'info', title: N.saved, body: entry.name });

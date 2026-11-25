@@ -3,18 +3,40 @@ import { getSensor } from '../../src/data/index.ts';
 import { circleOfConfusion } from '../../src/optics/index.ts';
 import { derive } from '../../src/setup/derive.ts';
 import { defaultSetup } from '../../src/setup/presets.ts';
-import { discPoint, focusShift, labCamera, pixelJitter, pupilRadiusM, timeSample } from '../../src/lab/camera.ts';
+import {
+  discPoint,
+  focusShift,
+  labCamera,
+  pixelJitter,
+  pupilRadiusM,
+  timeSample,
+} from '../../src/lab/camera.ts';
 import { formatAperture, formatMetres, formatShutter, formatStops } from '../../src/lab/format.ts';
 import { alongToWall, beam, sharpBand, viewWedge } from '../../src/lab/plan.ts';
 import { averageLuminance, METER_H, METER_W } from '../../src/lab/render/accumulate.ts';
-import { MAX_PER_FRAME, TIERS, initialTier, nextPerFrame, tierAfter } from '../../src/lab/render/tiers.ts';
+import {
+  MAX_PER_FRAME,
+  TIERS,
+  initialTier,
+  nextPerFrame,
+  tierAfter,
+} from '../../src/lab/render/tiers.ts';
 import { SETS, getSet } from '../../src/lab/sets/index.ts';
 import { clampPlace } from '../../src/lab/place.ts';
 import { decodeLabLink, encodeLabLink } from '../../src/lab/link.ts';
 import { labKey, labSummary, suggestLabName } from '../../src/lab/describe.ts';
 import { decodeLink } from '../../src/storage/link.ts';
 import { defaultLab } from '../../src/storage/sanitize.ts';
-import { ANGLES, APERTURES, FRAME_RATES, ISOS, SHUTTERS, WHITE_BALANCES, nearestIndex, step } from '../../src/lab/stops.ts';
+import {
+  ANGLES,
+  APERTURES,
+  FRAME_RATES,
+  ISOS,
+  SHUTTERS,
+  WHITE_BALANCES,
+  nearestIndex,
+  step,
+} from '../../src/lab/stops.ts';
 import { noiseCoefficients, noiseSigma } from '../../src/lab/render/noise.ts';
 import { SUBJECTS, getSubject } from '../../src/lab/subjects/index.ts';
 
@@ -35,11 +57,16 @@ describe('sets and subjects', () => {
     describe(set.name, () => {
       const halfW = set.room.width / 2;
       const front = set.room.wallZ + set.room.depth;
-      const inside = (x: number, z: number) => Math.abs(x) <= halfW && z >= set.room.wallZ && z <= front;
+      const inside = (x: number, z: number) =>
+        Math.abs(x) <= halfW && z >= set.room.wallZ && z <= front;
 
       it('lists subjects that exist, and at least one lighting scenario', () => {
         expect(set.subjects.length).toBeGreaterThan(0);
-        for (const id of set.subjects) expect(SUBJECTS.some((s) => s.id === id), id).toBe(true);
+        for (const id of set.subjects)
+          expect(
+            SUBJECTS.some((s) => s.id === id),
+            id,
+          ).toBe(true);
         expect(set.lighting.length).toBeGreaterThan(0);
         expect(new Set(set.lighting.map((l) => l.id)).size).toBe(set.lighting.length);
       });
@@ -48,7 +75,8 @@ describe('sets and subjects', () => {
         expect(inside(set.camera.x, set.camera.z)).toBe(true);
         expect(set.camera.z).toBeGreaterThan(0);
         for (const p of set.props) expect(inside(p.at.x, p.at.z), p.id).toBe(true);
-        for (const sc of set.lighting) for (const l of sc.lights) expect(inside(l.at.x, l.at.z), `${sc.id}/${l.id}`).toBe(true);
+        for (const sc of set.lighting)
+          for (const l of sc.lights) expect(inside(l.at.x, l.at.z), `${sc.id}/${l.id}`).toBe(true);
       });
 
       it('has sensible lights: positive candela, unique ids, colour temperature in range', () => {
@@ -114,7 +142,8 @@ describe('lab camera', () => {
   };
 
   it('a point on the focus plane lands on the same pixel from anywhere on the pupil', () => {
-    for (const dx of [-0.02, 0.005, 0.03]) expect(project(0.4, 3, dx, 3)).toBeCloseTo(project(0.4, 3, 0, 3), 12);
+    for (const dx of [-0.02, 0.005, 0.03])
+      expect(project(0.4, 3, dx, 3)).toBeCloseTo(project(0.4, 3, 0, 3), 12);
   });
 
   it('points off the focus plane move with the pupil (that spread is the blur)', () => {
@@ -125,7 +154,11 @@ describe('lab camera', () => {
 
 describe('render tiers', () => {
   it('software renderers start low, graphics chips medium', () => {
-    expect(initialTier('ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero)), SwiftShader driver)')).toBe('low');
+    expect(
+      initialTier(
+        'ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero)), SwiftShader driver)',
+      ),
+    ).toBe('low');
     expect(initialTier('llvmpipe (LLVM 15.0.7, 256 bits)')).toBe('low');
     expect(initialTier('ANGLE (Intel, Intel(R) Iris(R) Xe Graphics Direct3D11)')).toBe('medium');
   });
@@ -180,7 +213,9 @@ describe('plan geometry', () => {
 
   it('the sharp band sits between the near and far limits, inside the lens angle', () => {
     const band = sharpBand(cam, w, 0.35, 3.8, 5.5, 7.5);
-    expect(band.map((p) => cam.z - p.z)).toEqual([3.8, 3.8, 5.5, 5.5].map((d) => expect.closeTo(d, 10)));
+    expect(band.map((p) => cam.z - p.z)).toEqual(
+      [3.8, 3.8, 5.5, 5.5].map((d) => expect.closeTo(d, 10)),
+    );
     expect(band[1]!.x - band[0]!.x).toBeCloseTo(2 * 3.8 * 0.35, 10);
   });
 
@@ -224,7 +259,8 @@ describe('settings steps', () => {
     expect(APERTURES.at(-1)!.label).toBe('22');
     const f28 = APERTURES.find((s) => s.label === '2.8')!;
     expect(f28.value).toBeCloseTo(2 * Math.SQRT2, 12);
-    for (let i = 1; i < APERTURES.length; i++) expect(APERTURES[i]!.value / APERTURES[i - 1]!.value).toBeCloseTo(2 ** (1 / 6), 12);
+    for (let i = 1; i < APERTURES.length; i++)
+      expect(APERTURES[i]!.value / APERTURES[i - 1]!.value).toBeCloseTo(2 ** (1 / 6), 12);
   });
 
   it('shutter times run 30 s to 1/8000 s in exact third stops', () => {
@@ -232,11 +268,13 @@ describe('settings steps', () => {
     expect(SHUTTERS.at(-1)!.label).toBe('1/8000 s');
     expect(SHUTTERS.find((s) => s.label === '1/4 s')!.value).toBeCloseTo(0.25, 12);
     expect(SHUTTERS.find((s) => s.label === '1 s')!.value).toBeCloseTo(1, 12);
-    for (let i = 1; i < SHUTTERS.length; i++) expect(SHUTTERS[i - 1]!.value / SHUTTERS[i]!.value).toBeCloseTo(2 ** (1 / 3), 12);
+    for (let i = 1; i < SHUTTERS.length; i++)
+      expect(SHUTTERS[i - 1]!.value / SHUTTERS[i]!.value).toBeCloseTo(2 ** (1 / 3), 12);
   });
 
   it('ISO speeds are third stops apart, near enough', () => {
-    for (let i = 1; i < ISOS.length; i++) expect(Math.log2(ISOS[i]! / ISOS[i - 1]!)).toBeCloseTo(1 / 3, 1);
+    for (let i = 1; i < ISOS.length; i++)
+      expect(Math.log2(ISOS[i]! / ISOS[i - 1]!)).toBeCloseTo(1 / 3, 1);
     expect(ANGLES).toContain(180);
     expect(FRAME_RATES).toContain(24);
     expect(WHITE_BALANCES).toContain(5600);
@@ -263,7 +301,11 @@ describe('noise model', () => {
   });
 
   it('the shader coefficients give the same sigma', () => {
-    for (const [v, iso] of [[0.18, 100], [0.05, 1600], [0.9, 25600]] as const) {
+    for (const [v, iso] of [
+      [0.18, 100],
+      [0.05, 1600],
+      [0.9, 25600],
+    ] as const) {
       const { a, b } = noiseCoefficients(iso);
       expect(Math.sqrt(v * a + b)).toBeCloseTo(noiseSigma(v, iso), 12);
     }
@@ -291,7 +333,14 @@ describe('lab share links', () => {
   const state = {
     ...defaultLab(NOW),
     lighting: 'tungsten-hard',
-    exposure: { fNumber: 2 ** (13 / 6), shutter: 2 ** (5 - 38 / 3), angle: 172.8, fps: 25, iso: 1600, kelvin: 3200 },
+    exposure: {
+      fNumber: 2 ** (13 / 6),
+      shutter: 2 ** (5 - 38 / 3),
+      angle: 172.8,
+      fps: 25,
+      iso: 1600,
+      kelvin: 3200,
+    },
     focus: 3.5 as const,
     lights: { key: { on: true, stops: -2 / 3, size: 0.5, kelvin: 4300, x: -1.5, z: 2.1 } },
     ambient: 1 / 3,
@@ -307,7 +356,14 @@ describe('lab share links', () => {
     expect(out.state.exposure.shutter / state.exposure.shutter).toBeCloseTo(1, 4);
     expect(out.state.exposure).toMatchObject({ angle: 172.8, fps: 25, iso: 1600, kelvin: 3200 });
     expect(out.state.focus).toBe(3.5);
-    expect(out.state.lights.key).toEqual({ on: true, stops: -2 / 3, size: 0.5, kelvin: 4300, x: -1.5, z: 2.1 });
+    expect(out.state.lights.key).toEqual({
+      on: true,
+      stops: -2 / 3,
+      size: 0.5,
+      kelvin: 4300,
+      x: -1.5,
+      z: 2.1,
+    });
     expect(out.state.ambient).toBeCloseTo(1 / 3, 3);
     expect(out.state.camera).toEqual({ x: 0.4, z: 3.9 });
   });
@@ -319,12 +375,21 @@ describe('lab share links', () => {
   });
 
   it('leaves viewer preferences (aids) out of links', () => {
-    const out = decodeLabLink(encodeLabLink(setup, { ...state, aids: { histogram: true, histMode: 'rgb', picture: 'zebras', zebra: 80 } }), NOW)!;
+    const out = decodeLabLink(
+      encodeLabLink(setup, {
+        ...state,
+        aids: { histogram: true, histMode: 'rgb', picture: 'zebras', zebra: 80 },
+      }),
+      NOW,
+    )!;
     expect(out.state.aids).toEqual(defaultLab(NOW).aids);
   });
 
   it('focus on the subject and at infinity survive', () => {
-    for (const focus of ['subject', 'infinity'] as const) expect(decodeLabLink(encodeLabLink(setup, { ...state, focus }), NOW)!.state.focus).toBe(focus);
+    for (const focus of ['subject', 'infinity'] as const)
+      expect(decodeLabLink(encodeLabLink(setup, { ...state, focus }), NOW)!.state.focus).toBe(
+        focus,
+      );
   });
 });
 
@@ -335,7 +400,9 @@ describe('naming lab setups', () => {
   it('suggests a name and a summary in cinema terms', () => {
     const setup = defaultSetup('cinema');
     expect(suggestLabName(setup, st)).toBe('Three-point, T2.8, 180°');
-    expect(labSummary(setup, st)).toBe('ALEXA 35 · 35 mm · Three-point · T2.8 · 180° · EI 400 · 5600 K');
+    expect(labSummary(setup, st)).toBe(
+      'ALEXA 35 · 35 mm · Three-point · T2.8 · 180° · EI 400 · 5600 K',
+    );
   });
 
   it('and in stills terms', () => {
@@ -346,7 +413,11 @@ describe('naming lab setups', () => {
 
   it('two setups look the same whatever the time they were saved and the viewer aids', () => {
     const setup = defaultSetup('cinema');
-    const later = { ...st, changedAt: '2027-01-01T00:00:00.000Z', aids: { ...st.aids, histogram: true } };
+    const later = {
+      ...st,
+      changedAt: '2027-01-01T00:00:00.000Z',
+      aids: { ...st.aids, histogram: true },
+    };
     expect(labKey(setup, later)).toBe(labKey(setup, st));
     expect(labKey(setup, { ...st, ambient: 1 })).not.toBe(labKey(setup, st));
   });

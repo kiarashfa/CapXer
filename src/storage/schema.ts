@@ -18,7 +18,15 @@ export const APP_ID = 'capxer';
 export const SAVE_KEY = 'capxer.save';
 
 /** Hard caps for untrusted input (imported files, links, storage edited by hand). */
-export const LIMITS = { setups: 200, labSetups: 100, cameras: 50, lenses: 40, name: 60, profileName: 40, picture: 80_000 } as const;
+export const LIMITS = {
+  setups: 200,
+  labSetups: 100,
+  cameras: 50,
+  lenses: 40,
+  name: 60,
+  profileName: 40,
+  picture: 80_000,
+} as const;
 
 /** Colours behind initials; each keeps white letters at WCAG AA (src/styles/user.css). */
 export const TINTS = ['blue', 'teal', 'green', 'amber', 'rose', 'violet', 'slate'] as const;
@@ -108,7 +116,12 @@ export interface LabState {
   ambient: number;
   /** Camera position on the floor when moved, metres from the subject. */
   camera: { x: number; z: number } | null;
-  aids: { histogram: boolean; histMode: 'luma' | 'rgb'; picture: 'off' | 'zebras' | 'falseColour'; zebra: number };
+  aids: {
+    histogram: boolean;
+    histMode: 'luma' | 'rgb';
+    picture: 'off' | 'zebras' | 'falseColour';
+    zebra: number;
+  };
   /** When the lab state last changed; the newer one wins in a sync. */
   changedAt: string;
 }

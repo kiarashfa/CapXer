@@ -9,7 +9,8 @@ const DIST = fileURLToPath(new URL('../../dist', import.meta.url));
  * Read from dist/ so new pages are tested automatically without editing any list.
  */
 export function builtRoutes(): string[] {
-  if (!existsSync(DIST)) throw new Error('dist/ not found. Run `npm run build` before the browser tests.');
+  if (!existsSync(DIST))
+    throw new Error('dist/ not found. Run `npm run build` before the browser tests.');
   const routes: string[] = [];
   const walk = (dir: string) => {
     for (const name of readdirSync(dir)) {

@@ -13,14 +13,22 @@ export const LINK_VERSION = 1;
 const GUIDES = ['thirds', 'golden', 'centre', 'safe'] as const;
 
 /** Encodes like encodeURIComponent but keeps / : , readable (all allowed in a fragment). */
-const enc = (v: string | number) => encodeURIComponent(String(v)).replace(/%2F/g, '/').replace(/%3A/g, ':').replace(/%2C/g, ',');
+const enc = (v: string | number) =>
+  encodeURIComponent(String(v)).replace(/%2F/g, '/').replace(/%3A/g, ':').replace(/%2C/g, ',');
 
 export function encodeLink(setup: Setup, custom?: CustomSensor): string {
   const parts: [string, string | number][] = [
     ['v', LINK_VERSION],
     ['mode', setup.mode],
   ];
-  if (custom) parts.push(['cam', 'custom'], ['cn', custom.name], ['cw', custom.width], ['ch', custom.height], ['csq', custom.squeeze]);
+  if (custom)
+    parts.push(
+      ['cam', 'custom'],
+      ['cn', custom.name],
+      ['cw', custom.width],
+      ['ch', custom.height],
+      ['csq', custom.squeeze],
+    );
   else parts.push(['cam', setup.sensorId], ['fmt', setup.formatId]);
   parts.push(
     ['ar', setup.aspect],
@@ -64,7 +72,14 @@ export function decodeLink(hash: string): DecodedLink | null {
   let custom: CustomSensor | undefined;
   const cam = p.get('cam') ?? '';
   if (cam === 'custom') {
-    custom = sanitizeCustom({ id: PLACEHOLDER, name: cleanName(p.get('cn'), 'Shared sensor'), width: p.get('cw'), height: p.get('ch'), squeeze: p.get('csq') }) ?? undefined;
+    custom =
+      sanitizeCustom({
+        id: PLACEHOLDER,
+        name: cleanName(p.get('cn'), 'Shared sensor'),
+        width: p.get('cw'),
+        height: p.get('ch'),
+        squeeze: p.get('csq'),
+      }) ?? undefined;
   }
   const g = new Set((p.get('g') ?? '').split(','));
   const raw = {

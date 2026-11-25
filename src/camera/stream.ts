@@ -40,8 +40,14 @@ export async function knownDenied(): Promise<boolean> {
 export function errorKind(e: unknown): LiveError {
   const name = e instanceof DOMException || e instanceof Error ? e.name : '';
   if (name === 'NotAllowedError' || name === 'PermissionDeniedError') return 'denied';
-  if (name === 'NotFoundError' || name === 'OverconstrainedError' || name === 'DevicesNotFoundError') return 'none';
-  if (name === 'NotReadableError' || name === 'TrackStartError' || name === 'AbortError') return 'busy';
+  if (
+    name === 'NotFoundError' ||
+    name === 'OverconstrainedError' ||
+    name === 'DevicesNotFoundError'
+  )
+    return 'none';
+  if (name === 'NotReadableError' || name === 'TrackStartError' || name === 'AbortError')
+    return 'busy';
   if (name === 'SecurityError') return 'insecure';
   return 'error';
 }
@@ -51,7 +57,10 @@ export function errorKind(e: unknown): LiveError {
  * asks Chromium for zoom control where the camera has it; other browsers
  * ignore the unknown constraint.
  */
-export async function open(deviceId?: string, facing: 'environment' | 'user' = 'environment'): Promise<MediaStream> {
+export async function open(
+  deviceId?: string,
+  facing: 'environment' | 'user' = 'environment',
+): Promise<MediaStream> {
   const video: MediaTrackConstraints & { zoom?: boolean } = {
     width: { ideal: 1920 },
     height: { ideal: 1080 },
@@ -67,9 +76,18 @@ export function close(stream: MediaStream | null | undefined) {
 
 export function capabilities(track: MediaStreamTrack): Capabilities {
   type Range = { min: number; max: number; step?: number };
-  const caps = (track.getCapabilities?.() ?? {}) as MediaTrackCapabilities & { zoom?: Range; exposureCompensation?: Range; torch?: boolean };
-  const range = (r?: Range) => (r && r.max > r.min ? { min: r.min, max: r.max, step: r.step } : undefined);
-  return { zoom: range(caps.zoom), exposure: range(caps.exposureCompensation), torch: !!caps.torch };
+  const caps = (track.getCapabilities?.() ?? {}) as MediaTrackCapabilities & {
+    zoom?: Range;
+    exposureCompensation?: Range;
+    torch?: boolean;
+  };
+  const range = (r?: Range) =>
+    r && r.max > r.min ? { min: r.min, max: r.max, step: r.step } : undefined;
+  return {
+    zoom: range(caps.zoom),
+    exposure: range(caps.exposureCompensation),
+    torch: !!caps.torch,
+  };
 }
 
 export async function setZoom(track: MediaStreamTrack, zoom: number): Promise<boolean> {
@@ -84,7 +102,9 @@ export async function setZoom(track: MediaStreamTrack, zoom: number): Promise<bo
 /** Exposure compensation in stops; auto exposure keeps running around the new target. */
 export async function setExposure(track: MediaStreamTrack, ev: number): Promise<boolean> {
   try {
-    await track.applyConstraints({ advanced: [{ exposureCompensation: ev } as MediaTrackConstraintSet] });
+    await track.applyConstraints({
+      advanced: [{ exposureCompensation: ev } as MediaTrackConstraintSet],
+    });
     return true;
   } catch {
     return false;
@@ -94,5 +114,7 @@ export async function setExposure(track: MediaStreamTrack, ev: number): Promise<
 /** Video inputs. Labels are only filled in after permission was granted. */
 export async function listCameras(): Promise<CameraInfo[]> {
   const all = await navigator.mediaDevices.enumerateDevices();
-  return all.filter((d) => d.kind === 'videoinput').map((d, i) => ({ deviceId: d.deviceId, label: d.label || `Camera ${i + 1}` }));
+  return all
+    .filter((d) => d.kind === 'videoinput')
+    .map((d, i) => ({ deviceId: d.deviceId, label: d.label || `Camera ${i + 1}` }));
 }

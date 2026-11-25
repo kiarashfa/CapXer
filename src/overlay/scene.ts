@@ -26,8 +26,17 @@ const pathOf = (pts: ScenePoint[], close = false) =>
 function person(x: number, z: number, height = 1.75) {
   const half = 0.23;
   const shoulder = height * 0.82;
-  const body = pathOf([project(x - half, 0, z), project(x - half, shoulder - 0.1, z), project(x - half + 0.08, shoulder, z),
-    project(x + half - 0.08, shoulder, z), project(x + half, shoulder - 0.1, z), project(x + half, 0, z)], true);
+  const body = pathOf(
+    [
+      project(x - half, 0, z),
+      project(x - half, shoulder - 0.1, z),
+      project(x - half + 0.08, shoulder, z),
+      project(x + half - 0.08, shoulder, z),
+      project(x + half, shoulder - 0.1, z),
+      project(x + half, 0, z),
+    ],
+    true,
+  );
   const head = project(x, height - 0.12, z);
   return { body, head: { cx: f(head.X), cy: f(head.Y), r: f(0.12 / z) } };
 }
@@ -48,8 +57,20 @@ export const SCENE_CAPTION = 'Scene: a person 1.75 m tall at 4 m, camera at 1.6 
 export const SCENE = (() => {
   const near = person(0.7, 4);
   const far = person(-2.4, 12);
-  const tree = { trunk: pathOf([project(-8.2, 0, 22), project(-8.2, 3, 22), project(-7.8, 3, 22), project(-7.8, 0, 22)], true), crown: project(-8, 5.2, 22) };
-  const house = [project(7, 0, 35), project(7, 4, 35), project(10.5, 6.6, 35), project(14, 4, 35), project(14, 0, 35)];
+  const tree = {
+    trunk: pathOf(
+      [project(-8.2, 0, 22), project(-8.2, 3, 22), project(-7.8, 3, 22), project(-7.8, 0, 22)],
+      true,
+    ),
+    crown: project(-8, 5.2, 22),
+  };
+  const house = [
+    project(7, 0, 35),
+    project(7, 4, 35),
+    project(10.5, 6.6, 35),
+    project(14, 4, 35),
+    project(14, 0, 35),
+  ];
   const road = [
     pathOf([project(-1.6, 0, 1.8), project(-1.6, 0, 400)]),
     pathOf([project(1.6, 0, 1.8), project(1.6, 0, 400)]),
@@ -57,7 +78,12 @@ export const SCENE = (() => {
   const sun = { cx: 1.0, cy: -0.42, r: 0.05 };
   return {
     paths: [hills(), ...road, pathOf(house, true), tree.trunk, near.body, far.body],
-    circles: [sun, near.head, far.head, { cx: f(tree.crown.X), cy: f(tree.crown.Y), r: f(2.2 / 22) }],
+    circles: [
+      sun,
+      near.head,
+      far.head,
+      { cx: f(tree.crown.X), cy: f(tree.crown.Y), r: f(2.2 / 22) },
+    ],
   };
 })();
 

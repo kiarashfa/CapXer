@@ -11,7 +11,18 @@ const dist = process.argv.includes('--dist');
 const SOURCE_DIRS = ['src', 'public'];
 // LICENSE is not scanned: it is the verbatim KFA License text, which uses em dashes.
 const SOURCE_FILES = ['README.md', 'THIRD_PARTY.md'];
-const SOURCE_EXT = new Set([...CODE_EXTENSIONS, '.md', '.mdx', '.json', '.html', '.svg', '.txt', '.webmanifest', '.yml', '.yaml']);
+const SOURCE_EXT = new Set([
+  ...CODE_EXTENSIONS,
+  '.md',
+  '.mdx',
+  '.json',
+  '.html',
+  '.svg',
+  '.txt',
+  '.webmanifest',
+  '.yml',
+  '.yaml',
+]);
 // Built JS is skipped: third-party library strings are not ours to police, and our strings are covered in source.
 const DIST_EXT = new Set(['.html', '.xml', '.json', '.webmanifest', '.txt', '.svg']);
 
@@ -27,7 +38,10 @@ function walk(dir: string, exts: Set<string>, out: string[] = []): string[] {
 
 const files = dist
   ? walk(join(root, 'dist'), DIST_EXT)
-  : [...SOURCE_DIRS.flatMap((d) => walk(join(root, d), SOURCE_EXT)), ...SOURCE_FILES.map((f) => join(root, f)).filter((f) => existsSync(f))];
+  : [
+      ...SOURCE_DIRS.flatMap((d) => walk(join(root, d), SOURCE_EXT)),
+      ...SOURCE_FILES.map((f) => join(root, f)).filter((f) => existsSync(f)),
+    ];
 
 if (dist && files.length === 0) {
   console.error('check-emdash: dist/ is empty. Run the build first.');
@@ -44,7 +58,9 @@ for (const file of files) {
 }
 
 if (count > 0) {
-  console.error(`\ncheck-emdash: ${count} em-dash(es) found in user-facing text. Use a comma, colon, en-dash for ranges, or rephrase.`);
+  console.error(
+    `\ncheck-emdash: ${count} em-dash(es) found in user-facing text. Use a comma, colon, en-dash for ranges, or rephrase.`,
+  );
   process.exit(1);
 }
 console.log(`check-emdash: ${files.length} ${dist ? 'built' : 'source'} files clean.`);

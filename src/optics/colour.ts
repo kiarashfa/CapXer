@@ -13,15 +13,26 @@ import type { Citation } from '../data/index.ts';
 // Results are normalised to luminance Y = 1, so a light's colour never changes
 // its brightness. Real lamps are not perfect blackbodies; that is ignored.
 
-export const CMF_SOURCE: Citation = { ref: 'wyman-sloan-shirley-2013-cmf', locator: 'Sec. 2.2, Eq. 4, Table 1' };
-export const C2_SOURCE: Citation = { ref: 'nist-codata-2022-second-radiation-constant', locator: 'Value' };
+export const CMF_SOURCE: Citation = {
+  ref: 'wyman-sloan-shirley-2013-cmf',
+  locator: 'Sec. 2.2, Eq. 4, Table 1',
+};
+export const C2_SOURCE: Citation = {
+  ref: 'nist-codata-2022-second-radiation-constant',
+  locator: 'Value',
+};
 export const PRIMARIES_SOURCE: Citation = { ref: 'itu-r-bt709-6', locator: 'Items 1.3 and 1.4' };
 
 /** Second radiation constant, m K (2022 CODATA, exact). */
 export const C2 = 1.438776877e-2;
 
 /** BT.709 chromaticities (x, y): red, green, blue and the D65 white. */
-export const BT709_PRIMARIES = { r: [0.64, 0.33], g: [0.3, 0.6], b: [0.15, 0.06], white: [0.3127, 0.329] } as const;
+export const BT709_PRIMARIES = {
+  r: [0.64, 0.33],
+  g: [0.3, 0.6],
+  b: [0.15, 0.06],
+  white: [0.3127, 0.329],
+} as const;
 
 export type Vec3 = [number, number, number];
 type Mat3 = [Vec3, Vec3, Vec3];
@@ -79,7 +90,11 @@ export function blackbodyXYZ(kelvin: number): Vec3 {
   return [X / Y, 1, Z / Y];
 }
 
-const xyToXYZ = ([x, y]: readonly [number, number] | readonly number[]): Vec3 => [x! / y!, 1, (1 - x! - y!) / y!];
+const xyToXYZ = ([x, y]: readonly [number, number] | readonly number[]): Vec3 => [
+  x! / y!,
+  1,
+  (1 - x! - y!) / y!,
+];
 
 function invert3([[a, b, c], [d, e, f], [g, h, i]]: Mat3): Mat3 {
   const A = e * i - f * h;

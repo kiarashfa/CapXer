@@ -13,7 +13,9 @@ test.beforeEach(async ({ page }) => {
 
 test('the site bar links to the lab', async ({ page }) => {
   await page.goto('lab/');
-  await expect(page.locator('.bar-pages a[href$="/lab/"], .menu-sheet a[href$="/lab/"]').first()).toHaveAttribute('aria-current', 'page');
+  await expect(
+    page.locator('.bar-pages a[href$="/lab/"], .menu-sheet a[href$="/lab/"]').first(),
+  ).toHaveAttribute('aria-current', 'page');
 });
 
 test.describe('desktop', () => {
@@ -25,9 +27,14 @@ test.describe('desktop', () => {
     await expect(stage.locator('canvas')).toBeVisible();
     await expect(stage).toHaveAttribute('data-done', 'true', { timeout: 60_000 });
     // The default viewfinder setup is Cinema: T-stop, shutter angle, EI.
-    await expect(stage).toHaveAttribute('aria-label', /Figure, Three-point, T2\.8, 180° \(1\/48 s at 24 fps\), EI 400, 5600 K/);
+    await expect(stage).toHaveAttribute(
+      'aria-label',
+      /Figure, Three-point, T2\.8, 180° \(1\/48 s at 24 fps\), EI 400, 5600 K/,
+    );
     // The meter reads the finished picture.
-    await expect(page.locator('.lab-meter')).toHaveAttribute('aria-label', /EV \d+\.\d/, { timeout: 15_000 });
+    await expect(page.locator('.lab-meter')).toHaveAttribute('aria-label', /EV \d+\.\d/, {
+      timeout: 15_000,
+    });
     // Not a blank picture: the screenshot of the stage has real detail.
     expect((await stage.screenshot()).length).toBeGreaterThan(15_000);
   });
@@ -40,7 +47,10 @@ test.describe('desktop', () => {
     await expect(page.getByTestId('lab-wb-value')).toHaveText('5600 K');
     await expect(page.locator('.lab-note')).toContainText('simplified model');
     const plan = page.locator('svg.lab-plan');
-    await expect(plan).toHaveAttribute('aria-label', /Figure 4\.\d m from the camera, Key, Fill, Back\. Sharp \d/);
+    await expect(plan).toHaveAttribute(
+      'aria-label',
+      /Figure 4\.\d m from the camera, Key, Fill, Back\. Sharp \d/,
+    );
     await expect(plan.locator('polygon.dof')).toHaveCount(1);
     await expect(plan.locator('circle.lamp')).toHaveCount(3);
     await expect(page.locator('.lab-legend')).toContainText('What the lens sees');
@@ -56,24 +66,39 @@ test.describe('desktop', () => {
     await expect(page.getByTestId('lab-wb-value')).toHaveText('5000 K');
     await expect(stage).toHaveAttribute('data-done', 'true');
     // One third stop more ISO and nothing else: the picture is brighter than the meter asks for.
-    await expect(page.locator('.lab-meter')).toHaveAttribute('aria-label', /stops brighter than the meter/);
+    await expect(page.locator('.lab-meter')).toHaveAttribute(
+      'aria-label',
+      /stops brighter than the meter/,
+    );
   });
 
-  test('aperture restarts the picture, and Match the meter brings the exposure back', async ({ page }) => {
+  test('aperture restarts the picture, and Match the meter brings the exposure back', async ({
+    page,
+  }) => {
     await page.goto('lab/');
     const stage = page.getByTestId('lab-stage');
-    await expect(page.locator('.lab-meter')).toHaveAttribute('aria-label', /EV \d/, { timeout: 60_000 });
+    await expect(page.locator('.lab-meter')).toHaveAttribute('aria-label', /EV \d/, {
+      timeout: 60_000,
+    });
     for (let i = 0; i < 3; i++) await page.getByTestId('lab-aperture-less').click();
     await expect(page.getByTestId('lab-aperture-value')).toHaveText('T4');
-    await expect(page.locator('.lab-meter')).toHaveAttribute('aria-label', /stops darker than the meter/);
+    await expect(page.locator('.lab-meter')).toHaveAttribute(
+      'aria-label',
+      /stops darker than the meter/,
+    );
     await expect(stage).toHaveAttribute('data-done', 'true', { timeout: 60_000 });
     await page.getByTestId('lab-match').click();
     // Cinema keeps the shutter angle and changes the stop.
     await expect(page.getByTestId('lab-shutter-value')).toHaveText('180°');
-    await expect(page.locator('.lab-meter')).toHaveAttribute('aria-label', /Same as the meter|0\.[01] stops/);
+    await expect(page.locator('.lab-meter')).toHaveAttribute(
+      'aria-label',
+      /Same as the meter|0\.[01] stops/,
+    );
   });
 
-  test('manual focus moves the sharp area, and focusing on the subject brings it back', async ({ page }) => {
+  test('manual focus moves the sharp area, and focusing on the subject brings it back', async ({
+    page,
+  }) => {
     await page.goto('lab/');
     const plan = page.locator('svg.lab-plan');
     const before = await plan.getAttribute('aria-label');
@@ -104,7 +129,10 @@ test.describe('desktop', () => {
     await openDock(page);
     await page.getByTestId('lab-tool-set').click();
     await page.getByTestId('lab-lighting-tungsten-hard').click();
-    await expect(page.getByTestId('lab-stage')).toHaveAttribute('aria-label', /Single tungsten light/);
+    await expect(page.getByTestId('lab-stage')).toHaveAttribute(
+      'aria-label',
+      /Single tungsten light/,
+    );
     await page.getByTestId('lab-lighting-three-point').click();
     await page.getByTestId('lab-tool-lights').click();
     await page.getByTestId('lab-light-fill').getByRole('checkbox').uncheck();
@@ -113,7 +141,9 @@ test.describe('desktop', () => {
     await expect(page.locator('svg.lab-plan')).toHaveAttribute('aria-label', /Key, Back\./);
   });
 
-  test('lights and the camera move on the plan with the keyboard and by dragging', async ({ page }) => {
+  test('lights and the camera move on the plan with the keyboard and by dragging', async ({
+    page,
+  }) => {
     await page.goto('lab/');
     const key = page.getByTestId('plan-light-key');
     await expect(key).toHaveAttribute('aria-label', /Key light: 2\.2 m right, 2\.2 m in front/);
@@ -128,15 +158,23 @@ test.describe('desktop', () => {
     await page.mouse.down();
     await page.mouse.move(box.x + box.width / 2 + 60, box.y + box.height / 2 - 60, { steps: 5 });
     await page.mouse.up();
-    await expect(cam).not.toHaveAttribute('aria-label', /Camera · 35 mm: 0\.0 m right, 4\.5 m in front/);
+    await expect(cam).not.toHaveAttribute(
+      'aria-label',
+      /Camera · 35 mm: 0\.0 m right, 4\.5 m in front/,
+    );
     await openDock(page);
     await page.getByTestId('lab-tool-camera').click();
     await page.getByRole('button', { name: 'Back to the start' }).click();
     await page.keyboard.press('Escape');
-    await expect(page.getByTestId('plan-camera')).toHaveAttribute('aria-label', /Camera · 35 mm: 0\.0 m right, 4\.5 m in front/);
+    await expect(page.getByTestId('plan-camera')).toHaveAttribute(
+      'aria-label',
+      /Camera · 35 mm: 0\.0 m right, 4\.5 m in front/,
+    );
   });
 
-  test('the Camera tool changes the shared setup (Stills wording, saved for the viewfinder)', async ({ page }) => {
+  test('the Camera tool changes the shared setup (Stills wording, saved for the viewfinder)', async ({
+    page,
+  }) => {
     await page.goto('lab/');
     await openDock(page);
     await page.getByTestId('lab-tool-camera').click();
@@ -145,13 +183,17 @@ test.describe('desktop', () => {
     await expect(page.getByTestId('lab-shutter-value')).toHaveText('1/50');
     await page.getByTestId('lab-camera-select').selectOption('nikon/z6iii');
     await expect(page.locator('.lab-tag')).toContainText('Nikon Z6III');
-    const saved = await page.evaluate(() => JSON.parse(localStorage.getItem('capxer.save') ?? 'null')?.current);
+    const saved = await page.evaluate(
+      () => JSON.parse(localStorage.getItem('capxer.save') ?? 'null')?.current,
+    );
     expect(saved).toMatchObject({ mode: 'stills', sensorId: 'nikon/z6iii' });
   });
 
   test('Aids show a histogram and false colour on the render', async ({ page }) => {
     await page.goto('lab/');
-    await expect(page.getByTestId('lab-stage')).toHaveAttribute('data-done', 'true', { timeout: 60_000 });
+    await expect(page.getByTestId('lab-stage')).toHaveAttribute('data-done', 'true', {
+      timeout: 60_000,
+    });
     await openDock(page);
     await page.getByTestId('lab-tool-aids').click();
     await page.getByTestId('lab-hist-switch').check();
@@ -172,8 +214,14 @@ test.describe('desktop', () => {
           await page.getByTestId('lab-hist-switch').check();
           await page.getByTestId('lab-aid-false').click();
         }
-        const results = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa']).analyze();
-        expect(results.violations.map((v) => `${tool} ${v.id}: ${v.nodes.map((n) => n.target).join(', ')}`)).toEqual([]);
+        const results = await new AxeBuilder({ page })
+          .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'])
+          .analyze();
+        expect(
+          results.violations.map(
+            (v) => `${tool} ${v.id}: ${v.nodes.map((n) => n.target).join(', ')}`,
+          ),
+        ).toEqual([]);
       }
     });
   }
@@ -189,7 +237,9 @@ test.describe('desktop', () => {
 test.describe('without WebGL 2 or a modern browser', () => {
   test.skip(({ isMobile }) => isMobile, 'the lab is desktop only');
 
-  test('a browser without WebGL 2 gets a plain note instead of a broken picture', async ({ page }) => {
+  test('a browser without WebGL 2 gets a plain note instead of a broken picture', async ({
+    page,
+  }) => {
     await page.addInitScript(() => {
       const original = HTMLCanvasElement.prototype.getContext;
       // @ts-expect-error test-only override
@@ -227,7 +277,10 @@ test.describe('phone', () => {
     const card = page.getByTestId('lab-phone');
     await expect(card).toBeVisible();
     await expect(card.getByRole('heading', { name: 'The lab needs a computer' })).toBeVisible();
-    await expect(card.getByRole('link', { name: 'Open the viewfinder' })).toHaveAttribute('href', /\/viewfinder\/$/);
+    await expect(card.getByRole('link', { name: 'Open the viewfinder' })).toHaveAttribute(
+      'href',
+      /\/viewfinder\/$/,
+    );
     await expect(page.locator('canvas')).toHaveCount(0);
   });
 });
@@ -235,7 +288,8 @@ test.describe('phone', () => {
 test.describe('saving and sharing', () => {
   test.skip(({ isMobile }) => isMobile, 'the lab is desktop only');
 
-  const save = (page: import('@playwright/test').Page) => page.evaluate(() => JSON.parse(localStorage.getItem('capxer.save') ?? 'null'));
+  const save = (page: import('@playwright/test').Page) =>
+    page.evaluate(() => JSON.parse(localStorage.getItem('capxer.save') ?? 'null'));
 
   test('a visit that changes nothing writes nothing', async ({ page }) => {
     await page.goto('lab/');
@@ -249,21 +303,30 @@ test.describe('saving and sharing', () => {
     await page.getByTestId('lab-iso-more').click();
     await page.getByTestId('plan-light-key').focus();
     await page.keyboard.press('ArrowLeft');
-    await expect.poll(async () => (await save(page))?.lab?.lights?.key?.x, { timeout: 5000 }).toBeCloseTo(2.1, 5);
+    await expect
+      .poll(async () => (await save(page))?.lab?.lights?.key?.x, { timeout: 5000 })
+      .toBeCloseTo(2.1, 5);
     expect((await save(page)).lab.exposure.iso).toBe(500);
     await page.reload();
     await expect(page.getByTestId('lab-iso-value')).toHaveText('500');
-    await expect(page.getByTestId('plan-light-key')).toHaveAttribute('aria-label', /Key light: 2\.1 m right/);
+    await expect(page.getByTestId('plan-light-key')).toHaveAttribute(
+      'aria-label',
+      /Key light: 2\.1 m right/,
+    );
   });
 
   test('the viewfinder keeps the lab state when it saves', async ({ page }) => {
     await page.goto('lab/');
     await page.getByTestId('lab-iso-more').click();
-    await expect.poll(async () => (await save(page))?.lab?.exposure?.iso, { timeout: 5000 }).toBe(500);
+    await expect
+      .poll(async () => (await save(page))?.lab?.exposure?.iso, { timeout: 5000 })
+      .toBe(500);
     await page.goto('viewfinder/');
     await openDock(page);
     await page.getByRole('button', { name: 'Longer focal length' }).click();
-    await expect.poll(async () => (await save(page))?.current?.focal, { timeout: 5000 }).not.toBe(35);
+    await expect
+      .poll(async () => (await save(page))?.current?.focal, { timeout: 5000 })
+      .not.toBe(35);
     expect((await save(page)).lab.exposure.iso).toBe(500);
   });
 
@@ -282,14 +345,22 @@ test.describe('saving and sharing', () => {
     await openDock(page);
     await page.getByTestId('lab-tool-lights').click();
     await expect(page.getByTestId('lab-light-open-key')).toHaveAttribute('aria-expanded', 'true');
-    await expect(page.getByTestId('lab-light-key').getByRole('group', { name: 'Key: Softness' })).toBeVisible();
+    await expect(
+      page.getByTestId('lab-light-key').getByRole('group', { name: 'Key: Softness' }),
+    ).toBeVisible();
     await page.getByTestId('lab-light-open-fill').click();
     await expect(page.getByTestId('lab-light-open-key')).toHaveAttribute('aria-expanded', 'false');
-    await page.getByTestId('lab-light-fill').getByRole('group', { name: 'Fill: Colour, kelvin' }).getByRole('button', { name: '3200' }).click();
+    await page
+      .getByTestId('lab-light-fill')
+      .getByRole('group', { name: 'Fill: Colour, kelvin' })
+      .getByRole('button', { name: '3200' })
+      .click();
     await expect(page.getByTestId('lab-light-open-fill')).toContainText('3200 K');
   });
 
-  test('named lab setups: save, open, rename, delete with undo, and they come back next visit', async ({ page }) => {
+  test('named lab setups: save, open, rename, delete with undo, and they come back next visit', async ({
+    page,
+  }) => {
     await page.goto('lab/');
     await openDock(page);
     await page.getByTestId('lab-tool-saved').click();
@@ -297,12 +368,18 @@ test.describe('saving and sharing', () => {
     await page.getByTestId('lab-saved-save').click();
     await expect(page.getByTestId('lab-notice')).toContainText('Saved');
     const list = page.getByTestId('lab-saved-list');
-    await expect(list.locator('button.sv-item', { hasText: 'Night street' })).toHaveAttribute('aria-current', 'true');
+    await expect(list.locator('button.sv-item', { hasText: 'Night street' })).toHaveAttribute(
+      'aria-current',
+      'true',
+    );
 
     // Change the lab: the saved one is no longer "showing"; opening it brings it back.
     for (let i = 0; i < 3; i++) await page.getByTestId('lab-iso-more').click();
     await expect(page.getByTestId('lab-iso-value')).toHaveText('800');
-    await expect(list.locator('button.sv-item', { hasText: 'Night street' })).not.toHaveAttribute('aria-current', 'true');
+    await expect(list.locator('button.sv-item', { hasText: 'Night street' })).not.toHaveAttribute(
+      'aria-current',
+      'true',
+    );
     await list.locator('button.sv-item', { hasText: 'Night street' }).click();
     await expect(page.getByTestId('lab-iso-value')).toHaveText('400');
 
@@ -318,22 +395,35 @@ test.describe('saving and sharing', () => {
     await page.getByTestId('lab-notice').getByRole('button', { name: 'Undo' }).click();
     await expect(page.getByTestId('lab-saved-list')).toContainText('Blue hour');
 
-    await expect.poll(async () => (await save(page))?.labSetups?.map((x: { name: string }) => x.name), { timeout: 5000 }).toEqual(['Blue hour']);
+    await expect
+      .poll(async () => (await save(page))?.labSetups?.map((x: { name: string }) => x.name), {
+        timeout: 5000,
+      })
+      .toEqual(['Blue hour']);
     await page.reload();
     await openDock(page);
     await page.getByTestId('lab-tool-saved').click();
     await expect(page.getByTestId('lab-saved-list')).toContainText('Blue hour');
   });
 
-  test('a share link opens the setup without saving it; Back to mine and Keep it', async ({ page }) => {
+  test('a share link opens the setup without saving it; Back to mine and Keep it', async ({
+    page,
+  }) => {
     await page.addInitScript(() => {
       (window as unknown as { copied: string[] }).copied = [];
-      Object.defineProperty(navigator, 'clipboard', { value: { writeText: async (t: string) => void (window as unknown as { copied: string[] }).copied.push(t) } });
+      Object.defineProperty(navigator, 'clipboard', {
+        value: {
+          writeText: async (t: string) =>
+            void (window as unknown as { copied: string[] }).copied.push(t),
+        },
+      });
     });
     await page.goto('lab/');
     for (let i = 0; i < 3; i++) await page.getByTestId('lab-iso-more').click();
     await expect(page.getByTestId('lab-iso-value')).toHaveText('800');
-    await expect.poll(async () => (await save(page))?.lab?.exposure?.iso, { timeout: 5000 }).toBe(800);
+    await expect
+      .poll(async () => (await save(page))?.lab?.exposure?.iso, { timeout: 5000 })
+      .toBe(800);
     await openDock(page);
     await page.getByTestId('lab-share').click();
     await expect(page.getByTestId('lab-notice')).toContainText('Link copied');
@@ -342,7 +432,9 @@ test.describe('saving and sharing', () => {
 
     // Back at ISO 400 in "my" lab, then open the link.
     for (let i = 0; i < 3; i++) await page.getByTestId('lab-iso-less').click();
-    await expect.poll(async () => (await save(page))?.lab?.exposure?.iso, { timeout: 5000 }).toBe(400);
+    await expect
+      .poll(async () => (await save(page))?.lab?.exposure?.iso, { timeout: 5000 })
+      .toBe(400);
     await page.goto(link);
     await expect(page.getByTestId('lab-shared')).toBeVisible();
     await expect(page.getByTestId('lab-iso-value')).toHaveText('800');
@@ -356,6 +448,8 @@ test.describe('saving and sharing', () => {
 
     await page.goto(link);
     await page.getByTestId('lab-shared-keep').click();
-    await expect.poll(async () => (await save(page))?.lab?.exposure?.iso, { timeout: 5000 }).toBe(800);
+    await expect
+      .poll(async () => (await save(page))?.lab?.exposure?.iso, { timeout: 5000 })
+      .toBe(800);
   });
 });

@@ -1,7 +1,15 @@
 import { readdirSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
-import { devices, displayName, fullFormat, getDevice, getSensor, makers, sensors } from '../../src/data/index.ts';
+import {
+  devices,
+  displayName,
+  fullFormat,
+  getDevice,
+  getSensor,
+  makers,
+  sensors,
+} from '../../src/data/index.ts';
 import { validateDatabase, type DataFile } from '../../src/data/validate.ts';
 import { references } from '../../src/references/index.ts';
 import { cropFactor } from '../../src/optics/index.ts';
@@ -53,12 +61,16 @@ describe('validateDatabase rejects bad data', () => {
   const run = (...files: DataFile[]) => validate(files).join('\n');
 
   it('a file outside <maker>/<model>.json', () => {
-    expect(run({ ...nikon(), path: 'nikon-z6iii.json' })).toMatch(/path must be <maker>\/<model>\.json/);
+    expect(run({ ...nikon(), path: 'nikon-z6iii.json' })).toMatch(
+      /path must be <maker>\/<model>\.json/,
+    );
     expect(run({ ...nikon(), path: 'Nikon/Z6III.json' })).toMatch(/lowercase/);
   });
 
   it('a maker missing from makers.json', () => {
-    expect(run({ ...nikon(), path: 'canon/r5.json' })).toMatch(/maker "canon" is not in makers\.json/);
+    expect(run({ ...nikon(), path: 'canon/r5.json' })).toMatch(
+      /maker "canon" is not in makers\.json/,
+    );
   });
 
   it('an unknown reference', () => {
@@ -100,14 +112,19 @@ describe('validateDatabase rejects bad data', () => {
   });
 
   it('a maker with no sensors', () => {
-    expect(validateDatabase([nikon()], [...makers.filter((m) => m.id === 'nikon'), { id: 'leica', name: 'Leica' }], references).join('\n')).toMatch(
-      /"leica" has no sensors or devices folder/,
-    );
+    expect(
+      validateDatabase(
+        [nikon()],
+        [...makers.filter((m) => m.id === 'nikon'), { id: 'leica', name: 'Leica' }],
+        references,
+      ).join('\n'),
+    ).toMatch(/"leica" has no sensors or devices folder/);
   });
 });
 
 describe('device database (phones and webcams)', () => {
-  const run = (files: DataFile[]) => validateDatabase(realFiles, makers, references, files).join('\n');
+  const run = (files: DataFile[]) =>
+    validateDatabase(realFiles, makers, references, files).join('\n');
   const s25 = () => clone(deviceFiles.find((f) => f.path === 'samsung/galaxy-s25.json')!);
 
   it('is valid and fully cited', () => {

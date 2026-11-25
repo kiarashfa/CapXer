@@ -16,7 +16,10 @@ interface Props {
 const KINDS = ['thirds', 'golden', 'centre'] as const;
 const { ratio, guides, label, decorative = false } = Astro.props;
 if (!(ratio > 0.2 && ratio < 5)) throw new Error(`GuideFrame: bad ratio ${ratio}`);
-if (!guides.length || guides.some((g) => !KINDS.includes(g))) throw new Error(`GuideFrame: guides must be some of ${KINDS.join(', ')}, got ${guides.join(', ')}`);
+if (!guides.length || guides.some((g) => !KINDS.includes(g)))
+  throw new Error(
+    `GuideFrame: guides must be some of ${KINDS.join(', ')}, got ${guides.join(', ')}`,
+  );
 
 const PHI = (1 + Math.sqrt(5)) / 2;
 const FRACTIONS = { thirds: [1 / 3, 2 / 3], golden: [1 / PHI ** 2, 1 / PHI] } as const;
@@ -31,41 +34,68 @@ const H = Math.round(PAD + fh + KEY);
 const x0 = PAD;
 const y0 = PAD;
 const has = (g: (typeof KINDS)[number]) => guides.includes(g);
-const lines = (['thirds', 'golden'] as const)
-  .filter(has)
-  .flatMap((g) => FRACTIONS[g].flatMap((f) => [
+const lines = (['thirds', 'golden'] as const).filter(has).flatMap((g) =>
+  FRACTIONS[g].flatMap((f) => [
     { g, x1: x0 + fw * f, y1: y0, x2: x0 + fw * f, y2: y0 + fh },
     { g, x1: x0, y1: y0 + fh * f, x2: x0 + fw, y2: y0 + fh * f },
-  ]));
+  ]),
+);
 const cx = x0 + fw / 2;
 const cy = y0 + fh / 2;
 const text = label ?? `${Number(ratio.toFixed(3))}:1`;
 const pct = (f: number) => `${(f * 100).toFixed(1)}%`;
 const aria = `A ${text} frame with ${guides
-  .map((g) => (g === 'centre' ? 'a centre mark' : `${NAMES[g].toLowerCase()} lines at ${FRACTIONS[g].map(pct).join(' and ')} of each side`))
+  .map((g) =>
+    g === 'centre'
+      ? 'a centre mark'
+      : `${NAMES[g].toLowerCase()} lines at ${FRACTIONS[g].map(pct).join(' and ')} of each side`,
+  )
   .join(', ')}.`;
 const key = guides.map((g, i) => ({ g, name: NAMES[g], x: PAD + i * 200 }));
 ---
 
 <div class="grid-paper lesson-drawing">
-  <svg viewBox={`0 0 ${W} ${H}`} role={decorative ? undefined : 'img'} aria-label={decorative ? undefined : aria} aria-hidden={decorative ? 'true' : undefined}>
+  <svg
+    viewBox={`0 0 ${W} ${H}`}
+    role={decorative ? undefined : 'img'}
+    aria-label={decorative ? undefined : aria}
+    aria-hidden={decorative ? 'true' : undefined}
+  >
     <rect class="gf-frame" x={x0} y={y0} width={fw} height={fh} rx="4" />
-    {lines.map((l) => <line class={`gf-${l.g}`} x1={l.x1.toFixed(1)} y1={l.y1.toFixed(1)} x2={l.x2.toFixed(1)} y2={l.y2.toFixed(1)} />)}
-    {has('centre') && <path class="gf-centre" d={`M ${cx - 14} ${cy} H ${cx + 14} M ${cx} ${cy - 14} V ${cy + 14}`} />}
-    <text class="gf-label" x={x0 + 12} y={y0 + 26}>{text}</text>
+    {lines.map((l) => (
+      <line
+        class={`gf-${l.g}`}
+        x1={l.x1.toFixed(1)}
+        y1={l.y1.toFixed(1)}
+        x2={l.x2.toFixed(1)}
+        y2={l.y2.toFixed(1)}
+      />
+    ))}
+    {has('centre') && (
+      <path
+        class="gf-centre"
+        d={`M ${cx - 14} ${cy} H ${cx + 14} M ${cx} ${cy - 14} V ${cy + 14}`}
+      />
+    )}
+    <text class="gf-label" x={x0 + 12} y={y0 + 26}>
+      {text}
+    </text>
     <g class="gf-key">
-      {
-        key.map((k) => (
-          <g>
-            {k.g === 'centre' ? (
-              <path class="gf-centre" d={`M ${k.x} ${H - 18} H ${k.x + 24} M ${k.x + 12} ${H - 30} V ${H - 6}`} />
-            ) : (
-              <line class={`gf-${k.g}`} x1={k.x} y1={H - 18} x2={k.x + 32} y2={H - 18} />
-            )}
-            <text x={k.x + 42} y={H - 12}>{k.name}</text>
-          </g>
-        ))
-      }
+      {key.map((k) => (
+        <g>
+          {k.g === 'centre' ? (
+            <path
+              class="gf-centre"
+              d={`M ${k.x} ${H - 18} H ${k.x + 24} M ${k.x + 12} ${H - 30} V ${H - 6}`}
+            />
+          ) : (
+            <line class={`gf-${k.g}`} x1={k.x} y1={H - 18} x2={k.x + 32} y2={H - 18} />
+          )}
+          <text x={k.x + 42} y={H - 12}>
+            {k.name}
+          </text>
+        </g>
+      ))}
     </g>
   </svg>
 </div>

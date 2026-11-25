@@ -28,7 +28,8 @@ export function initialTier(rendererName: string): Tier {
 /** One tier lower when a single sample takes too long (the picture would take over 2 s). */
 export function tierAfter(tier: Tier, msPerSample: number): Tier {
   const settings = TIERS[tier];
-  if (tier !== 'low' && msPerSample * settings.samples > 2000) return TIER_ORDER[TIER_ORDER.indexOf(tier) - 1]!;
+  if (tier !== 'low' && msPerSample * settings.samples > 2000)
+    return TIER_ORDER[TIER_ORDER.indexOf(tier) - 1]!;
   return tier;
 }
 

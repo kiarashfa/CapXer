@@ -11,6 +11,8 @@ const { title } = Astro.props;
 ---
 
 <figure class="lesson-figure">
-  <figcaption class="lesson-figure-title"><span class="lesson-figure-n">{t.lessons.figure}</span> {title}</figcaption>
+  <figcaption class="lesson-figure-title">
+    <span class="lesson-figure-n">{t.lessons.figure}</span> {title}
+  </figcaption>
   <slot />
 </figure>

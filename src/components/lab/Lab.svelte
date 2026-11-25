@@ -4,7 +4,12 @@
   import { PANEL_CLOSED_EVENT } from '../../lib/site-bar.ts';
   import { CLIP_SHARE, histogramPath } from '../../analysis/levels.ts';
   import LabPanes from './LabPanes.svelte';
-  import { autosaveLab, backToMine, keepShared, startLabPersistence } from '../../lab/persist.svelte.ts';
+  import {
+    autosaveLab,
+    backToMine,
+    keepShared,
+    startLabPersistence,
+  } from '../../lab/persist.svelte.ts';
   import LabNotice from './LabNotice.svelte';
   import { NoToneMapping } from 'three';
   import { displayName, getSensor } from '../../data/index.ts';
@@ -38,7 +43,9 @@
     webgl = !!gl;
     if (gl) {
       const info = gl.getExtension('WEBGL_debug_renderer_info');
-      const name = info ? String(gl.getParameter(info.UNMASKED_RENDERER_WEBGL)) : String(gl.getParameter(gl.RENDERER));
+      const name = info
+        ? String(gl.getParameter(info.UNMASKED_RENDERER_WEBGL))
+        : String(gl.getParameter(gl.RENDERER));
       lab.tier = initialTier(name);
       gl.getExtension('WEBGL_lose_context')?.loseContext();
     }
@@ -51,20 +58,34 @@
   });
 
   const sensor = $derived(getSensor(lab.setup.sensorId));
-  const tag = $derived(`${sensor ? displayName(sensor) : ''} · ${lab.camera.aspect.toFixed(2)}:1 · ${lab.camera.focal} mm`);
+  const tag = $derived(
+    `${sensor ? displayName(sensor) : ''} · ${lab.camera.aspect.toFixed(2)}:1 · ${lab.camera.focal} mm`,
+  );
   const done = $derived(lab.samples >= lab.target);
   // Cinema says T-stop, shutter angle and EI; Stills says f-stop, shutter speed and ISO.
   const apertureText = $derived(`${lab.cinema ? 'T' : 'f/'}${APERTURES[lab.apertureIndex]!.label}`);
   // In the stepper a fraction reads like a camera's display (1/50); whole seconds keep their unit.
   const shutterLabel = $derived(SHUTTERS[lab.shutterIndex]!.label);
-  const shutterText = $derived(lab.cinema ? `${lab.angle}°` : shutterLabel.startsWith('1/') ? shutterLabel.replace(' s', '') : shutterLabel);
-  const shutterSub = $derived(lab.cinema ? `${formatShutter(lab.shutter)} ${L.steps.at} ${lab.fps} fps` : undefined);
+  const shutterText = $derived(
+    lab.cinema
+      ? `${lab.angle}°`
+      : shutterLabel.startsWith('1/')
+        ? shutterLabel.replace(' s', '')
+        : shutterLabel,
+  );
+  const shutterSub = $derived(
+    lab.cinema ? `${formatShutter(lab.shutter)} ${L.steps.at} ${lab.fps} fps` : undefined,
+  );
   const isoName = $derived(lab.cinema ? L.settings.ei : L.settings.iso);
   const focusText = $derived(formatMetres(lab.focusM));
   const pictureLabel = $derived(
     `${L.pictureLabel} ${lab.subject.name}, ${lab.lighting.name}, ${apertureText}, ${lab.cinema ? `${shutterText} (${shutterSub})` : shutterLabel}, ${isoName} ${lab.iso}, ${lab.kelvin} K, ${L.settings.focus.toLowerCase()} ${focusText}.`,
   );
-  const side = (name: string, word: string, disabled: boolean, onclick: () => void) => ({ label: `${name}: ${word}`, disabled, onclick });
+  const side = (name: string, word: string, disabled: boolean, onclick: () => void) => ({
+    label: `${name}: ${word}`,
+    disabled,
+    onclick,
+  });
 
   // A dock tool open: the site bar keeps its dock open (src/lib/site-bar.ts).
   $effect(() => {
@@ -75,11 +96,15 @@
     const was = lab.panel;
     lab.panel = null;
     window.dispatchEvent(new Event(PANEL_CLOSED_EVENT));
-    if (was) tick().then(() => document.querySelector<HTMLElement>(`[aria-controls="lab-pane-${was}"]`)?.focus());
+    if (was)
+      tick().then(() =>
+        document.querySelector<HTMLElement>(`[aria-controls="lab-pane-${was}"]`)?.focus(),
+      );
   }
 
   function onkeydown(e: KeyboardEvent) {
-    if (e.key !== 'Escape' || !desktop || !lab.panel || document.querySelector('dialog[open]')) return;
+    if (e.key !== 'Escape' || !desktop || !lab.panel || document.querySelector('dialog[open]'))
+      return;
     e.preventDefault();
     closePanel();
   }
@@ -103,11 +128,19 @@
 
 {#if !desktop}
   <section class="card lab-phone" data-testid="lab-phone">
-    <svg aria-hidden="true" viewBox="0 0 64 48" class="lab-phone-art"><rect x="6" y="4" width="52" height="34" rx="4" /><path d="M2 44h60" /><circle cx="32" cy="21" r="7" /><path d="M14 30l10-9 8 7 6-5 12 9" /></svg>
+    <svg aria-hidden="true" viewBox="0 0 64 48" class="lab-phone-art"
+      ><rect x="6" y="4" width="52" height="34" rx="4" /><path d="M2 44h60" /><circle
+        cx="32"
+        cy="21"
+        r="7"
+      /><path d="M14 30l10-9 8 7 6-5 12 9" /></svg
+    >
     <h2>{L.phone.title}</h2>
     <p>{L.phone.body}</p>
     <div class="lab-phone-actions">
-      <button type="button" class="btn btn-primary" onclick={copyLink}>{copied ? L.phone.copied : L.phone.copy}</button>
+      <button type="button" class="btn btn-primary" onclick={copyLink}
+        >{copied ? L.phone.copied : L.phone.copy}</button
+      >
       <a class="btn btn-secondary" href={url('viewfinder')}>{L.phone.viewfinder}</a>
     </div>
     <p class="sr-only" aria-live="polite">{copied ? L.phone.copied : ''}</p>
@@ -117,17 +150,42 @@
     <div class="lab-col">
       {#if lab.shared}
         <div class="note lab-shared" role="status" data-testid="lab-shared">
-          <p><b>{L.sharedNote.title}</b> {L.sharedNote.body}{lab.shared.unknownCamera ? ` ${L.sharedNote.unknownCamera}` : ''}</p>
+          <p>
+            <b>{L.sharedNote.title}</b>
+            {L.sharedNote.body}{lab.shared.unknownCamera ? ` ${L.sharedNote.unknownCamera}` : ''}
+          </p>
           <div class="lab-shared-actions">
-            <button type="button" class="btn btn-primary" onclick={keepShared} data-testid="lab-shared-keep">{L.sharedNote.keep}</button>
-            <button type="button" class="btn btn-secondary" onclick={backToMine} data-testid="lab-shared-back">{L.sharedNote.back}</button>
+            <button
+              type="button"
+              class="btn btn-primary"
+              onclick={keepShared}
+              data-testid="lab-shared-keep">{L.sharedNote.keep}</button
+            >
+            <button
+              type="button"
+              class="btn btn-secondary"
+              onclick={backToMine}
+              data-testid="lab-shared-back">{L.sharedNote.back}</button
+            >
           </div>
         </div>
       {/if}
       <div class="lab-view" style:--aspect={lab.camera.aspect}>
-        <div class="lab-stage" role="img" aria-label={pictureLabel} data-testid="lab-stage" data-samples={lab.samples} data-done={done}>
+        <div
+          class="lab-stage"
+          role="img"
+          aria-label={pictureLabel}
+          data-testid="lab-stage"
+          data-samples={lab.samples}
+          data-done={done}
+        >
           {#if webgl}
-            <Canvas renderMode="manual" autoRender={false} toneMapping={NoToneMapping} dpr={Math.min(devicePixelRatio || 1, 2)}>
+            <Canvas
+              renderMode="manual"
+              autoRender={false}
+              toneMapping={NoToneMapping}
+              dpr={Math.min(devicePixelRatio || 1, 2)}
+            >
               <Scene />
             </Canvas>
           {:else if webgl === false}
@@ -136,35 +194,95 @@
           <span class="vf-tag lab-tag" aria-hidden="true">{tag}</span>
           {#if lab.histogram && lab.hist}
             {@const h = lab.hist}
-            <svg class="vf-hist" viewBox={`0 0 ${HW} ${HH}`} preserveAspectRatio="none" aria-hidden="true" data-testid="lab-hist">
-              {#each [0.25, 0.5, 0.75] as f (f)}<line class="grid" x1={f * HW} x2={f * HW} y1="0" y2={HH} />{/each}
+            <svg
+              class="vf-hist"
+              viewBox={`0 0 ${HW} ${HH}`}
+              preserveAspectRatio="none"
+              aria-hidden="true"
+              data-testid="lab-hist"
+            >
+              {#each [0.25, 0.5, 0.75] as f (f)}<line
+                  class="grid"
+                  x1={f * HW}
+                  x2={f * HW}
+                  y1="0"
+                  y2={HH}
+                />{/each}
               {#if lab.histMode === 'luma'}
-                <path class="luma" d={histogramPath(h.luma, HW, HH - 3, true)} transform="translate(0 3)" />
+                <path
+                  class="luma"
+                  d={histogramPath(h.luma, HW, HH - 3, true)}
+                  transform="translate(0 3)"
+                />
               {:else}
-                <path class="ch r" d={histogramPath(h.r, HW, HH - 3, false)} transform="translate(0 3)" />
-                <path class="ch g" d={histogramPath(h.g, HW, HH - 3, false)} transform="translate(0 3)" />
-                <path class="ch b" d={histogramPath(h.b, HW, HH - 3, false)} transform="translate(0 3)" />
+                <path
+                  class="ch r"
+                  d={histogramPath(h.r, HW, HH - 3, false)}
+                  transform="translate(0 3)"
+                />
+                <path
+                  class="ch g"
+                  d={histogramPath(h.g, HW, HH - 3, false)}
+                  transform="translate(0 3)"
+                />
+                <path
+                  class="ch b"
+                  d={histogramPath(h.b, HW, HH - 3, false)}
+                  transform="translate(0 3)"
+                />
               {/if}
               {#if h.low > CLIP_SHARE}<rect class="clip" x="0" y="0" width="2.5" height={HH} />{/if}
-              {#if h.high > CLIP_SHARE}<rect class="clip" x={HW - 2.5} y="0" width="2.5" height={HH} />{/if}
+              {#if h.high > CLIP_SHARE}<rect
+                  class="clip"
+                  x={HW - 2.5}
+                  y="0"
+                  width="2.5"
+                  height={HH}
+                />{/if}
             </svg>
           {/if}
-          <span class="lab-progress" aria-hidden="true">{done ? L.sharp : `${L.rendering} ${Math.round((lab.samples / lab.target) * 100)} %`}</span>
+          <span class="lab-progress" aria-hidden="true"
+            >{done
+              ? L.sharp
+              : `${L.rendering} ${Math.round((lab.samples / lab.target) * 100)} %`}</span
+          >
         </div>
       </div>
 
       <section class="card lab-strip" aria-label={L.exposure}>
         <!-- The set, subject and light: a button that opens the Set tool. -->
-        <button type="button" class="lab-set" title={L.changeSet} aria-expanded={lab.panel === 'set'} aria-controls="lab-pane-set" onclick={() => (lab.panel = lab.panel === 'set' ? null : 'set')} data-testid="lab-set-pill">
+        <button
+          type="button"
+          class="lab-set"
+          title={L.changeSet}
+          aria-expanded={lab.panel === 'set'}
+          aria-controls="lab-pane-set"
+          onclick={() => (lab.panel = lab.panel === 'set' ? null : 'set')}
+          data-testid="lab-set-pill"
+        >
           <span><small>{L.set}</small> {lab.set.name}</span>
           <span><small>{L.subject}</small> {lab.subject.name}</span>
           <span><small>{L.light}</small> {lab.lighting.name}</span>
-          <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6" /></svg>
+          <svg
+            aria-hidden="true"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"><path d="m6 9 6 6 6-6" /></svg
+          >
         </button>
         <div class="lab-strip-top">
           <Meter offset={lab.offset} ev={lab.sceneEv} />
           <div class="lab-strip-actions">
-            <button type="button" class="btn btn-secondary" disabled={lab.sceneEv === null} onclick={() => lab.matchMeter()} data-testid="lab-match">{L.match}</button>
+            <button
+              type="button"
+              class="btn btn-secondary"
+              disabled={lab.sceneEv === null}
+              onclick={() => lab.matchMeter()}
+              data-testid="lab-match">{L.match}</button
+            >
           </div>
         </div>
         <div class="lab-steps">
@@ -172,16 +290,24 @@
             id="lab-aperture"
             label={L.settings.aperture}
             value={apertureText}
-            less={side(L.settings.aperture, L.steps.less, !lab.canStep('aperture', -1), () => lab.stepAperture(-1))}
-            more={side(L.settings.aperture, L.steps.more, !lab.canStep('aperture', 1), () => lab.stepAperture(1))}
+            less={side(L.settings.aperture, L.steps.less, !lab.canStep('aperture', -1), () =>
+              lab.stepAperture(-1),
+            )}
+            more={side(L.settings.aperture, L.steps.more, !lab.canStep('aperture', 1), () =>
+              lab.stepAperture(1),
+            )}
           />
           <Stepper
             id="lab-shutter"
             label={L.settings.shutter}
             value={shutterText}
             sub={shutterSub}
-            less={side(L.settings.shutter, L.steps.less, !lab.canStep('shutter', -1), () => lab.stepShutter(-1))}
-            more={side(L.settings.shutter, L.steps.more, !lab.canStep('shutter', 1), () => lab.stepShutter(1))}
+            less={side(L.settings.shutter, L.steps.less, !lab.canStep('shutter', -1), () =>
+              lab.stepShutter(-1),
+            )}
+            more={side(L.settings.shutter, L.steps.more, !lab.canStep('shutter', 1), () =>
+              lab.stepShutter(1),
+            )}
           />
           <Stepper
             id="lab-iso"
@@ -194,8 +320,12 @@
             id="lab-wb"
             label={L.settings.wb}
             value={`${lab.kelvin} K`}
-            less={side(L.settings.wb, L.steps.wbLower, !lab.canStep('wb', -1), () => lab.stepWhiteBalance(-1))}
-            more={side(L.settings.wb, L.steps.wbHigher, !lab.canStep('wb', 1), () => lab.stepWhiteBalance(1))}
+            less={side(L.settings.wb, L.steps.wbLower, !lab.canStep('wb', -1), () =>
+              lab.stepWhiteBalance(-1),
+            )}
+            more={side(L.settings.wb, L.steps.wbHigher, !lab.canStep('wb', 1), () =>
+              lab.stepWhiteBalance(1),
+            )}
           />
         </div>
         <p class="lab-note">{L.noiseNote}</p>
@@ -205,23 +335,39 @@
     {#if lab.panel}
       <LabPanes panel={lab.panel} onclose={closePanel} />
     {:else}
-    <section class="card lab-plan-card" aria-labelledby="lab-plan-title">
-      <header class="lab-pane-head"><h2 id="lab-plan-title">{L.plan.title}</h2><span>{L.plan.hint}</span></header>
-      <Plan />
-      <div class="lab-plan-focus">
-        <Stepper
-          id="lab-focus"
-          label={L.settings.focus}
-          value={focusText}
-          sub={lab.focusManual === null ? L.onSubject : undefined}
-          less={{ label: L.steps.closer, disabled: !lab.canStep('focus', -1), onclick: () => lab.stepFocus(-1) }}
-          more={{ label: L.steps.farther, disabled: !lab.canStep('focus', 1), onclick: () => lab.stepFocus(1) }}
-        />
-        {#if lab.focusManual !== null}
-          <button type="button" class="btn btn-secondary" onclick={() => lab.focusOnSubject()} data-testid="lab-focus-subject">{L.focusSubject}</button>
-        {/if}
-      </div>
-    </section>
+      <section class="card lab-plan-card" aria-labelledby="lab-plan-title">
+        <header class="lab-pane-head">
+          <h2 id="lab-plan-title">{L.plan.title}</h2>
+          <span>{L.plan.hint}</span>
+        </header>
+        <Plan />
+        <div class="lab-plan-focus">
+          <Stepper
+            id="lab-focus"
+            label={L.settings.focus}
+            value={focusText}
+            sub={lab.focusManual === null ? L.onSubject : undefined}
+            less={{
+              label: L.steps.closer,
+              disabled: !lab.canStep('focus', -1),
+              onclick: () => lab.stepFocus(-1),
+            }}
+            more={{
+              label: L.steps.farther,
+              disabled: !lab.canStep('focus', 1),
+              onclick: () => lab.stepFocus(1),
+            }}
+          />
+          {#if lab.focusManual !== null}
+            <button
+              type="button"
+              class="btn btn-secondary"
+              onclick={() => lab.focusOnSubject()}
+              data-testid="lab-focus-subject">{L.focusSubject}</button
+            >
+          {/if}
+        </div>
+      </section>
     {/if}
   </div>
 {/if}

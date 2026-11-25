@@ -25,22 +25,32 @@
   const clipping = $derived.by(() => {
     const h = live.showing ? aids.hist : null;
     if (!h) return '';
-    const parts = [h.low > CLIP_SHARE && t.vf.aids.clipShadows, h.high > CLIP_SHARE && t.vf.aids.clipHighlights].filter(Boolean);
+    const parts = [
+      h.low > CLIP_SHARE && t.vf.aids.clipShadows,
+      h.high > CLIP_SHARE && t.vf.aids.clipHighlights,
+    ].filter(Boolean);
     return parts.length ? `, ${parts.join(', ')}` : '';
   });
   const aspectLabel = $derived(aspectText(vf.setup.mode, vf.setup.aspect));
-  const focalLabel = $derived(`${toEntry(vf.setup.focal, vf.setup.focalEntry, d.crop)} mm${vf.setup.focalEntry === 'equivalent' ? ' FF' : ''}`);
+  const focalLabel = $derived(
+    `${toEntry(vf.setup.focal, vf.setup.focalEntry, d.crop)} mm${vf.setup.focalEntry === 'equivalent' ? ' FF' : ''}`,
+  );
   const label = $derived(
     `${vf.camera.name}, ${vf.format.name}, ${vf.setup.focal} mm lens, ${aspectLabel} frame, ` +
       `${d.fov.horizontal.toFixed(1)} by ${d.fov.vertical.toFixed(1)} degrees` +
       (live.showing ? `, live camera, ${live.modeLabel}` : '') +
       clipping,
   );
-  const pct = (b: Box) => `left:${b.x * 100}%;top:${b.y * 100}%;width:${b.w * 100}%;height:${b.h * 100}%`;
+  const pct = (b: Box) =>
+    `left:${b.x * 100}%;top:${b.y * 100}%;width:${b.w * 100}%;height:${b.h * 100}%`;
   const histShown = $derived(live.showing && aids.histogram && !!aids.hist);
   const level = $derived(live.level && live.rollValid && Math.abs(live.roll) < 0.5);
   const card = $derived(live.source === 'live' && !live.showing ? live.status : null);
-  const err = $derived(card && card in t.vf.live.errors ? t.vf.live.errors[card as keyof typeof t.vf.live.errors] : null);
+  const err = $derived(
+    card && card in t.vf.live.errors
+      ? t.vf.live.errors[card as keyof typeof t.vf.live.errors]
+      : null,
+  );
 
   let video = $state<HTMLVideoElement>();
 
@@ -55,7 +65,12 @@
   $effect(() => {
     const target = live.plan?.camera;
     const zoom = live.caps.zoom;
-    if (!zoom || target === undefined || Math.abs(target - live.appliedZoom) < Math.max(zoom.step ?? 0, 0.01)) return;
+    if (
+      !zoom ||
+      target === undefined ||
+      Math.abs(target - live.appliedZoom) < Math.max(zoom.step ?? 0, 0.01)
+    )
+      return;
     const id = setTimeout(() => live.zoom(target), 120);
     return () => clearTimeout(id);
   });
@@ -75,10 +90,25 @@
     style={`aspect-ratio:${size.width} / ${size.height};--frame:${FRAME_COLORS[vf.setup.frameColor]}`}
   >
     {#if !live.showing}
-      <svg class="vf-scene" class:dim={card} viewBox={box} preserveAspectRatio="none" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true">
+      <svg
+        class="vf-scene"
+        class:dim={card}
+        viewBox={box}
+        preserveAspectRatio="none"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.2"
+        aria-hidden="true"
+      >
         {#if half > SCENE_HALF_WIDTH}
           <rect class="outside" x={-half} y="-10" width={half - SCENE_HALF_WIDTH} height="20" />
-          <rect class="outside" x={SCENE_HALF_WIDTH} y="-10" width={half - SCENE_HALF_WIDTH} height="20" />
+          <rect
+            class="outside"
+            x={SCENE_HALF_WIDTH}
+            y="-10"
+            width={half - SCENE_HALF_WIDTH}
+            height="20"
+          />
         {/if}
         {#each SCENE.paths as p}<path d={p} />{/each}
         {#each SCENE.circles as c}<ellipse cx={c.cx} cy={c.cy} rx={c.r} ry={c.r} />{/each}
@@ -100,20 +130,37 @@
       ></video>
       <AidsLayer frame={ov.frame} style={live.box ? pct(live.box) : 'opacity:0'} />
     {/if}
-    {#each ov.masks as m}<div class="vf-ov vf-mask" style={`${pct(m)};opacity:${vf.setup.mask}`}></div>{/each}
+    {#each ov.masks as m}<div
+        class="vf-ov vf-mask"
+        style={`${pct(m)};opacity:${vf.setup.mask}`}
+      ></div>{/each}
     <div class="vf-ov vf-frame" style={pct(ov.frame)}></div>
     {#each ov.lines as l}
-      <div class="vf-ov vf-line" style={l.x1 === l.x2 ? `left:${l.x1 * 100}%;top:${l.y1 * 100}%;width:1px;height:${(l.y2 - l.y1) * 100}%` : `left:${l.x1 * 100}%;top:${l.y1 * 100}%;height:1px;width:${(l.x2 - l.x1) * 100}%`}></div>
+      <div
+        class="vf-ov vf-line"
+        style={l.x1 === l.x2
+          ? `left:${l.x1 * 100}%;top:${l.y1 * 100}%;width:1px;height:${(l.y2 - l.y1) * 100}%`
+          : `left:${l.x1 * 100}%;top:${l.y1 * 100}%;height:1px;width:${(l.x2 - l.x1) * 100}%`}
+      ></div>
     {/each}
-    {#if ov.centre}<div class="vf-ov vf-centre" style={`left:${ov.centre.x * 100}%;top:${ov.centre.y * 100}%`}></div>{/if}
+    {#if ov.centre}<div
+        class="vf-ov vf-centre"
+        style={`left:${ov.centre.x * 100}%;top:${ov.centre.y * 100}%`}
+      ></div>{/if}
     {#if ov.safe}
       <div class="vf-ov vf-safe" style={pct(ov.safe.action)}></div>
       <div class="vf-ov vf-safe" style={pct(ov.safe.graphics)}></div>
     {/if}
     {#if live.level}
       {#if live.rollValid}
-        <div class="vf-ov vf-level" class:ok={level} style={`transform:translate(-50%,-50%) rotate(${-live.roll}deg)`}></div>
-        <span class="vf-tag vf-level-tag vf-num" class:ok={level} class:raised={histShown}>{level ? t.vf.live.levelOk : `${live.roll > 0 ? '+' : ''}${live.roll.toFixed(1)}°`}</span>
+        <div
+          class="vf-ov vf-level"
+          class:ok={level}
+          style={`transform:translate(-50%,-50%) rotate(${-live.roll}deg)`}
+        ></div>
+        <span class="vf-tag vf-level-tag vf-num" class:ok={level} class:raised={histShown}
+          >{level ? t.vf.live.levelOk : `${live.roll > 0 ? '+' : ''}${live.roll.toFixed(1)}°`}</span
+        >
       {:else}
         <span class="vf-tag vf-level-tag" class:raised={histShown}>{t.vf.live.levelFlat}</span>
       {/if}
@@ -121,7 +168,11 @@
     <span class="vf-tag" style="left:8px">{aspectLabel}</span>
     <span class="vf-tag" style="right:8px">{focalLabel}</span>
     {#if histShown}<Histogram />{/if}
-    {#if live.showing && live.modeLabel}<span class="vf-tag vf-mode" data-testid="vf-mode" data-mode={live.plan?.mode}>{live.modeLabel}</span>{/if}
+    {#if live.showing && live.modeLabel}<span
+        class="vf-tag vf-mode"
+        data-testid="vf-mode"
+        data-mode={live.plan?.mode}>{live.modeLabel}</span
+      >{/if}
   </div>
 
   {#if card}
@@ -130,20 +181,34 @@
         <b>{t.vf.live.intro.title}</b>
         <p>{t.vf.live.intro.body}</p>
         <div class="vf-card-actions">
-          <button type="button" class="btn btn-primary" onclick={() => live.start()}>{t.vf.live.intro.start}</button>
-          <button type="button" class="btn btn-secondary" onclick={() => live.stop()}>{t.vf.live.backToScene}</button>
+          <button type="button" class="btn btn-primary" onclick={() => live.start()}
+            >{t.vf.live.intro.start}</button
+          >
+          <button type="button" class="btn btn-secondary" onclick={() => live.stop()}
+            >{t.vf.live.backToScene}</button
+          >
         </div>
       {:else if card === 'asking'}
         <p>{t.vf.live.asking}</p>
       {:else if card === 'paused'}
         <p>{t.vf.live.paused}</p>
-        <div class="vf-card-actions"><button type="button" class="btn btn-primary" onclick={() => live.resume()}>{t.vf.live.resume}</button></div>
+        <div class="vf-card-actions">
+          <button type="button" class="btn btn-primary" onclick={() => live.resume()}
+            >{t.vf.live.resume}</button
+          >
+        </div>
       {:else if err}
         <b>{err[0]}</b>
         <p>{err[1]}</p>
         <div class="vf-card-actions">
-          {#if card !== 'unsupported' && card !== 'insecure'}<button type="button" class="btn btn-primary" onclick={() => live.start()}>{t.vf.live.retry}</button>{/if}
-          <button type="button" class="btn btn-secondary" onclick={() => live.stop()}>{t.vf.live.backToScene}</button>
+          {#if card !== 'unsupported' && card !== 'insecure'}<button
+              type="button"
+              class="btn btn-primary"
+              onclick={() => live.start()}>{t.vf.live.retry}</button
+            >{/if}
+          <button type="button" class="btn btn-secondary" onclick={() => live.stop()}
+            >{t.vf.live.backToScene}</button
+          >
         </div>
       {/if}
     </div>

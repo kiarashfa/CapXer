@@ -19,14 +19,21 @@ describe('consent', () => {
   it('round-trips a choice', () => {
     const s = memoryStore();
     writeConsent('granted', s, new Date('2026-10-28T12:00:00Z'));
-    expect(readConsent(s)).toEqual({ v: CONSENT_VERSION, analytics: 'granted', at: '2026-10-28T12:00:00.000Z' });
+    expect(readConsent(s)).toEqual({
+      v: CONSENT_VERSION,
+      analytics: 'granted',
+      at: '2026-10-28T12:00:00.000Z',
+    });
     writeConsent('denied', s);
     expect(readConsent(s)?.analytics).toBe('denied');
   });
 
   it('ignores records from another consent version, so the banner shows again', () => {
     const s = memoryStore();
-    s.setItem(CONSENT_KEY, JSON.stringify({ v: CONSENT_VERSION + 1, analytics: 'granted', at: '' }));
+    s.setItem(
+      CONSENT_KEY,
+      JSON.stringify({ v: CONSENT_VERSION + 1, analytics: 'granted', at: '' }),
+    );
     expect(readConsent(s)).toBeNull();
   });
 

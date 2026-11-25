@@ -31,7 +31,8 @@ if (cam) {
   if (!sensor) throw new Error(`${where}: unknown camera "${cam}"`);
   setup.sensorId = cam;
   setup.formatId = fmt ?? sensor.formats[0]!.id;
-  if (!sensor.formats.some((f) => f.id === setup.formatId)) throw new Error(`${where}: ${cam} has no format "${fmt}"`);
+  if (!sensor.formats.some((f) => f.id === setup.formatId))
+    throw new Error(`${where}: ${cam} has no format "${fmt}"`);
 } else if (fmt) throw new Error(`${where}: fmt needs cam`);
 if (ar) {
   if (!aspectPreset(mode, ar)) throw new Error(`${where}: no ${mode} frame "${ar}"`);
@@ -42,15 +43,18 @@ if (mm !== undefined) {
   setup.focal = mm;
 }
 if (sq !== undefined) {
-  if (!SQUEEZES.includes(sq)) throw new Error(`${where}: squeeze ${sq} is not one of ${SQUEEZES.join(', ')}`);
+  if (!SQUEEZES.includes(sq))
+    throw new Error(`${where}: squeeze ${sq} is not one of ${SQUEEZES.join(', ')}`);
   setup.squeeze = sq;
 }
 if (guides !== undefined) {
   const names = Object.keys(setup.guides) as (keyof Guides)[];
   const wanted = guides === 'none' ? [] : guides.split(',').map((g) => g.trim());
   const bad = wanted.filter((g) => !names.includes(g as keyof Guides));
-  if (!wanted.length && guides !== 'none') throw new Error(`${where}: guides is empty (use "none")`);
-  if (bad.length) throw new Error(`${where}: unknown guides ${bad.join(', ')}; use ${names.join(', ')} or none`);
+  if (!wanted.length && guides !== 'none')
+    throw new Error(`${where}: guides is empty (use "none")`);
+  if (bad.length)
+    throw new Error(`${where}: unknown guides ${bad.join(', ')}; use ${names.join(', ')} or none`);
   for (const g of names) setup.guides[g] = wanted.includes(g);
 }
 const href = `${url('viewfinder')}#${encodeLink(setup)}`;
@@ -58,5 +62,15 @@ const href = `${url('viewfinder')}#${encodeLink(setup)}`;
 
 <a class="btn btn-primary lesson-trylink" href={href}>
   <slot />
-  <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+  <svg
+    aria-hidden="true"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="1.8"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <path d="M5 12h14M13 6l6 6-6 6"></path>
+  </svg>
 </a>

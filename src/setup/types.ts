@@ -5,7 +5,8 @@
 export type Mode = 'cinema' | 'stills';
 export type FocalEntry = 'actual' | 'equivalent';
 export type FrameColor = 'accent' | 'amber' | 'white' | 'red';
-export type PanelId = 'camera' | 'frame' | 'lens' | 'guides' | 'live' | 'exposure' | 'info' | 'saved';
+export type PanelId =
+  'camera' | 'frame' | 'lens' | 'guides' | 'live' | 'exposure' | 'info' | 'saved';
 
 export interface Guides {
   thirds: boolean;

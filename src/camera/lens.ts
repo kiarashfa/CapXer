@@ -45,9 +45,15 @@ export function fovFromDiagonal(degrees: number, aspect = PHONE_ASPECT): CameraF
   return fromDiagonalTan(Math.tan((degrees * Math.PI) / 360), aspect);
 }
 
-export function fovFromDeviceCamera(c: Pick<DeviceCamera, 'equivalent' | 'diagonalFov' | 'aspect'>): CameraFov {
-  const aspect = c.aspect ? Math.max(c.aspect[0], c.aspect[1]) / Math.min(c.aspect[0], c.aspect[1]) : PHONE_ASPECT;
-  return c.equivalent !== undefined ? fovFromEquivalent(c.equivalent, aspect) : fovFromDiagonal(c.diagonalFov!, aspect);
+export function fovFromDeviceCamera(
+  c: Pick<DeviceCamera, 'equivalent' | 'diagonalFov' | 'aspect'>,
+): CameraFov {
+  const aspect = c.aspect
+    ? Math.max(c.aspect[0], c.aspect[1]) / Math.min(c.aspect[0], c.aspect[1])
+    : PHONE_ASPECT;
+  return c.equivalent !== undefined
+    ? fovFromEquivalent(c.equivalent, aspect)
+    : fovFromDiagonal(c.diagonalFov!, aspect);
 }
 
 /** The 35mm-equivalent focal length of a calibrated camera (for display). */
@@ -60,7 +66,8 @@ export function equivalentOf(fov: CameraFov): number {
 export function streamTangents(fov: CameraFov, w: number, h: number): { x: number; y: number } {
   const long = Math.max(w, h);
   const streamAspect = long / Math.min(w, h);
-  const longTan = streamAspect >= fov.aspect ? fov.longTan : (fov.longTan / fov.aspect) * streamAspect;
+  const longTan =
+    streamAspect >= fov.aspect ? fov.longTan : (fov.longTan / fov.aspect) * streamAspect;
   const perPixel = longTan / (long / 2);
   return { x: (perPixel * w) / 2, y: (perPixel * h) / 2 };
 }
@@ -91,22 +98,32 @@ const TOLERANCE = 0.01;
  * The video must cover the whole simulated image, so the total is limited by
  * the tighter of the two directions.
  */
-export function planZoom(lens: { x: number; y: number }, stream: { x: number; y: number }, range?: ZoomRange): ZoomPlan {
+export function planZoom(
+  lens: { x: number; y: number },
+  stream: { x: number; y: number },
+  range?: ZoomRange,
+): ZoomPlan {
   const total = Math.min(stream.x / lens.x, stream.y / lens.y);
   let camera = 1;
   if (range && range.max > range.min) {
     camera = Math.min(range.max, Math.max(range.min, total));
-    if (range.step && range.step > 0) camera = range.min + Math.round((camera - range.min) / range.step) * range.step;
+    if (range.step && range.step > 0)
+      camera = range.min + Math.round((camera - range.min) / range.step) * range.step;
     camera = Math.min(range.max, Math.max(range.min, camera));
   }
   const digital = total / camera;
   // "camera" whenever the camera zooms (any rest is digital, shown alongside).
-  const mode: LiveMode = digital < 1 - TOLERANCE ? 'wider' : Math.abs(camera - 1) > TOLERANCE ? 'camera' : 'digital';
+  const mode: LiveMode =
+    digital < 1 - TOLERANCE ? 'wider' : Math.abs(camera - 1) > TOLERANCE ? 'camera' : 'digital';
   return { camera, digital, total, mode };
 }
 
 /** Where the video sits in the stage, as fractions of the stage box (centred). */
-export function videoBox(lens: { x: number; y: number }, stream: { x: number; y: number }, camera: number) {
+export function videoBox(
+  lens: { x: number; y: number },
+  stream: { x: number; y: number },
+  camera: number,
+) {
   const w = stream.x / camera / lens.x;
   const h = stream.y / camera / lens.y;
   return { x: (1 - w) / 2, y: (1 - h) / 2, w, h };
@@ -125,7 +142,12 @@ export function captureRect(
 ) {
   const sx = px.width / video.w;
   const sy = px.height / video.h;
-  return { x: (frame.x - video.x) * sx, y: (frame.y - video.y) * sy, w: frame.w * sx, h: frame.h * sy };
+  return {
+    x: (frame.x - video.x) * sx,
+    y: (frame.y - video.y) * sy,
+    w: frame.w * sx,
+    h: frame.h * sy,
+  };
 }
 
 /**
@@ -134,7 +156,11 @@ export function captureRect(
  * the screen's orientation angle. `valid` is false when the phone lies too flat
  * for a horizon to mean anything.
  */
-export function levelRoll(beta: number, gamma: number, screenAngle = 0): { roll: number; valid: boolean } {
+export function levelRoll(
+  beta: number,
+  gamma: number,
+  screenAngle = 0,
+): { roll: number; valid: boolean } {
   const b = (beta * Math.PI) / 180;
   const g = (gamma * Math.PI) / 180;
   // "Up" in device coordinates (x right, y towards the top edge, z out of the screen).

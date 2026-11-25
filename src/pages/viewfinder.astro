@@ -19,14 +19,18 @@ import '../styles/viewfinder.css';
        keep the viewfinder hidden until then (src/storage/persist.svelte.ts), at most 3 s. -->
   <script is:inline slot="head" define:vars={{ key: SAVE_KEY }}>
     let has = /(^#|&)v=\d/.test(location.hash);
-    try { has = has || !!localStorage.getItem(key); } catch {}
+    try {
+      has = has || !!localStorage.getItem(key);
+    } catch {}
     if (has) {
       document.documentElement.dataset.restoring = '';
       setTimeout(() => delete document.documentElement.dataset.restoring, 3000);
     }
   </script>
   <Fragment slot="old-browser">{t.oldBrowser.tool}</Fragment>
-  <div slot="dock" data-needs-modern><ViewfinderDock client:load /></div>
+  <div slot="dock" data-needs-modern>
+    <ViewfinderDock client:load />
+  </div>
   <h1 class="sr-only">Viewfinder</h1>
   <div data-needs-modern>
     <Viewfinder client:load lessons={lessons} />

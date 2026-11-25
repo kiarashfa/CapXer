@@ -33,15 +33,27 @@
 <div class="vf-row">
   <div class="vf-txt"><b>{t.vf.lens.entry}</b><span>{t.vf.lens.entryHint}</span></div>
   <div class="seg" role="group" aria-label={t.vf.lens.entry}>
-    <button type="button" aria-pressed={entry === 'actual'} onclick={() => vf.setEntry('actual')}>{t.vf.lens.actual}</button>
-    <button type="button" aria-pressed={entry === 'equivalent'} onclick={() => vf.setEntry('equivalent')}>{t.vf.lens.equivalent}</button>
+    <button type="button" aria-pressed={entry === 'actual'} onclick={() => vf.setEntry('actual')}
+      >{t.vf.lens.actual}</button
+    >
+    <button
+      type="button"
+      aria-pressed={entry === 'equivalent'}
+      onclick={() => vf.setEntry('equivalent')}>{t.vf.lens.equivalent}</button
+    >
   </div>
 </div>
 
 <div class="vf-row stack">
   <div class="flex items-baseline justify-between gap-4">
-    <label class="vf-txt" for="vf-focal"><b>{t.vf.lens.label}</b><span>{t.vf.lens.sliderHint}</span></label>
-    <span class="vf-num text-2xl font-semibold text-accent">{shown}<small class="text-sm text-muted"> mm{entry === 'equivalent' ? ' FF' : ''}</small></span>
+    <label class="vf-txt" for="vf-focal"
+      ><b>{t.vf.lens.label}</b><span>{t.vf.lens.sliderHint}</span></label
+    >
+    <span class="vf-num text-2xl font-semibold text-accent"
+      >{shown}<small class="text-sm text-muted">
+        mm{entry === 'equivalent' ? ' FF' : ''}</small
+      ></span
+    >
   </div>
   <div>
     <input
@@ -55,7 +67,10 @@
       oninput={(e) => vf.setFocal(fromSlider(Number(e.currentTarget.value), vf.range))}
     />
     <div class="scale-labels relative h-4" aria-hidden="true">
-      {#each ticks as tk}<span class="absolute -translate-x-1/2" style={`left: calc(14px + (100% - 28px) * ${tk.pos})`}>{tk.label}</span>{/each}
+      {#each ticks as tk}<span
+          class="absolute -translate-x-1/2"
+          style={`left: calc(14px + (100% - 28px) * ${tk.pos})`}>{tk.label}</span
+        >{/each}
     </div>
   </div>
 </div>
@@ -64,7 +79,12 @@
   <div class="vf-txt"><b>{t.vf.lens.stops}</b><span>{t.vf.lens.stopsHint}</span></div>
   <div class="chips" role="group" aria-label={t.vf.lens.stops}>
     {#each vf.stopLabels as s, i}
-      <button type="button" class="chip mono" aria-pressed={Math.abs(vf.stopsActual[i]! - vf.setup.focal) < 0.05} onclick={() => vf.setFocal(vf.stopsActual[i]!)}>{s}</button>
+      <button
+        type="button"
+        class="chip mono"
+        aria-pressed={Math.abs(vf.stopsActual[i]! - vf.setup.focal) < 0.05}
+        onclick={() => vf.setFocal(vf.stopsActual[i]!)}>{s}</button
+      >
     {/each}
   </div>
   <form class="flex items-center gap-2" onsubmit={addLens}>

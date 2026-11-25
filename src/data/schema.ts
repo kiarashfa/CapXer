@@ -29,7 +29,6 @@ export const FormatSchema = z.strictObject({
   citation: CitationSchema,
 });
 
-
 /**
  * A maker (or, with generic: true, a family of formats such as film) from
  * src/data/makers.json. Its id is the folder name under src/data/sensors/.
@@ -51,7 +50,9 @@ export const SensorSchema = z.strictObject({
   kind: z.enum(SENSOR_KINDS),
   formatClass: z.enum(FORMAT_CLASSES),
   /** Photosite pitch in micrometres, when published. Cross-checked against formats. */
-  pitch: z.strictObject({ value: z.number().positive().max(20), citation: CitationSchema }).optional(),
+  pitch: z
+    .strictObject({ value: z.number().positive().max(20), citation: CitationSchema })
+    .optional(),
   /** The first format is the full image area; the rest are modes within it. */
   formats: z.array(FormatSchema).min(1),
   /**
@@ -81,7 +82,10 @@ export const DeviceCameraSchema = z
     aspect: z.tuple([z.int().positive(), z.int().positive()]).optional(),
     citation: CitationSchema,
   })
-  .refine((c) => (c.equivalent === undefined) !== (c.diagonalFov === undefined), 'give exactly one of equivalent or diagonalFov');
+  .refine(
+    (c) => (c.equivalent === undefined) !== (c.diagonalFov === undefined),
+    'give exactly one of equivalent or diagonalFov',
+  );
 
 /** One file: src/data/devices/<maker>/<model>.json. The first camera is the main one. */
 export const DeviceSchema = z.strictObject({
@@ -103,4 +107,3 @@ export type SensorFile = z.infer<typeof SensorSchema>;
 export type Sensor = SensorFile & { id: string; maker: Maker };
 export type SensorKind = Sensor['kind'];
 export type FormatClass = Sensor['formatClass'];
-

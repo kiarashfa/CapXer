@@ -9,7 +9,8 @@ interface Props {
   decorative?: boolean;
 }
 const { ratios, labels, decorative = false } = Astro.props;
-if (!ratios.length || ratios.some((r) => !(r > 0.2 && r < 5))) throw new Error(`RatioFrames: bad ratios ${ratios.join(', ')}`);
+if (!ratios.length || ratios.some((r) => !(r > 0.2 && r < 5)))
+  throw new Error(`RatioFrames: bad ratios ${ratios.join(', ')}`);
 
 const W = 640;
 const PAD = 24;
@@ -26,14 +27,19 @@ const aria = `Frames of ${frames.map((f) => f.label).join(', ')} drawn at the sa
 ---
 
 <div class="grid-paper lesson-drawing">
-  <svg viewBox={`0 0 ${W} ${H}`} role={decorative ? undefined : 'img'} aria-label={decorative ? undefined : aria} aria-hidden={decorative ? 'true' : undefined}>
-    {
-      frames.map((f) => (
-        <g class:list={['rf-frame', f.strong && 'rf-strong']}>
-          <rect x={PAD} y={f.y} width={frameW} height={f.h} rx="4" />
-          <text x={PAD + 12} y={f.y + 26}>{f.label}</text>
-        </g>
-      ))
-    }
+  <svg
+    viewBox={`0 0 ${W} ${H}`}
+    role={decorative ? undefined : 'img'}
+    aria-label={decorative ? undefined : aria}
+    aria-hidden={decorative ? 'true' : undefined}
+  >
+    {frames.map((f) => (
+      <g class:list={['rf-frame', f.strong && 'rf-strong']}>
+        <rect x={PAD} y={f.y} width={frameW} height={f.h} rx="4" />
+        <text x={PAD + 12} y={f.y + 26}>
+          {f.label}
+        </text>
+      </g>
+    ))}
   </svg>
 </div>

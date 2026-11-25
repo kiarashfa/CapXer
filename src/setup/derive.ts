@@ -1,4 +1,13 @@
-import { aspectRatio, coverageAtDistance, cropFactor, desqueezed, fieldOfView, fitAspect, type Area, type FieldOfView } from '../optics/index.ts';
+import {
+  aspectRatio,
+  coverageAtDistance,
+  cropFactor,
+  desqueezed,
+  fieldOfView,
+  fitAspect,
+  type Area,
+  type FieldOfView,
+} from '../optics/index.ts';
 import { aspectPreset } from './presets.ts';
 import type { Setup } from './types.ts';
 

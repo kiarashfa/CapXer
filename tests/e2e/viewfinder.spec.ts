@@ -12,7 +12,11 @@ async function openPane(page: Page, name: string, isMobile: boolean) {
     if ((await bar.getAttribute('data-dock')) !== 'open') await openDock(page);
     const tools = page.locator('#dock-tools');
     // In the dock, the lens panel opens from the focal-length value.
-    await (name === 'Lens' ? tools.getByRole('button', { name: /lens settings/ }) : tools.getByRole('button', { name, exact: true })).click();
+    await (
+      name === 'Lens'
+        ? tools.getByRole('button', { name: /lens settings/ })
+        : tools.getByRole('button', { name, exact: true })
+    ).click();
   }
   await expect(page.getByTestId(`pane-${name.toLowerCase()}`)).toBeVisible();
 }
@@ -25,7 +29,10 @@ test.beforeEach(async ({ page }) => {
 });
 
 test('shows the default frame and its angles', async ({ page }) => {
-  await expect(page.getByTestId('vf-stage')).toHaveAttribute('aria-label', /ARRI ALEXA 35, 4K 16:9, 35 mm lens, 2\.39:1 frame/);
+  await expect(page.getByTestId('vf-stage')).toHaveAttribute(
+    'aria-label',
+    /ARRI ALEXA 35, 4K 16:9, 35 mm lens, 2\.39:1 frame/,
+  );
   await expect(page.locator('main')).toContainText('39.2°');
   await expect(page.locator('main')).toContainText('16.9°');
 });
@@ -83,7 +90,9 @@ test.describe('desktop dock', () => {
     await expect(page.locator('#dock-tools')).toBeHidden();
     await openDock(page);
     // Keyboard users land on the first tool.
-    await expect(page.locator('#dock-tools').getByRole('button', { name: 'Camera', exact: true })).toBeFocused();
+    await expect(
+      page.locator('#dock-tools').getByRole('button', { name: 'Camera', exact: true }),
+    ).toBeFocused();
     await page.locator('#dock-tools').getByRole('button', { name: 'Guides', exact: true }).click();
     await expect(page.getByTestId('pane-guides')).toBeVisible();
     await page.keyboard.press('Escape');
@@ -143,7 +152,10 @@ test.describe('phone menu', () => {
   test('lists the pages', async ({ page }) => {
     await page.getByRole('button', { name: 'Menu' }).click();
     const menu = page.getByRole('navigation', { name: 'Pages' });
-    await expect(menu.getByRole('link', { name: 'Viewfinder' })).toHaveAttribute('aria-current', 'page');
+    await expect(menu.getByRole('link', { name: 'Viewfinder' })).toHaveAttribute(
+      'aria-current',
+      'page',
+    );
     await menu.getByRole('link', { name: 'About' }).click();
     await expect(page).toHaveURL(/about\/$/);
   });

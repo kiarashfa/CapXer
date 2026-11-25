@@ -83,7 +83,8 @@ describe('meter', () => {
   });
 
   it('luminance and EV100 convert both ways', () => {
-    for (const ev of [-2, 0, 7.5, 15]) expect(ev100FromLuminance(luminanceFromEv100(ev))).toBeCloseTo(ev, 10);
+    for (const ev of [-2, 0, 7.5, 15])
+      expect(ev100FromLuminance(luminanceFromEv100(ev))).toBeCloseTo(ev, 10);
   });
 
   it('settings that match the meter are 0 stops off; one stop more light is +1', () => {
@@ -155,7 +156,11 @@ describe('depth of field (Nasse, Zeiss 2010)', () => {
   });
 
   it('the focus distance is the harmonic mean of the near and far limits (p. 15)', () => {
-    for (const [f, n, s] of [[50, 2.8, 2000], [85, 1.4, 1500], [24, 11, 900]]) {
+    for (const [f, n, s] of [
+      [50, 2.8, 2000],
+      [85, 1.4, 1500],
+      [24, 11, 900],
+    ]) {
       const { near, far } = depthOfField(f, n, 0.03, s);
       expect((2 * near * far) / (near + far)).toBeCloseTo(s, 6);
     }
@@ -175,7 +180,10 @@ describe('depth of field (Nasse, Zeiss 2010)', () => {
 
   it('a point at the focus distance is sharp, and blur grows with the aperture', () => {
     expect(blurDiameter(50, 1.4, 3000, 3000)).toBe(0);
-    expect(blurDiameter(50, 1.4, 3000, 6000)).toBeCloseTo(2 * blurDiameter(50, 2.8, 3000, 6000), 10);
+    expect(blurDiameter(50, 1.4, 3000, 6000)).toBeCloseTo(
+      2 * blurDiameter(50, 2.8, 3000, 6000),
+      10,
+    );
   });
 
   it('rejects non-positive input', () => {

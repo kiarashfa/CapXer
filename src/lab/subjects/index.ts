@@ -5,7 +5,14 @@ import type { SubjectDef } from '../types.ts';
 // a heavy model (a human, an animal) costs nothing until someone picks it.
 
 export const SUBJECTS: SubjectDef[] = [
-  { id: 'figure', name: 'Figure', height: 1.75, focusHeight: 1.6, radius: 0.25, load: () => import('./figure/Figure.svelte') },
+  {
+    id: 'figure',
+    name: 'Figure',
+    height: 1.75,
+    focusHeight: 1.6,
+    radius: 0.25,
+    load: () => import('./figure/Figure.svelte'),
+  },
 ];
 
 export function getSubject(id: string | undefined): SubjectDef {

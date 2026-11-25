@@ -20,7 +20,15 @@ export function readSave(): SaveFile | null {
 
 /** True when the save holds anything of the user's own (more than the last viewfinder setup). */
 export function hasWork(file: SaveFile | null): boolean {
-  return !!file && (!!file.profile || file.setups.length > 0 || file.gear.cameras.length > 0 || file.gear.lenses.length > 0 || !!file.calibration.phone || !!file.calibration.webcam);
+  return (
+    !!file &&
+    (!!file.profile ||
+      file.setups.length > 0 ||
+      file.gear.cameras.length > 0 ||
+      file.gear.lenses.length > 0 ||
+      !!file.calibration.phone ||
+      !!file.calibration.webcam)
+  );
 }
 
 const lensKey = (mm: number) => String(Math.round(mm * 10) / 10);
@@ -64,7 +72,11 @@ export function withDeletions(base: SaveFile | null, next: SaveFile, now = new D
  * file the caller's state came from, so only its own deletions are recorded.
  * Returns the file as written, or null when the browser refused to store it.
  */
-export function writeSave(next: SaveFile, base: SaveFile | null, now = new Date()): SaveFile | null {
+export function writeSave(
+  next: SaveFile,
+  base: SaveFile | null,
+  now = new Date(),
+): SaveFile | null {
   const file = { ...withDeletions(base, next, now), savedAt: now.toISOString() };
   if (!local().write(file)) return null;
   dispatchEvent(new CustomEvent(SAVE_EVENT));

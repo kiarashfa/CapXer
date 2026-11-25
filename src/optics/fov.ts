@@ -16,7 +16,8 @@ const RAD_TO_DEG = 180 / Math.PI;
 
 /** Angle of view in degrees across one image dimension. */
 export function angleOfView(dimension: number, focalLength: number): number {
-  if (!(dimension > 0) || !(focalLength > 0)) throw new RangeError('dimension and focal length must be positive');
+  if (!(dimension > 0) || !(focalLength > 0))
+    throw new RangeError('dimension and focal length must be positive');
   return 2 * Math.atan(dimension / (2 * focalLength)) * RAD_TO_DEG;
 }
 
@@ -32,7 +33,8 @@ export function fieldOfView(area: Area, focalLength: number, squeeze = 1): Field
 
 /** Focal length (mm) that gives the requested angle (degrees) across a dimension. Inverse of angleOfView(). */
 export function focalLengthForAngle(dimension: number, angleDeg: number): number {
-  if (!(angleDeg > 0 && angleDeg < 180)) throw new RangeError('angle must be between 0 and 180 degrees');
+  if (!(angleDeg > 0 && angleDeg < 180))
+    throw new RangeError('angle must be between 0 and 180 degrees');
   return dimension / (2 * Math.tan(angleDeg / RAD_TO_DEG / 2));
 }
 
@@ -41,7 +43,12 @@ export function focalLengthForAngle(dimension: number, angleDeg: number): number
  * `distance`. Pinhole approximation (distance from the lens, much larger than
  * the focal length); good to within about f / distance.
  */
-export function coverageAtDistance(area: Area, focalLength: number, distance: number, squeeze = 1): Area {
+export function coverageAtDistance(
+  area: Area,
+  focalLength: number,
+  distance: number,
+  squeeze = 1,
+): Area {
   const a = desqueezed(area, squeeze);
   return { width: (a.width * distance) / focalLength, height: (a.height * distance) / focalLength };
 }

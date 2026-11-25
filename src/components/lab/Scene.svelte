@@ -1,9 +1,22 @@
 <script lang="ts">
   import { T, useTask, useThrelte } from '@threlte/core';
   import { onDestroy, type Component } from 'svelte';
-  import { Color, NoToneMapping, PCFShadowMap, Vector3, type PerspectiveCamera, type SpotLight } from 'three';
+  import {
+    Color,
+    NoToneMapping,
+    PCFShadowMap,
+    Vector3,
+    type PerspectiveCamera,
+    type SpotLight,
+  } from 'three';
   import { kelvinToRgb } from '../../optics/index.ts';
-  import { discPoint, focusShift, pixelJitter, pupilRadiusM, timeSample } from '../../lab/camera.ts';
+  import {
+    discPoint,
+    focusShift,
+    pixelJitter,
+    pupilRadiusM,
+    timeSample,
+  } from '../../lab/camera.ts';
   import { Accumulator, type BandColours } from '../../lab/render/accumulate.ts';
   import { BANDS, histogram, zebraThreshold } from '../../analysis/levels.ts';
   import { provideMotion } from '../../lab/render/motion.ts';
@@ -45,7 +58,20 @@
   // Anything that changes the scene or the optics restarts the average; an
   // exposure change (ISO only, for now) just shows the same average brighter.
   const sceneKey = $derived(
-    JSON.stringify([lab.setId, lab.subject.id, lab.lighting.id, lab.lights, lab.ambient, lab.fNumber, lab.shutter, lab.focusM, lab.camera, lab.cameraAt, lab.focusPoint, lab.tier]),
+    JSON.stringify([
+      lab.setId,
+      lab.subject.id,
+      lab.lighting.id,
+      lab.lights,
+      lab.ambient,
+      lab.fNumber,
+      lab.shutter,
+      lab.focusM,
+      lab.camera,
+      lab.cameraAt,
+      lab.focusPoint,
+      lab.tier,
+    ]),
   );
   let loaded = $state(0);
 
@@ -82,10 +108,20 @@
   });
 
   // Exposure, white balance, noise and the aids only change how the same average is shown.
-  const hex = (h: string): [number, number, number] => [parseInt(h.slice(1, 3), 16) / 255, parseInt(h.slice(3, 5), 16) / 255, parseInt(h.slice(5, 7), 16) / 255];
-  const bandColours = Object.fromEntries(BANDS.map((b) => [b.id, hex(b.color)])) as unknown as BandColours;
+  const hex = (h: string): [number, number, number] => [
+    parseInt(h.slice(1, 3), 16) / 255,
+    parseInt(h.slice(3, 5), 16) / 255,
+    parseInt(h.slice(5, 7), 16) / 255,
+  ];
+  const bandColours = Object.fromEntries(
+    BANDS.map((b) => [b.id, hex(b.color)]),
+  ) as unknown as BandColours;
   $effect(() => {
-    acc.setAid(lab.picture === 'zebras' ? 1 : lab.picture === 'falseColour' ? 2 : 0, zebraThreshold(lab.zebra), bandColours);
+    acc.setAid(
+      lab.picture === 'zebras' ? 1 : lab.picture === 'falseColour' ? 2 : 0,
+      zebraThreshold(lab.zebra),
+      bandColours,
+    );
     void lab.exposureScale;
     void lab.gains;
     void lab.noise;
@@ -121,12 +157,19 @@
   function lightOffset(light: Light, i: number, n: number, out: Vector3) {
     // Spread over the light's face, across the direction it points.
     const p = discPoint((i * 37) % n, n);
-    const dir = new Vector3(light.aim.x - light.at.x, light.aim.y - light.at.y, light.aim.z - light.at.z).normalize();
+    const dir = new Vector3(
+      light.aim.x - light.at.x,
+      light.aim.y - light.at.y,
+      light.aim.z - light.at.z,
+    ).normalize();
     const a = Math.abs(dir.y) < 0.9 ? new Vector3(0, 1, 0) : new Vector3(1, 0, 0);
     const u = new Vector3().crossVectors(dir, a).normalize();
     const v = new Vector3().crossVectors(dir, u).normalize();
     const r = light.size / 2;
-    out.set(light.at.x, light.at.y, light.at.z).addScaledVector(u, p.x * r).addScaledVector(v, p.y * r);
+    out
+      .set(light.at.x, light.at.y, light.at.z)
+      .addScaledVector(u, p.x * r)
+      .addScaledVector(v, p.y * r);
   }
 
   const hooks = {
@@ -162,7 +205,8 @@
       cam.position.copy(base);
       cam.updateMatrixWorld();
       cam.updateProjectionMatrix();
-      for (const light of lab.lights) spots.get(light.id)?.position.set(light.at.x, light.at.y, light.at.z);
+      for (const light of lab.lights)
+        spots.get(light.id)?.position.set(light.at.x, light.at.y, light.at.z);
     },
   };
 
@@ -272,7 +316,14 @@
   onDestroy(() => acc.dispose());
 </script>
 
-<T.PerspectiveCamera makeDefault near={0.05} far={60} fov={lab.camera.vFov} position={[lab.cameraAt.x, lab.cameraAt.y, lab.cameraAt.z]} oncreate={cameraCreated} />
+<T.PerspectiveCamera
+  makeDefault
+  near={0.05}
+  far={60}
+  fov={lab.camera.vFov}
+  position={[lab.cameraAt.x, lab.cameraAt.y, lab.cameraAt.z]}
+  oncreate={cameraCreated}
+/>
 
 {#each lab.lights as light (lab.lighting.id + light.id)}
   <T.SpotLight

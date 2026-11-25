@@ -1,6 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import { derive } from '../../src/setup/derive.ts';
-import { focalRange, fromEntry, fromSlider, stepFocal, toEntry, toSlider } from '../../src/setup/focal.ts';
+import {
+  focalRange,
+  fromEntry,
+  fromSlider,
+  stepFocal,
+  toEntry,
+  toSlider,
+} from '../../src/setup/focal.ts';
 import { ASPECTS, SAFE_AREAS, defaultSetup } from '../../src/setup/presets.ts';
 import { overlayGeometry } from '../../src/overlay/geometry.ts';
 import { SCENE_HALF_WIDTH, project, viewBoxFor } from '../../src/overlay/scene.ts';
@@ -33,7 +40,10 @@ describe('derive (default cinema setup: ALEXA 35, 4K 16:9, 2.39:1, 35 mm)', () =
   });
 
   it('desqueezes anamorphic before fitting the aspect', () => {
-    const d2 = derive({ ...defaultSetup('cinema'), aspect: '2.39', squeeze: 2 }, { width: 22, height: 18.59 });
+    const d2 = derive(
+      { ...defaultSetup('cinema'), aspect: '2.39', squeeze: 2 },
+      { width: 22, height: 18.59 },
+    );
     expect(d2.areaAspect).toBeCloseTo(2.367, 3);
     expect(d2.frameFraction.w).toBe(1);
     expect(d2.frameFraction.h).toBeLessThan(1);
@@ -52,7 +62,9 @@ describe('focal helpers', () => {
     expect(toSlider(800, r)).toBe(1000);
     expect(fromSlider(toSlider(50, r), r)).toBe(50);
     // Each doubling moves the slider the same distance (to the nearest whole step).
-    expect(Math.abs(toSlider(40, r) - toSlider(20, r) - (toSlider(80, r) - toSlider(40, r)))).toBeLessThanOrEqual(1);
+    expect(
+      Math.abs(toSlider(40, r) - toSlider(20, r) - (toSlider(80, r) - toSlider(40, r))),
+    ).toBeLessThanOrEqual(1);
   });
 
   it('steps to the next and previous lens stop', () => {
@@ -71,7 +83,11 @@ describe('focal helpers', () => {
 });
 
 describe('overlay geometry', () => {
-  const g = overlayGeometry({ w: 1, h: 16 / 9 / 2.39 }, { thirds: true, golden: true, centre: true, safe: true }, SAFE_AREAS);
+  const g = overlayGeometry(
+    { w: 1, h: 16 / 9 / 2.39 },
+    { thirds: true, golden: true, centre: true, safe: true },
+    SAFE_AREAS,
+  );
 
   it('centres the frame with two mask bands', () => {
     expect(g.frame.y).toBeCloseTo(0.1281, 4);
@@ -91,7 +107,13 @@ describe('overlay geometry', () => {
   });
 
   it('pillarboxes a taller frame', () => {
-    expect(overlayGeometry({ w: 0.5, h: 1 }, { thirds: false, golden: false, centre: false, safe: false }, SAFE_AREAS).masks).toHaveLength(2);
+    expect(
+      overlayGeometry(
+        { w: 0.5, h: 1 },
+        { thirds: false, golden: false, centre: false, safe: false },
+        SAFE_AREAS,
+      ).masks,
+    ).toHaveLength(2);
   });
 });
 

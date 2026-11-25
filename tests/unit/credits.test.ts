@@ -19,9 +19,16 @@ describe('credits', () => {
     const rows = thirdParty
       .split('\n')
       .filter((l) => l.startsWith('| '))
-      .map((l) => l.split('|')[1]!.trim().replace(/^\[([^\]]+)\]\([^)]*\)$/, '$1'));
+      .map((l) =>
+        l
+          .split('|')[1]!
+          .trim()
+          .replace(/^\[([^\]]+)\]\([^)]*\)$/, '$1'),
+      );
     // Shipped items (shown on the About page) have a row; build-only tools are named in the text.
-    const missing = CREDITS.filter((c) => (c.about ? !rows.includes(c.name) : !rows.includes(c.name) && !thirdParty.includes(c.name)));
+    const missing = CREDITS.filter((c) =>
+      c.about ? !rows.includes(c.name) : !rows.includes(c.name) && !thirdParty.includes(c.name),
+    );
     expect(missing.map((c) => c.name)).toEqual([]);
   });
 

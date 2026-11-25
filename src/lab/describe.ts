@@ -11,13 +11,24 @@ import { APERTURES, SHUTTERS, nearestIndex } from './stops.ts';
 const cinema = (setup: Setup) => setup.mode === 'cinema';
 
 export function apertureLabel(setup: Setup, fNumber: number): string {
-  const label = APERTURES[nearestIndex(APERTURES.map((a) => a.value), fNumber)]!.label;
+  const label =
+    APERTURES[
+      nearestIndex(
+        APERTURES.map((a) => a.value),
+        fNumber,
+      )
+    ]!.label;
   return `${cinema(setup) ? 'T' : 'f/'}${label}`;
 }
 
 export function shutterLabel(setup: Setup, st: LabState): string {
   if (cinema(setup)) return `${st.exposure.angle}°`;
-  return SHUTTERS[nearestIndex(SHUTTERS.map((s) => s.value), st.exposure.shutter)]!.label;
+  return SHUTTERS[
+    nearestIndex(
+      SHUTTERS.map((s) => s.value),
+      st.exposure.shutter,
+    )
+  ]!.label;
 }
 
 function lightingName(st: LabState): string {
@@ -34,7 +45,17 @@ export function suggestLabName(setup: Setup, st: LabState): string {
 export function labSummary(setup: Setup, st: LabState): string {
   const model = getSensor(setup.sensorId)?.name ?? '';
   const iso = `${cinema(setup) ? 'EI' : 'ISO'} ${st.exposure.iso}`;
-  return [model, `${setup.focal} mm`, lightingName(st), apertureLabel(setup, st.exposure.fNumber), shutterLabel(setup, st), iso, `${st.exposure.kelvin} K`].filter(Boolean).join(' · ');
+  return [
+    model,
+    `${setup.focal} mm`,
+    lightingName(st),
+    apertureLabel(setup, st.exposure.fNumber),
+    shutterLabel(setup, st),
+    iso,
+    `${st.exposure.kelvin} K`,
+  ]
+    .filter(Boolean)
+    .join(' · ');
 }
 
 /** The parts that make two lab setups look the same (not when they were saved, not the viewer's aids). */

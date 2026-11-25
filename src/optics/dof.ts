@@ -16,13 +16,17 @@ import type { Area } from './types.ts';
 // These are the usual approximations for subjects much farther than the focal
 // length; they are not meant for macro distances.
 
-export const DOF_SOURCE: Citation = { ref: 'zeiss-nasse-depth-of-field-2010', locator: 'pp. 8, 9, 12, 13, 15' };
+export const DOF_SOURCE: Citation = {
+  ref: 'zeiss-nasse-depth-of-field-2010',
+  locator: 'pp. 8, 9, 12, 13, 15',
+};
 
 /** The diagonal is divided by this to get the acceptable circle of confusion. */
 export const COC_DIVISOR = 1500;
 
 function positive(name: string, ...values: number[]) {
-  for (const v of values) if (!(v > 0 && Number.isFinite(v))) throw new RangeError(`${name} must be positive and finite`);
+  for (const v of values)
+    if (!(v > 0 && Number.isFinite(v))) throw new RangeError(`${name} must be positive and finite`);
 }
 
 /** Acceptable circle of confusion (mm) for an image area: diagonal / 1500. */
@@ -52,7 +56,12 @@ export interface DepthOfField {
 }
 
 /** Near and far limits of acceptable sharpness when focused at `focus` (mm). */
-export function depthOfField(focalLength: number, fNumber: number, coc: number, focus: number): DepthOfField {
+export function depthOfField(
+  focalLength: number,
+  fNumber: number,
+  coc: number,
+  focus: number,
+): DepthOfField {
   positive('focus distance', focus);
   const h = hyperfocal(focalLength, fNumber, coc);
   const near = (h * focus) / (h + focus);
@@ -68,7 +77,12 @@ export function depthOfField(focalLength: number, fNumber: number, coc: number, 
  * Equals the circle of confusion for a point at infinity when focused at the
  * hyperfocal distance (consistent with the formulas above).
  */
-export function blurDiameter(focalLength: number, fNumber: number, focus: number, distance: number): number {
+export function blurDiameter(
+  focalLength: number,
+  fNumber: number,
+  focus: number,
+  distance: number,
+): number {
   positive('focus distance', focus);
   if (!(distance > 0)) throw new RangeError('subject distance must be positive');
   const pupil = entrancePupil(focalLength, fNumber);

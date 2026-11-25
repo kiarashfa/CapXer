@@ -20,8 +20,15 @@ export function GET() {
     icons: [
       { src: url('icons/icon-192.png'), sizes: '192x192', type: 'image/png', purpose: 'any' },
       { src: url('icons/icon-512.png'), sizes: '512x512', type: 'image/png', purpose: 'any' },
-      { src: url('icons/icon-maskable-512.png'), sizes: '512x512', type: 'image/png', purpose: 'maskable' },
+      {
+        src: url('icons/icon-maskable-512.png'),
+        sizes: '512x512',
+        type: 'image/png',
+        purpose: 'maskable',
+      },
     ],
   };
-  return new Response(JSON.stringify(manifest, null, 2), { headers: { 'Content-Type': 'application/manifest+json' } });
+  return new Response(JSON.stringify(manifest, null, 2), {
+    headers: { 'Content-Type': 'application/manifest+json' },
+  });
 }

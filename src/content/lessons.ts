@@ -28,7 +28,10 @@ export const lessonUrl = (id: string) => url(`lessons/${id}`);
 export async function getLessons(): Promise<Lesson[]> {
   const all = await getCollection('lessons');
   return all.sort(
-    (a, b) => TOPICS[a.data.topic].order - TOPICS[b.data.topic].order || a.data.order - b.data.order || a.data.title.localeCompare(b.data.title),
+    (a, b) =>
+      TOPICS[a.data.topic].order - TOPICS[b.data.topic].order ||
+      a.data.order - b.data.order ||
+      a.data.title.localeCompare(b.data.title),
   );
 }
 
@@ -37,11 +40,29 @@ export async function lessonLinksByPanel(): Promise<Partial<Record<PanelId, Less
   const out: Partial<Record<PanelId, LessonLink[]>> = {};
   for (const l of await getLessons()) {
     for (const p of l.data.tools) {
-      (out[p] ??= []).push({ title: l.data.title, href: lessonUrl(l.id), minutes: readingMinutes(l.body ?? '') });
+      (out[p] ??= []).push({
+        title: l.data.title,
+        href: lessonUrl(l.id),
+        minutes: readingMinutes(l.body ?? ''),
+      });
     }
   }
   return out;
 }
 
-const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-export const longDate = (d: Date) => `${d.getUTCDate()} ${MONTHS[d.getUTCMonth()]} ${d.getUTCFullYear()}`;
+const MONTHS = [
+  'January',
+  'February',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December',
+];
+export const longDate = (d: Date) =>
+  `${d.getUTCDate()} ${MONTHS[d.getUTCMonth()]} ${d.getUTCFullYear()}`;
