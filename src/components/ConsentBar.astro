@@ -187,7 +187,7 @@ import { url } from '../lib/url.ts';
     }
   }
   .consent-link {
-    color: var(--c-acc);
+    color: var(--c-link);
     text-decoration: underline;
     text-underline-offset: 2px;
     white-space: nowrap;
@@ -395,6 +395,7 @@ import { url } from '../lib/url.ts';
     --c-muted: #afb1b5;
     --c-acc: #8fb4ff;
     --c-acc2: #5fc9c0;
+    --c-link: #8fb4ff;
     --c-line: rgba(236, 235, 232, 0.16);
     --c-line-s: rgba(236, 235, 232, 0.38);
     --c-shadow: 0 6px 20px rgba(0, 0, 0, 0.18);
@@ -414,6 +415,8 @@ import { url } from '../lib/url.ts';
     --c-muted: #52565b;
     --c-acc: #6883ba;
     --c-acc2: #56b5ad;
+    /* Darker than --c-acc so the link passes WCAG AA contrast (4.5:1) on the light bar. */
+    --c-link: #3451d1;
     --c-line: rgba(10, 14, 19, 0.16);
     --c-line-s: rgba(10, 14, 19, 0.38);
     --c-shadow: 0 6px 20px rgba(0, 0, 0, 0.18);
