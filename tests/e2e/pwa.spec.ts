@@ -8,7 +8,7 @@ test.use({ serviceWorkers: 'allow' });
 
 test.beforeEach(async ({ page }) => {
   await page.addInitScript(() => {
-    localStorage.setItem('capxer.consent', JSON.stringify({ v: 1, analytics: 'denied', at: '' }));
+    localStorage.setItem('kfa-consent', JSON.stringify({ v: 1, analytics: 'denied' }));
   });
 });
 

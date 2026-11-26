@@ -19,7 +19,6 @@ import {
 import { CREDITS } from '../content/credits.ts';
 import { longDate } from '../content/lessons.ts';
 import { REPO_URL, VERSION } from '../config/site.ts';
-import { url } from '../lib/url.ts';
 
 // Every source the camera and device database, the viewfinder's guides and the exposure aids cite, generated from the data so it never drifts.
 const citedIds = new Set([
@@ -110,28 +109,40 @@ const built = longDate(new Date());
       <p>
         CapXer has no server, no database and no accounts. Your camera feed, photos, setups, lab
         settings, name and picture stay on your device unless you share a link, download your save
-        file or turn on cloud save. If you allow analytics, Google Analytics counts visits to the
-        site and sets cookies, but it never sees your camera, your setups, your name or your
-        picture. If you decline, it is not loaded at all. You can change your answer at any time:{' '}
+        file or turn on cloud save.
+      </p>
+      <h3 class="pt-2 font-bold">Analytics</h3>
+      <p>
+        If you accept analytics in the cookie bar, Google Analytics counts visits to this site: the
+        page, which part of the world you visit from and your browser type. It never receives your
+        camera feed, photos, setups, lab settings, name and picture, and if you decline it is not
+        loaded at all. One answer covers every project on kiarashfa.github.io. You can change it at
+        any time:{' '}
         <button
           type="button"
           class="cursor-pointer text-accent underline underline-offset-3"
-          data-open-consent
+          data-consent-open
         >
-          {t.consent.settings}
+          {t.footer.cookies}
         </button>
+        .
       </p>
+      <h3 id="cloud-save" class="pt-2 font-bold">
+        Cloud save
+      </h3>
       <p>
-        Cloud save is off unless you turn it on in <a href={url('user')}>your profile</a>. Your
-        browser then keeps a copy of your save file in your own Google Drive or Dropbox, in a
-        private folder only CapXer can use, and nothing passes through any server of ours. CapXer
-        uses that access only to read and write this one file. You can disconnect at any time, which
-        also ends the access, and signing out removes everything from the browser. Data from Google
-        is handled under the{' '}
+        Cloud save is optional. If you connect Google Drive or Dropbox, CapXer keeps one file in a
+        private app folder of your own account, straight from your browser and never through a
+        server of ours. It sees nothing else there, and you can disconnect at any time. Use of
+        information received from Google APIs follows the{' '}
         <a href="https://developers.google.com/terms/api-services-user-data-policy">
           Google API Services User Data Policy
         </a>
-        , including its Limited Use requirements.
+        , including the Limited Use requirements.
+      </p>
+      <p class="text-muted">
+        Questions about privacy? Open an issue on <a href={`${REPO_URL}/issues`}>GitHub</a> or write
+        to <a href="mailto:kiarashfa@gmail.com">kiarashfa@gmail.com</a>.
       </p>
     </DocSection>
 

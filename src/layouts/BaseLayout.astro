@@ -5,11 +5,10 @@ import '../styles/global.css';
 import '../styles/site-bar.css';
 import '../styles/user.css';
 import ThemeToggle from '../components/site/ThemeToggle.svelte';
-import ConsentBanner from '../components/site/ConsentBanner.svelte';
+import ConsentBar from '../components/ConsentBar.astro';
 import { t } from '../i18n/en.ts';
 import { url } from '../lib/url.ts';
 import { THEME_KEY } from '../lib/theme.ts';
-import { CONSENT_OPEN_EVENT } from '../lib/consent.ts';
 import { REPO_URL, SITE_NAME } from '../config/site.ts';
 import { SAVE_KEY } from '../storage/schema.ts';
 import { TINTS } from '../storage/schema.ts';
@@ -402,9 +401,9 @@ const current = (href: string) =>
         <button
           type="button"
           class="min-h-11 cursor-pointer text-accent underline underline-offset-3"
-          data-open-consent
+          data-consent-open
         >
-          {t.consent.settings}
+          {t.footer.cookies}
         </button>
         <a href={url('about')}>{t.nav.about}</a>
         <a href={REPO_URL}>{t.footer.source}</a>
@@ -412,7 +411,7 @@ const current = (href: string) =>
       </div>
     </footer>
 
-    <ConsentBanner client:load />
+    <ConsentBar />
 
     <dialog
       class="dlg"
@@ -471,20 +470,15 @@ const current = (href: string) =>
       </div>
     </div>
 
-    <script define:vars={{ eventName: CONSENT_OPEN_EVENT }} is:inline>
-      document
-        .querySelectorAll('[data-open-consent]')
-        .forEach((el) =>
-          el.addEventListener('click', () => window.dispatchEvent(new Event(eventName))),
-        );
-    </script>
     <script>
       import { initSiteBar } from '../lib/site-bar.ts';
       import { initPwa } from '../lib/pwa.ts';
       import { initProfile } from '../user/bar.ts';
+      import { followConsentBar } from '../lib/toasts.ts';
       initSiteBar();
       initPwa();
       initProfile();
+      followConsentBar(document.querySelector<HTMLElement>('[data-consent]'));
     </script>
   </body>
 </html>

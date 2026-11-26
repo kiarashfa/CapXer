@@ -4,10 +4,10 @@ import { test, expect, openDock } from './fixtures.ts';
 const LESSON = 'lessons/aspect-ratios/';
 const isDesktop = (page: Page) => (page.viewportSize()?.width ?? 0) >= 1024;
 
-// Consent already answered, so the banner never covers what the tests tap.
+// Consent already answered, so the cookie bar never covers what the tests tap.
 test.beforeEach(async ({ page }) => {
   await page.addInitScript(() => {
-    localStorage.setItem('capxer.consent', JSON.stringify({ v: 1, analytics: 'denied', at: '' }));
+    localStorage.setItem('kfa-consent', JSON.stringify({ v: 1, analytics: 'denied' }));
   });
 });
 

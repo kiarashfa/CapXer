@@ -34,8 +34,10 @@ test.describe('console stays clean', () => {
   for (const path of PAGES) {
     test(`${path} with analytics allowed`, async ({ page, gaRequests }) => {
       const problems = await watch(page);
+      // Localhost never reports unless this debug flag is set (src/lib/consent.ts).
+      await page.addInitScript(() => localStorage.setItem('kfa-consent-debug', '1'));
       await page.goto(path);
-      await page.getByRole('button', { name: 'Allow analytics' }).click();
+      await page.locator('[data-consent]').getByRole('button', { name: 'Accept' }).click();
       await expect.poll(() => gaRequests.length).toBeGreaterThan(0);
       await page.waitForLoadState('networkidle');
       expect(problems).toEqual([]);

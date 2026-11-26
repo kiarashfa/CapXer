@@ -186,7 +186,7 @@
   }
 
   /* Notes at the bottom of the screen ("Link copied", "Update ready"): inverse ink, never modal.
-     The stack rises above the consent banner while it shows (--toasts-bottom). */
+     The stack rises above the cookie bar while it shows (--toasts-bottom, src/lib/toasts.ts). */
   .toasts {
     position: fixed;
     z-index: 70;

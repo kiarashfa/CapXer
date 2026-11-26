@@ -1,4 +1,4 @@
-// Single source of truth for deployment and analytics settings.
+// Single source of truth for deployment settings (the analytics ID is in measurement-id.ts).
 // Imported by astro.config.ts, the app and the Node scripts. Keep it free of
 // non-erasable TypeScript (no enums/namespaces) so Node can run it directly.
 
@@ -17,6 +17,3 @@ export const SITE_ORIGIN = 'https://kiarashfa.github.io';
 export const BASE_PATH = '/CapXer/';
 
 export const REPO_URL = 'https://github.com/kiarashfa/CapXer';
-
-/** GA4 measurement ID. Public by design; never put secrets in this repo. */
-export const GA_MEASUREMENT_ID = 'G-W290FFPWK4';

@@ -47,8 +47,8 @@ test.describe('focus is never hidden (2.4.11)', () => {
   for (const path of PAGES) {
     test(path, async ({ page }) => {
       await page.goto(path);
-      // Close the consent banner the way a keyboard user would, so it does not sit over the page.
-      await page.getByRole('button', { name: 'Decline' }).click();
+      // Answer the cookie bar first, so it does not sit over the page.
+      await page.locator('[data-consent]').getByRole('button', { name: 'Reject' }).click();
       expect(await hiddenFocus(page)).toEqual([]);
     });
   }

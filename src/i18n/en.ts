@@ -33,14 +33,6 @@ export const en = {
     toDark: 'Switch to dark theme',
     toggle: 'Toggle theme',
   },
-  consent: {
-    title: 'Analytics',
-    body: 'May CapXer use Google Analytics to count visits? It sets cookies and only runs if you agree. Your camera feed never leaves your device either way.',
-    accept: 'Allow analytics',
-    decline: 'Decline',
-    more: 'Privacy details',
-    settings: 'Privacy settings',
-  },
   oldBrowser: {
     title: 'Your browser is too old for CapXer',
     body: 'Some parts of this site need a recent browser. Please update, or use a current version of Chrome, Safari, Firefox or Edge.',
@@ -217,6 +209,7 @@ export const en = {
   },
   footer: {
     source: 'Source code',
+    cookies: 'Cookie settings',
   },
   lessons: {
     title: 'Lessons',

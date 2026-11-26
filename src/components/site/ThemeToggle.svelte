@@ -2,7 +2,6 @@
   import { onMount } from 'svelte';
   import { t } from '../../i18n/en.ts';
   import { applyTheme, currentTheme, type Theme } from '../../lib/theme.ts';
-  import { track } from '../../lib/analytics.ts';
 
   // null until mounted: the server cannot know the visitor's theme.
   let theme = $state<Theme | null>(null);
@@ -18,7 +17,6 @@
     const next: Theme = currentTheme() === 'dark' ? 'light' : 'dark';
     applyTheme(next);
     theme = next;
-    track('theme_change', { theme: next });
   }
 </script>
 

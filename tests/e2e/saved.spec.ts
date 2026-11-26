@@ -26,7 +26,7 @@ const stage = (page: Page) => page.getByTestId('vf-stage');
 
 test.beforeEach(async ({ page }) => {
   await page.addInitScript(() => {
-    localStorage.setItem('capxer.consent', JSON.stringify({ v: 1, analytics: 'denied', at: '' }));
+    localStorage.setItem('kfa-consent', JSON.stringify({ v: 1, analytics: 'denied' }));
   });
 });
 
@@ -153,7 +153,7 @@ test('export a file and import it into an empty browser', async ({ page, browser
   const fresh = await browser.newContext({ viewport: page.viewportSize(), isMobile: false });
   const p2 = await fresh.newPage();
   await p2.addInitScript(() =>
-    localStorage.setItem('capxer.consent', JSON.stringify({ v: 1, analytics: 'denied', at: '' })),
+    localStorage.setItem('kfa-consent', JSON.stringify({ v: 1, analytics: 'denied' })),
   );
   await p2.goto(page.url());
   const saved2 = await openPane(p2, 'saved');

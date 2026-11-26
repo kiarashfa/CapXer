@@ -4,10 +4,10 @@ import { expect, openDock, test } from './fixtures.ts';
 // The lab (v2, L3): desktop renders the studio by accumulation and shows a
 // meter, the settings and a top view of the set; phones get a card instead.
 
-// The analytics banner would cover the lower controls; the consent tests cover it.
+// The cookie bar would cover the lower controls; consent.spec.ts covers it.
 test.beforeEach(async ({ page }) => {
   await page.addInitScript(() => {
-    localStorage.setItem('capxer.consent', JSON.stringify({ v: 1, analytics: 'denied', at: '' }));
+    localStorage.setItem('kfa-consent', JSON.stringify({ v: 1, analytics: 'denied' }));
   });
 });
 

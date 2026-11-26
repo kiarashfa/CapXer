@@ -69,7 +69,7 @@ test.describe('accessibility (WCAG 2.2 AA)', () => {
       test(`${path} in ${scheme} theme`, async ({ page }) => {
         await page.emulateMedia({ colorScheme: scheme });
         await page.goto(path);
-        await expect(page.getByTestId('consent-banner')).toBeVisible();
+        await expect(page.locator('[data-consent]')).toBeVisible();
         const results = await new AxeBuilder({ page })
           .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'])
           .analyze();

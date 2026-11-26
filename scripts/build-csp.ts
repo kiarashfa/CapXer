@@ -3,14 +3,15 @@
 // GitHub Pages cannot send headers, so the policy has to live in the page.
 //
 // Why our own step and not Astro's `security.csp`: Astro does not hash
-// `is:inline` scripts (theme, old-browser check, consent button) and puts its tag
+// `is:inline` scripts (theme, old-browser check, profile circle) and puts its tag
 // after them; a policy only covers what comes after it in the document.
 // Here the tag goes first in <head> and every inline script gets a sha256 hash,
 // so script-src never needs 'unsafe-inline'.
 // Styles keep 'unsafe-inline': Svelte and our markup use style="" attributes,
-// which hashes cannot allow. Google Analytics hosts are needed only after "Allow
-// analytics"; Google sign-in, Drive and Dropbox only after the user connects a
-// cloud save (src/user/cloud.ts).
+// which hashes cannot allow. Google Analytics hosts (gtag.js, then its collect
+// requests) are needed only after "Accept" in the cookie bar (src/lib/consent.ts);
+// Google sign-in, Drive and Dropbox only after the user connects a cloud save
+// (src/user/cloud.ts).
 // tests/e2e/console.spec.ts fails on any CSP violation in the browser.
 import { createHash } from 'node:crypto';
 import { readFileSync, readdirSync, statSync, writeFileSync } from 'node:fs';
